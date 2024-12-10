@@ -1,23 +1,47 @@
+import { useEffect, useState } from "react";
 import { Text, View, Image, FlatList, SafeAreaView } from "react-native";
 import { StyleSheet } from "react-native";
 const logo = require("../assets/images/react-logo.png");
 
-type ItemProps = { img_uri: any; title: string; artist: string };
+type AlbumProps = {
+  cover: {
+    sizes: {
+      60: string;
+      120: string;
+      300: string;
+      600: string;
+      960: string;
+      1200: string;
+      1500: string;
+    };
+  };
+  title: string;
+  artist: { name: string };
+};
 
-const Item = ({ img_uri, title, artist }: ItemProps) => (
+const Item = ({ cover, title, artist }: AlbumProps) => (
   <View style={styles.listItem}>
-    <Image source={img_uri} style={styles.image} />
-    <Text style={{ color: "white", fontSize: 20 }}>{title}</Text>
-    <Text style={{ color: "white" }}>{artist}</Text>
+    <Image source={{ uri: cover.sizes[120] }} style={styles.image} />
+    <View style={{ marginLeft: 10 }}>
+      <Text style={{ color: "white", fontSize: 20 }}>{title}</Text>
+      <Text style={{ color: "white" }}>{artist.name}</Text>
+    </View>
   </View>
 );
 
 export default function Index() {
-  const recentAlbums = new Array(15).fill(null).map((_, index) => ({
-    img_uri: logo,
-    title: `album ${index + 1}`,
-    artist: `artist ${index + 1}`,
-  }));
+  const [albums, setAlbums] = useState<AlbumProps[]>([]);
+
+  useEffect(() => {
+    const callback = async () => {
+      const fetchedAlbums = await fetch(
+        "https://api.mirlo.space/v1/trackGroups?take=20"
+      ).then((response) => response.json());
+      setAlbums(fetchedAlbums.results);
+    };
+    callback();
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -25,10 +49,10 @@ export default function Index() {
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
-          data={recentAlbums}
+          data={albums}
           renderItem={({ item }) => (
             <Item
-              img_uri={item.img_uri}
+              cover={item.cover}
               title={item.title}
               artist={item.artist}
             ></Item>
@@ -51,7 +75,6 @@ const styles = StyleSheet.create({
   },
   listItem: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
     alignItems: "center",
     padding: 5,
   },
