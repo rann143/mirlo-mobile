@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Text, View, Image, FlatList, SafeAreaView } from "react-native";
 import { StyleSheet } from "react-native";
 const logo = require("../assets/images/react-logo.png");
+import { API_ROOT } from "@/constants/api-root";
 
 type AlbumProps = {
   cover: {
@@ -35,7 +36,7 @@ export default function Index() {
   useEffect(() => {
     const callback = async () => {
       const fetchedAlbums = await fetch(
-        "https://api.mirlo.space/v1/trackGroups?take=20"
+        `${API_ROOT}v1/trackGroups?take=20`
       ).then((response) => response.json());
       setAlbums(fetchedAlbums.results);
     };
