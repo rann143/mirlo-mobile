@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Text, View, Image, FlatList, SafeAreaView } from "react-native";
 import { StyleSheet } from "react-native";
-const logo = require("../assets/images/react-logo.png");
 import { API_ROOT } from "@/constants/api-root";
 
 type AlbumProps = {
