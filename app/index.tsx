@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Text, View, Image, FlatList, SafeAreaView } from "react-native";
 import { StyleSheet } from "react-native";
+import { Link } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
 
 type AlbumProps = {
@@ -23,7 +24,9 @@ const Item = ({ cover, title, artist }: AlbumProps) => (
   <View style={styles.listItem}>
     <Image source={{ uri: cover.sizes[120] }} style={styles.image} />
     <View style={{ marginLeft: 10 }}>
-      <Text style={{ color: "white", fontSize: 20 }}>{title}</Text>
+      <Link href="/album-tracks" style={{ color: "white", fontSize: 20 }}>
+        {title}
+      </Link>
       <Text style={{ color: "white" }}>{artist.name}</Text>
     </View>
   </View>
