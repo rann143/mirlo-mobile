@@ -9,6 +9,12 @@ export default function RootLayout() {
           title: "Mirlo",
         }}
       />
+      <Stack.Screen
+        name="album-tracks"
+        options={{
+          title: "Album Tracks",
+        }}
+      />
     </Stack>
   );
 }
