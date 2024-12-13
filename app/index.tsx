@@ -18,13 +18,21 @@ type AlbumProps = {
   };
   title: string;
   artist: { name: string };
+  artistId: number;
+  urlSlug: string;
 };
 
-const Item = ({ cover, title, artist }: AlbumProps) => (
+const Item = ({ cover, title, artist, artistId, urlSlug }: AlbumProps) => (
   <View style={styles.listItem}>
     <Image source={{ uri: cover.sizes[120] }} style={styles.image} />
     <View style={{ marginLeft: 10 }}>
-      <Link href="/album-tracks" style={{ color: "white", fontSize: 20 }}>
+      <Link
+        href={{
+          pathname: "/artist/[id]/album/[slug]/album-tracks",
+          params: { id: artistId, slug: urlSlug },
+        }}
+        style={{ color: "white", fontSize: 20 }}
+      >
         {title}
       </Link>
       <Text style={{ color: "white" }}>{artist.name}</Text>
@@ -58,6 +66,8 @@ export default function Index() {
               cover={item.cover}
               title={item.title}
               artist={item.artist}
+              artistId={item.artistId}
+              urlSlug={item.urlSlug}
             ></Item>
           )}
         ></FlatList>
