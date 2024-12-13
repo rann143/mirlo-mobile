@@ -1,6 +1,8 @@
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 
 export default function RootLayout() {
+  const pathname = usePathname();
+
   return (
     <Stack>
       <Stack.Screen
@@ -10,9 +12,9 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
-        name="album-tracks"
+        name="artist/[id]/album/[slug]"
         options={{
-          title: "Album Tracks",
+          title: "Album",
         }}
       />
     </Stack>
