@@ -2,6 +2,7 @@ import { Text, View, SafeAreaView, StyleSheet, FlatList } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
 import { useState, useEffect } from "react";
+import { VscPlay } from "react-icons/vsc";
 
 type TrackProps = {
   title: string;
