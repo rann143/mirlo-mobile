@@ -9,9 +9,11 @@ import {
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { VscPlay } from "react-icons/vsc";
-import { Audio } from "expo-av";
+import { Video, ResizeMode } from "expo-av";
+import { useEvent } from "expo";
+import { useVideoPlayer, VideoView } from "expo-video";
 
 type TrackProps = {
   title: string;
@@ -36,37 +38,11 @@ const TrackItem = ({ title, audio }: TrackProps) => (
   </View>
 );
 
+// CURRENTLY ONLY PLAYS FIRST TRACK IN ALBUM
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
   const [tracks, setTracks] = useState<TrackProps[]>([]);
-
-  // ************************
-  // Current Goal is just to get first song in tracks to play. Then focus on being able to play all displayed songs
-  const [currentSound, setCurrentSound] = useState<Audio.Sound | null>(null);
-
-  async function playSound() {
-    try {
-      console.log("Loading Sound");
-      // Unload existing sound if any
-      if (currentSound) {
-        await currentSound.unloadAsync();
-      }
-
-      const soundUri = API_ROOT + tracks[0].audio.url;
-      // console.log(soundUri);
-
-      const { sound: playBackObject } = await Audio.Sound.createAsync(
-        { uri: soundUri },
-        { shouldPlay: true }
-      );
-
-      setCurrentSound(playBackObject);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  // ************************
+  const [currentTrackUrl, setCurrentTrackUrl] = useState<string>("");
 
   useEffect(() => {
     const callback = async () => {
@@ -74,22 +50,50 @@ export default function AlbumTracks() {
         `${API_ROOT}/v1/trackGroups/${slug}/?artistId=${id}`
       ).then((response) => response.json());
       setTracks(fetchedAlbum.result.tracks);
-    };
-    callback();
 
-    return () => {
-      if (currentSound) {
-        currentSound.unloadAsync();
+      if (fetchedAlbum.result.tracks.length > 0) {
+        setCurrentTrackUrl(
+          `${API_ROOT}${fetchedAlbum.result.tracks[0].audio.url}`
+        );
       }
     };
-  }, [currentSound]);
+    callback();
+  }, []);
+
+  const player = useVideoPlayer(currentTrackUrl, (player) => {
+    if (currentTrackUrl) {
+      player.loop = true;
+      player.play();
+    }
+  });
+
+  const { isPlaying } = useEvent(player, "playingChange", {
+    isPlaying: player.playing,
+  });
 
   // console.log(tracks);
+  if (tracks.length) {
+    console.log(currentTrackUrl);
+    console.log(player);
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      {currentTrackUrl && player && (
+        <VideoView style={styles.video} player={player} />
+      )}
+
+      <Button
+        title={isPlaying ? "Pause" : "Play"}
+        onPress={() => {
+          if (isPlaying) {
+            player.pause();
+          } else {
+            player.play();
+          }
+        }}
+      />
       <View style={styles.container}>
-        <Button title="Play First Track (Testing)" onPress={playSound} />
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
@@ -141,5 +145,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "center",
     textTransform: "uppercase",
+  },
+  playPauseButton: {
+    width: 50,
+    height: 50,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  video: {
+    width: 0,
+    height: 0,
+    opacity: 0,
   },
 });
