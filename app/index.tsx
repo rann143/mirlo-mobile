@@ -46,7 +46,7 @@ export default function Index() {
   useEffect(() => {
     const callback = async () => {
       const fetchedAlbums = await fetch(
-        `${API_ROOT}v1/trackGroups?take=20`
+        `${API_ROOT}/v1/trackGroups?take=20`
       ).then((response) => response.json());
       setAlbums(fetchedAlbums.results);
     };
