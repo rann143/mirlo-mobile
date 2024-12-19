@@ -1,6 +1,7 @@
 import {
   Text,
   View,
+  Image,
   SafeAreaView,
   StyleSheet,
   FlatList,
@@ -10,9 +11,9 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
 import { useState, useEffect } from "react";
-import { VscPlay } from "react-icons/vsc";
 import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 type TrackProps = {
   title: string;
@@ -37,6 +38,9 @@ const PlayButton = ({
   player,
   isPlaying,
 }: TrackProps) => {
+  const playIcon = <Ionicons name="play" size={20} />;
+  const pauseIcon = <Ionicons name="pause" size={20} />;
+
   function onPress() {
     if (`${API_ROOT}${audio.url}` !== currentTrackUrl) {
       setCurrentTrackURL(`${API_ROOT}${audio.url}`);
@@ -51,11 +55,11 @@ const PlayButton = ({
   }
 
   return (
-    <TouchableOpacity style={styles.appButtonContainer} onPress={onPress}>
-      <Text style={styles.appButtonText}>
+    <TouchableOpacity style={styles.playPauseButtonContainer} onPress={onPress}>
+      <Text style={styles.playPauseButtonText}>
         {`${API_ROOT}${audio.url}` === currentTrackUrl && isPlaying
-          ? "Pause"
-          : "Play"}
+          ? pauseIcon
+          : playIcon}
       </Text>
     </TouchableOpacity>
   );
@@ -159,27 +163,18 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: "#f0f0f0", // placeholder color while loading
   },
-  appButtonContainer: {
-    backgroundColor: "#009688",
+  playPauseButtonContainer: {
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginRight: 10,
   },
-  appButtonText: {
+  playPauseButtonText: {
     fontSize: 18,
     color: "#fff",
     fontWeight: "bold",
     alignSelf: "center",
     textTransform: "uppercase",
-  },
-  playPauseButton: {
-    width: 50,
-    height: 50,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
   },
   video: {
     width: 0,
