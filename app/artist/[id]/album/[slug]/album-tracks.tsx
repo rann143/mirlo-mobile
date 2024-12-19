@@ -44,6 +44,11 @@ export default function AlbumTracks() {
   const [tracks, setTracks] = useState<TrackProps[]>([]);
   const [currentTrackUrl, setCurrentTrackUrl] = useState<string>("");
 
+  const player = useVideoPlayer(currentTrackUrl);
+  const { isPlaying } = useEvent(player, "playingChange", {
+    isPlaying: player.playing,
+  });
+
   useEffect(() => {
     const callback = async () => {
       const fetchedAlbum = await fetch(
@@ -59,17 +64,6 @@ export default function AlbumTracks() {
     };
     callback();
   }, []);
-
-  const player = useVideoPlayer(currentTrackUrl, (player) => {
-    if (currentTrackUrl) {
-      player.loop = true;
-      player.play();
-    }
-  });
-
-  const { isPlaying } = useEvent(player, "playingChange", {
-    isPlaying: player.playing,
-  });
 
   // console.log(tracks);
   if (tracks.length) {
