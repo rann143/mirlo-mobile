@@ -14,30 +14,18 @@ import { useState, useEffect } from "react";
 import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { usePlayer } from "@/state/PlayerContext";
 
 type TrackProps = {
   title: string;
   audio: {
     url: string;
   };
-  currentTrackUrl: string;
-  setCurrentTrackURL: React.Dispatch<React.SetStateAction<string>>;
-  player: {
-    play: () => void;
-    pause: () => void;
-    playing: boolean;
-  };
-  isPlaying: boolean;
 };
 
-const PlayButton = ({
-  title,
-  audio,
-  currentTrackUrl,
-  setCurrentTrackURL,
-  player,
-  isPlaying,
-}: TrackProps) => {
+const PlayButton = ({ title, audio }: TrackProps) => {
+  const { player, isPlaying, currentTrackUrl, setCurrentTrackURL } =
+    usePlayer();
   const playIcon = <Ionicons name="play" size={20} />;
   const pauseIcon = <Ionicons name="pause" size={20} />;
 
@@ -65,23 +53,9 @@ const PlayButton = ({
   );
 };
 
-const TrackItem = ({
-  title,
-  audio,
-  currentTrackUrl,
-  setCurrentTrackURL,
-  player,
-  isPlaying,
-}: TrackProps) => (
+const TrackItem = ({ title, audio }: TrackProps) => (
   <View style={styles.listItem}>
-    <PlayButton
-      title={title}
-      audio={audio}
-      currentTrackUrl={currentTrackUrl}
-      setCurrentTrackURL={setCurrentTrackURL}
-      player={player}
-      isPlaying={isPlaying}
-    />
+    <PlayButton title={title} audio={audio} />
     <Text style={{ color: "white", fontSize: 20 }}>{title}</Text>
   </View>
 );
@@ -89,12 +63,7 @@ const TrackItem = ({
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
   const [tracks, setTracks] = useState<TrackProps[]>([]);
-  const [currentTrackUrl, setCurrentTrackUrl] = useState<string>("");
-
-  const player = useVideoPlayer(currentTrackUrl);
-  const { isPlaying } = useEvent(player, "playingChange", {
-    isPlaying: player.playing,
-  });
+  const { player, isPlaying, currentTrackUrl } = usePlayer();
 
   useEffect(() => {
     const callback = async () => {
@@ -123,14 +92,7 @@ export default function AlbumTracks() {
           contentContainerStyle={styles.listContainer}
           data={tracks}
           renderItem={({ item }) => (
-            <TrackItem
-              title={item.title}
-              audio={item.audio}
-              currentTrackUrl={currentTrackUrl}
-              setCurrentTrackURL={setCurrentTrackUrl}
-              player={player}
-              isPlaying={isPlaying}
-            ></TrackItem>
+            <TrackItem title={item.title} audio={item.audio}></TrackItem>
           )}
         ></FlatList>
       </View>
