@@ -9,9 +9,8 @@ import {
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { VscPlay } from "react-icons/vsc";
-import { Video, ResizeMode } from "expo-av";
 import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
 
@@ -20,20 +19,65 @@ type TrackProps = {
   audio: {
     url: string;
   };
+  currentTrackUrl: string;
+  setCurrentTrackURL: React.Dispatch<React.SetStateAction<string>>;
+  player: {
+    play: () => void;
+    pause: () => void;
+    playing: boolean;
+  };
+  isPlaying: boolean;
 };
 
-// Not Yet Functional
-const PlayButton = () => {
+const PlayButton = ({
+  title,
+  audio,
+  currentTrackUrl,
+  setCurrentTrackURL,
+  player,
+  isPlaying,
+}: TrackProps) => {
+  function onPress() {
+    if (`${API_ROOT}${audio.url}` !== currentTrackUrl) {
+      setCurrentTrackURL(`${API_ROOT}${audio.url}`);
+      return;
+    }
+
+    if (isPlaying) {
+      player.pause();
+    } else {
+      player.play();
+    }
+  }
+
   return (
-    <TouchableOpacity style={styles.appButtonContainer}>
-      <Text style={styles.appButtonText}>Play</Text>
+    <TouchableOpacity style={styles.appButtonContainer} onPress={onPress}>
+      <Text style={styles.appButtonText}>
+        {`${API_ROOT}${audio.url}` === currentTrackUrl && isPlaying
+          ? "Pause"
+          : "Play"}
+      </Text>
     </TouchableOpacity>
   );
 };
 
-const TrackItem = ({ title, audio }: TrackProps) => (
+const TrackItem = ({
+  title,
+  audio,
+  currentTrackUrl,
+  setCurrentTrackURL,
+  player,
+  isPlaying,
+}: TrackProps) => (
   <View style={styles.listItem}>
-    <PlayButton />
+    <PlayButton
+      title={title}
+      audio={audio}
+      currentTrackUrl={currentTrackUrl}
+      setCurrentTrackURL={setCurrentTrackURL}
+      player={player}
+      isPlaying={isPlaying}
+    />
     <Text style={{ color: "white", fontSize: 20 }}>{title}</Text>
   </View>
 );
@@ -55,15 +99,15 @@ export default function AlbumTracks() {
         `${API_ROOT}/v1/trackGroups/${slug}/?artistId=${id}`
       ).then((response) => response.json());
       setTracks(fetchedAlbum.result.tracks);
-
-      if (fetchedAlbum.result.tracks.length > 0) {
-        setCurrentTrackUrl(
-          `${API_ROOT}${fetchedAlbum.result.tracks[0].audio.url}`
-        );
-      }
     };
     callback();
   }, []);
+
+  useEffect(() => {
+    if (currentTrackUrl && player) {
+      player.play();
+    }
+  }, [currentTrackUrl, player]);
 
   // console.log(tracks);
   if (tracks.length) {
@@ -76,24 +120,20 @@ export default function AlbumTracks() {
       {currentTrackUrl && player && (
         <VideoView style={styles.video} player={player} />
       )}
-
-      <Button
-        title={isPlaying ? "Pause" : "Play"}
-        onPress={() => {
-          if (isPlaying) {
-            player.pause();
-          } else {
-            player.play();
-          }
-        }}
-      />
       <View style={styles.container}>
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
           data={tracks}
           renderItem={({ item }) => (
-            <TrackItem title={item.title} audio={item.audio}></TrackItem>
+            <TrackItem
+              title={item.title}
+              audio={item.audio}
+              currentTrackUrl={currentTrackUrl}
+              setCurrentTrackURL={setCurrentTrackUrl}
+              player={player}
+              isPlaying={isPlaying}
+            ></TrackItem>
           )}
         ></FlatList>
       </View>
