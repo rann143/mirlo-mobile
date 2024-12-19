@@ -11,7 +11,7 @@ interface PlayerContextType {
 
 export const PlayerContext = createContext<PlayerContextType | null>(null);
 
-export const TrackContextProvider: React.FC<{ children: React.ReactNode }> = ({
+export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [currentTrackUrl, setCurrentTrackURL] = useState<string>("");
