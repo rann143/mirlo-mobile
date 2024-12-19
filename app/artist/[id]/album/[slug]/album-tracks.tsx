@@ -82,7 +82,6 @@ const TrackItem = ({
   </View>
 );
 
-// CURRENTLY ONLY PLAYS FIRST TRACK IN ALBUM
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
   const [tracks, setTracks] = useState<TrackProps[]>([]);
