@@ -109,12 +109,6 @@ export default function AlbumTracks() {
     }
   }, [currentTrackUrl, player]);
 
-  // console.log(tracks);
-  if (tracks.length) {
-    console.log(currentTrackUrl);
-    console.log(player);
-  }
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {currentTrackUrl && player && (
