@@ -63,7 +63,8 @@ const TrackItem = ({ title, audio }: TrackProps) => (
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
   const [tracks, setTracks] = useState<TrackProps[]>([]);
-  const { player, isPlaying, currentTrackUrl } = usePlayer();
+  const { player, isPlaying, currentTrackUrl, setCurrentTrackURL } =
+    usePlayer();
 
   useEffect(() => {
     const callback = async () => {
@@ -75,6 +76,9 @@ export default function AlbumTracks() {
     callback();
   }, []);
 
+  // this is causing a BUG where even if player is paused,
+  // if i leave this album and go to any other or even this album,
+  // music will automatically start play
   useEffect(() => {
     if (currentTrackUrl && player) {
       player.play();
