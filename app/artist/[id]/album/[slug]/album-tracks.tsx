@@ -24,14 +24,18 @@ type TrackProps = {
 };
 
 const PlayButton = ({ title, audio }: TrackProps) => {
-  const { player, isPlaying, currentTrackUrl, setCurrentTrackURL } =
-    usePlayer();
+  const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
   const playIcon = <Ionicons name="play" size={20} />;
   const pauseIcon = <Ionicons name="pause" size={20} />;
+  const audioURL = `${API_ROOT}${audio.url}`;
 
   function onPress() {
-    if (`${API_ROOT}${audio.url}` !== currentTrackUrl) {
-      setCurrentTrackURL(`${API_ROOT}${audio.url}`);
+    // check button's associated song url against current audio source to determine
+    // if we need to change the player's audio source
+    if (audioURL !== currentSource) {
+      player.replace(audioURL);
+      player.play();
+      setCurrentSource(audioURL);
       return;
     }
 
@@ -45,9 +49,7 @@ const PlayButton = ({ title, audio }: TrackProps) => {
   return (
     <TouchableOpacity style={styles.playPauseButtonContainer} onPress={onPress}>
       <Text style={styles.playPauseButtonText}>
-        {`${API_ROOT}${audio.url}` === currentTrackUrl && isPlaying
-          ? pauseIcon
-          : playIcon}
+        {audioURL === currentSource && isPlaying ? pauseIcon : playIcon}
       </Text>
     </TouchableOpacity>
   );
@@ -63,8 +65,7 @@ const TrackItem = ({ title, audio }: TrackProps) => (
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
   const [tracks, setTracks] = useState<TrackProps[]>([]);
-  const { player, isPlaying, currentTrackUrl, setCurrentTrackURL } =
-    usePlayer();
+  const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
 
   useEffect(() => {
     const callback = async () => {
@@ -76,18 +77,9 @@ export default function AlbumTracks() {
     callback();
   }, []);
 
-  // this is causing a BUG where even if player is paused,
-  // if i leave this album and go to any other or even this album,
-  // music will automatically start play
-  useEffect(() => {
-    if (currentTrackUrl && player) {
-      player.play();
-    }
-  }, [currentTrackUrl, player]);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {currentTrackUrl && player && (
+      {currentSource && player && (
         <VideoView style={styles.video} player={player} />
       )}
       <View style={styles.container}>
