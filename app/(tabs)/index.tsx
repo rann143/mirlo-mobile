@@ -56,7 +56,6 @@ export default function Index() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <Text style={styles.text}>Recent Releases</Text>
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}

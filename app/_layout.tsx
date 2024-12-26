@@ -15,11 +15,8 @@ export default function RootLayout() {
     <PlayerContextProvider>
       <Stack>
         <Stack.Screen
-          name="index"
-          options={{
-            title: "Mirlo",
-            headerRight: () => <ProfileLink />,
-          }}
+          name="(tabs)"
+          options={{ headerShown: false, title: "Recent Releases" }}
         />
         <Stack.Screen
           name="artist/[id]/album/[slug]"
