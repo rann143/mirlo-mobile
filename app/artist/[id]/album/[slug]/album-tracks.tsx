@@ -11,8 +11,7 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
 import { useState, useEffect } from "react";
-import { useEvent } from "expo";
-import { useVideoPlayer, VideoView } from "expo-video";
+import { VideoView } from "expo-video";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
 
