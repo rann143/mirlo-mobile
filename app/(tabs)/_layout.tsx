@@ -2,15 +2,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Feather from "@expo/vector-icons/Feather";
 import { Tabs } from "expo-router";
 import { Link } from "expo-router";
-
-function ProfileLink() {
-  const icon = <Feather name="user" size={24} color="black" />;
-  return (
-    <Link href="/" style={{ marginRight: 15 }}>
-      {icon}
-    </Link>
-  );
-}
+import ProfileLink from "@/components/ProfileLink";
 
 export default function TabLayout() {
   return (
