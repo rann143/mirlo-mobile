@@ -1,11 +1,9 @@
 import {
   Text,
   View,
-  Image,
   SafeAreaView,
   StyleSheet,
   FlatList,
-  Button,
   TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
