@@ -8,9 +8,16 @@ import {
 } from "react-native";
 import { useState } from "react";
 
+type LoginInputs = {
+  email: string;
+  password: string;
+};
+
 export default function LoginForm() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [loginInputs, setLoginInputs] = useState<LoginInputs>({
+    email: "",
+    password: "",
+  });
 
   return (
     <View style={styles.container}>
@@ -19,16 +26,29 @@ export default function LoginForm() {
         <TextInput
           placeholder="Email"
           style={styles.inputStyle}
-          value={email}
-          onChangeText={setEmail}
+          value={loginInputs.email}
+          onChangeText={(text) =>
+            setLoginInputs({
+              ...loginInputs,
+              email: text,
+            })
+          }
         />
         <TextInput
           secureTextEntry={true}
           placeholder="Password"
           style={styles.inputStyle}
-          value={password}
-          onChangeText={setPassword}
+          value={loginInputs.password}
+          onChangeText={(text) =>
+            setLoginInputs({
+              ...loginInputs,
+              password: text,
+            })
+          }
         />
+        <TouchableOpacity style={styles.button}>
+          <Text>Submit</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -64,5 +84,13 @@ const styles = StyleSheet.create({
   text: {
     color: "#fff",
     fontSize: 20,
+  },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    backgroundColor: "#FFF",
+    paddingVertical: 5,
+    borderRadius: 50,
   },
 });
