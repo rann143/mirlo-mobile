@@ -2,11 +2,7 @@ import { Stack, usePathname } from "expo-router";
 import { PlayerContextProvider } from "@/state/PlayerContext";
 import Feather from "@expo/vector-icons/Feather";
 import { Link } from "expo-router";
-
-function ProfileLink() {
-  const icon = <Feather name="user" size={24} color="black" />;
-  return <Link href="/">{icon}</Link>;
-}
+import ProfileLink from "@/components/ProfileLink";
 
 export default function RootLayout() {
   const pathname = usePathname();
@@ -25,6 +21,7 @@ export default function RootLayout() {
             headerRight: () => <ProfileLink />,
           }}
         />
+        <Stack.Screen name="login" options={{ title: "Login" }} />
       </Stack>
     </PlayerContextProvider>
   );
