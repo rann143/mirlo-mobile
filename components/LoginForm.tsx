@@ -19,6 +19,22 @@ export default function LoginForm() {
     password: "",
   });
 
+  function submit() {
+    if (loginInputs.email && loginInputs.password) {
+      console.log(loginInputs.email);
+      setLoginInputs({
+        email: "",
+        password: "",
+      });
+    } else {
+      console.log("inputs must NOT be empty");
+      setLoginInputs({
+        ...loginInputs,
+        password: "",
+      });
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.formLabel}> Login </Text>
@@ -46,7 +62,7 @@ export default function LoginForm() {
             })
           }
         />
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={submit}>
           <Text>Submit</Text>
         </TouchableOpacity>
       </View>
