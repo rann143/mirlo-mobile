@@ -11,3 +11,14 @@ interface LoggedInUser {
   }[];
   language?: string;
 }
+
+interface UserTrackGroupPurchase {
+  userId: number;
+  user?: User;
+  trackGroupId: number;
+  trackGroup?: TrackGroup;
+  pricePaid: number;
+  currencyPaid: string;
+  datePurchased: string;
+  singleDownloadToken?: string;
+}

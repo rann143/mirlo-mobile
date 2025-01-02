@@ -18,6 +18,7 @@ async function fetchWrapper<R>(
     credentials: "include",
     ...init,
   });
+
   if (!res.ok) {
     let message;
     try {

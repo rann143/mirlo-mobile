@@ -1,23 +1,50 @@
-import { createContext, useState, useContext } from "react";
-
-interface LoggedInUser {
-  email: string;
-  name: string;
-  id: number;
-  userTrackGroupPurchases?: { trackGroupId: number }[];
-  isAdmin: boolean;
-  currency?: string;
-  wishlist?: {
-    userId: number;
-    trackGroupId: number;
-  }[];
-  language?: string;
-}
+import {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { authRefresh, queryAuthProfile } from "@/queries/authQueries";
 
 const AuthContext = createContext<{ user?: LoggedInUser | null }>({
   user: undefined,
 });
 
-// export function AuthContextProvider({ children }: React.PropsWithChildren) {
-//     const {data: user} =
-// }
+export function AuthContextProvider({ children }: React.PropsWithChildren) {
+  const { data: user } = useQuery(queryAuthProfile());
+  const userId = user?.id;
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (userId) {
+      interval = setInterval(async () => {
+        authRefresh();
+      }, 1000 * 60 * 5); //refresh every 5 mintues
+    }
+
+    return () => (interval ? clearInterval(interval) : undefined);
+  }, [userId, authRefresh]);
+
+  const context = useMemo(() => ({ user }), [user]);
+
+  return (
+    <AuthContext.Provider value={context}>{children}</AuthContext.Provider>
+  );
+}
+
+export function useAuthContext() {
+  const { user } = useContext(AuthContext);
+
+  const queryClient = useQueryClient();
+  const refreshLoggedInUser = useCallback(() => {
+    queryClient.invalidateQueries({
+      predicate: (query) => query.queryKey.includes("auth"),
+    });
+  }, [queryClient]);
+
+  return { user, refreshLoggedInUser };
+}

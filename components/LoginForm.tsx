@@ -6,7 +6,10 @@ import {
   View,
   TextInput,
 } from "react-native";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { useLoginMutation } from "@/queries/authQueries";
+import { useRouter } from "expo-router";
 
 type LoginInputs = {
   email: string;
@@ -14,56 +17,113 @@ type LoginInputs = {
 };
 
 export default function LoginForm() {
-  const [loginInputs, setLoginInputs] = useState<LoginInputs>({
-    email: "",
-    password: "",
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInputs>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
+  const router = useRouter();
 
-  function submit() {
-    if (loginInputs.email && loginInputs.password) {
-      console.log(loginInputs.email);
-      setLoginInputs({
-        email: "",
-        password: "",
-      });
-    } else {
-      console.log("inputs must NOT be empty");
-      setLoginInputs({
-        ...loginInputs,
-        password: "",
-      });
-    }
-  }
+  const { mutate: login } = useLoginMutation();
+
+  const onSubmit = async (data: LoginInputs) => {
+    login(data, {
+      onSuccess() {
+        console.log("logged in successfully");
+        router.replace("/");
+      },
+      onError(e) {
+        console.error("e", e.message);
+        console.error(e);
+      },
+    });
+  };
+
+  // const onSubmit = useCallback(
+  //   async (data: LoginInputs) => {
+  //     login(data, {
+  //       onSuccess() {
+  //         console.log("logged in successfully");
+  //       },
+  //       onError(e) {
+  //         console.error("e", e.message);
+  //         console.error(e);
+  //       },
+  //     });
+  //   },
+  //   [login]
+  // );
+
+  // const [loginInputs, setLoginInputs] = useState<LoginInputs>({
+  //   email: "",
+  //   password: "",
+  // });
+
+  // function submit() {
+  //   if (loginInputs.email && loginInputs.password) {
+  //     console.log(loginInputs.email);
+  //     setLoginInputs({
+  //       email: "",
+  //       password: "",
+  //     });
+  //   } else {
+  //     console.log("inputs must NOT be empty");
+  //     setLoginInputs({
+  //       ...loginInputs,
+  //       password: "",
+  //     });
+  //   }
+  // }
 
   return (
     <View style={styles.container}>
       <Text style={styles.formLabel}> Login </Text>
       <View>
-        <TextInput
-          placeholder="Email"
-          style={styles.inputStyle}
-          value={loginInputs.email}
-          onChangeText={(text) =>
-            setLoginInputs({
-              ...loginInputs,
-              email: text,
-            })
-          }
+        <Text style={styles.formLabel}>Email:</Text>
+        <Controller
+          control={control}
+          rules={{ required: true }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={styles.inputStyle}
+              placeholder="Email"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="email"
         />
-        <TextInput
-          secureTextEntry={true}
-          placeholder="Password"
-          style={styles.inputStyle}
-          value={loginInputs.password}
-          onChangeText={(text) =>
-            setLoginInputs({
-              ...loginInputs,
-              password: text,
-            })
-          }
+        {errors.email && <Text>This is required.</Text>}
+
+        <Text style={styles.formLabel}>Password:</Text>
+        <Controller
+          control={control}
+          rules={{ required: true }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={styles.inputStyle}
+              placeholder="Password"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              secureTextEntry
+            />
+          )}
+          name="password"
         />
-        <TouchableOpacity style={styles.button} onPress={submit}>
-          <Text>Submit</Text>
+        {errors.password && <Text>This is required.</Text>}
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSubmit(onSubmit)}
+        >
+          <Text style={styles.text}>Submit</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -80,11 +140,12 @@ const styles = StyleSheet.create({
   },
 
   formLabel: {
+    marginTop: 20,
     fontSize: 20,
     color: "#fff",
   },
   inputStyle: {
-    marginTop: 20,
+    marginTop: 5,
     width: 300,
     height: 40,
     paddingHorizontal: 10,
@@ -94,11 +155,11 @@ const styles = StyleSheet.create({
   formText: {
     alignItems: "center",
     justifyContent: "center",
-    color: "#fff",
+    color: "#aaa",
     fontSize: 20,
   },
   text: {
-    color: "#fff",
+    color: "#000",
     fontSize: 20,
   },
   button: {

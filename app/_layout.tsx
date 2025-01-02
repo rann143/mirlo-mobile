@@ -1,5 +1,6 @@
 import { Stack, usePathname } from "expo-router";
 import { PlayerContextProvider } from "@/state/PlayerContext";
+import { AuthContextProvider } from "@/state/AuthContext";
 import ProfileLink from "@/components/ProfileLink";
 import { QueryClientWrapper } from "@/queries/QueryClientWrapper";
 import { DevToolsBubble } from "react-native-react-query-devtools";
@@ -19,22 +20,24 @@ export default function RootLayout() {
 
   return (
     <QueryClientWrapper>
-      <PlayerContextProvider>
-        <Stack>
-          <Stack.Screen
-            name="(tabs)"
-            options={{ headerShown: false, title: "Recent Releases" }}
-          />
-          <Stack.Screen
-            name="artist/[id]/album/[slug]"
-            options={{
-              title: "Album",
-              headerRight: () => <ProfileLink />,
-            }}
-          />
-          <Stack.Screen name="login" options={{ title: "Login" }} />
-        </Stack>
-      </PlayerContextProvider>
+      <AuthContextProvider>
+        <PlayerContextProvider>
+          <Stack>
+            <Stack.Screen
+              name="(tabs)"
+              options={{ headerShown: false, title: "Recent Releases" }}
+            />
+            <Stack.Screen
+              name="artist/[id]/album/[slug]"
+              options={{
+                title: "Album",
+                headerRight: () => <ProfileLink />,
+              }}
+            />
+            <Stack.Screen name="login" options={{ title: "Login" }} />
+          </Stack>
+        </PlayerContextProvider>
+      </AuthContextProvider>
       <DevToolsBubble onCopy={onCopy} />
     </QueryClientWrapper>
   );
