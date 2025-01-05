@@ -11,6 +11,16 @@ import { queryUserPurchases } from "@/queries/queries";
 export default function Collections() {
   const { user } = useAuthContext();
   const userId = user?.id;
+
+  if (!user) {
+    return (
+      <View style={styles.container}>
+        <Text>Login to see your collection</Text>
+        <ProfileLink />
+      </View>
+    );
+  }
+
   const { isPending, isError, data, error } = useQuery(
     queryUserPurchases(userId)
   );
@@ -32,15 +42,6 @@ export default function Collections() {
   //     fetchTrackGroups();
   //   }
   // }, [fetchTrackGroups]);
-
-  if (!user) {
-    return (
-      <View style={styles.container}>
-        <Text>Login to see your collection</Text>
-        <ProfileLink />
-      </View>
-    );
-  }
 
   if (isPending) {
     return (
