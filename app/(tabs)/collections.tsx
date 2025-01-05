@@ -12,14 +12,19 @@ export default function Collections() {
   const [purchases, setPurchases] = useState<UserTrackGroupPurchase[]>();
 
   const fetchTrackGroups = useCallback(async () => {
-    const { results } = await fetch(
-      `${API_ROOT}/v1/users/${userId}/purchases`
-    ).then((response) => response.json());
+    //NEED TO ADD ERROR HANDLING
+    const { results } = await fetch(`${API_ROOT}/v1/users/${userId}/purchases`)
+      .then((response) => response.json())
+      .catch((err) => {
+        console.log(err.message);
+      });
     setPurchases(results);
   }, [userId]);
 
   useEffect(() => {
-    fetchTrackGroups();
+    if (userId) {
+      fetchTrackGroups();
+    }
   }, [fetchTrackGroups]);
 
   if (!user) {

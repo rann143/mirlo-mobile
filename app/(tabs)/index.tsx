@@ -3,24 +3,8 @@ import { Text, View, Image, FlatList, SafeAreaView } from "react-native";
 import { StyleSheet } from "react-native";
 import { Link } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
-
-type AlbumProps = {
-  cover: {
-    sizes: {
-      60: string;
-      120: string;
-      300: string;
-      600: string;
-      960: string;
-      1200: string;
-      1500: string;
-    };
-  };
-  title: string;
-  artist: { name: string };
-  artistId: number;
-  urlSlug: string;
-};
+import { useQuery } from "@tanstack/react-query";
+import { queryTrackGroups } from "@/queries/queries";
 
 const Item = ({ cover, title, artist, artistId, urlSlug }: AlbumProps) => (
   <View style={styles.listItem}>
@@ -42,16 +26,26 @@ const Item = ({ cover, title, artist, artistId, urlSlug }: AlbumProps) => (
 
 export default function Index() {
   const [albums, setAlbums] = useState<AlbumProps[]>([]);
+  const { isPending, isError, data, error } = useQuery(
+    queryTrackGroups({ take: 20, distinctArtists: true })
+  );
+  const trackGroups = data?.results;
 
-  useEffect(() => {
-    const callback = async () => {
-      const fetchedAlbums = await fetch(
-        `${API_ROOT}/v1/trackGroups?take=20`
-      ).then((response) => response.json());
-      setAlbums(fetchedAlbums.results);
-    };
-    callback();
-  }, []);
+  if (isPending) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -59,7 +53,7 @@ export default function Index() {
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
-          data={albums}
+          data={trackGroups}
           renderItem={({ item }) => (
             <Item
               cover={item.cover}
