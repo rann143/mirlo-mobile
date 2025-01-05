@@ -4,28 +4,34 @@ import { useCallback, useEffect, useState } from "react";
 import { API_ROOT } from "@/constants/api-root";
 import { Link, Redirect } from "expo-router";
 import ProfileLink from "@/components/ProfileLink";
+import { useQuery } from "@tanstack/react-query";
+
+import { queryUserPurchases } from "@/queries/queries";
 
 export default function Collections() {
   const { user } = useAuthContext();
   const userId = user?.id;
+  const { isPending, isError, data, error } = useQuery(
+    queryUserPurchases(userId)
+  );
+  const purchases = data?.results;
 
-  const [purchases, setPurchases] = useState<UserTrackGroupPurchase[]>();
+  // const [purchases, setPurchases] = useState<UserTrackGroupPurchase[]>();
 
-  const fetchTrackGroups = useCallback(async () => {
-    //NEED TO ADD ERROR HANDLING
-    const { results } = await fetch(`${API_ROOT}/v1/users/${userId}/purchases`)
-      .then((response) => response.json())
-      .catch((err) => {
-        console.log(err.message);
-      });
-    setPurchases(results);
-  }, [userId]);
+  // const fetchTrackGroups = useCallback(async () => {
+  //   const { results } = await fetch(`${API_ROOT}/v1/users/${userId}/purchases`)
+  //     .then((response) => response.json())
+  //     .catch((err) => {
+  //       console.log(err.message);
+  //     });
+  //   setPurchases(results);
+  // }, [userId]);
 
-  useEffect(() => {
-    if (userId) {
-      fetchTrackGroups();
-    }
-  }, [fetchTrackGroups]);
+  // useEffect(() => {
+  //   if (userId) {
+  //     fetchTrackGroups();
+  //   }
+  // }, [fetchTrackGroups]);
 
   if (!user) {
     return (
@@ -34,6 +40,26 @@ export default function Collections() {
         <ProfileLink />
       </View>
     );
+  }
+
+  if (isPending) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
+
+  if (!purchases) {
+    return <Text>No purchases found</Text>;
   }
 
   return (

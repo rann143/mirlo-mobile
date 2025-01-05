@@ -45,3 +45,17 @@ export function queryTrackGroups(opts: {
     queryFn: fetchTrackGroups,
   });
 }
+
+const fetchUserPurchases: QueryFunction<
+  { results: UserTrackGroupPurchase[] },
+  ["fetchUserPurchases", { userId: number | undefined }, ...any]
+> = ({ queryKey: [_, { userId }], signal }) => {
+  return api.get(`/v1/users/${userId}/purchases`, {});
+};
+
+export function queryUserPurchases(userId: number | undefined) {
+  return queryOptions({
+    queryKey: ["fetchUserPurchases", { userId }],
+    queryFn: fetchUserPurchases,
+  });
+}
