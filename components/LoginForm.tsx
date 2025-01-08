@@ -34,7 +34,7 @@ export default function LoginForm() {
     login(data, {
       onSuccess() {
         console.log("logged in successfully");
-        router.replace("/");
+        router.replace("/(tabs)/collections");
       },
       onError(e) {
         console.error("e", e.message);
