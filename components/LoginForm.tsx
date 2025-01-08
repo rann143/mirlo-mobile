@@ -43,42 +43,6 @@ export default function LoginForm() {
     });
   };
 
-  // const onSubmit = useCallback(
-  //   async (data: LoginInputs) => {
-  //     login(data, {
-  //       onSuccess() {
-  //         console.log("logged in successfully");
-  //       },
-  //       onError(e) {
-  //         console.error("e", e.message);
-  //         console.error(e);
-  //       },
-  //     });
-  //   },
-  //   [login]
-  // );
-
-  // const [loginInputs, setLoginInputs] = useState<LoginInputs>({
-  //   email: "",
-  //   password: "",
-  // });
-
-  // function submit() {
-  //   if (loginInputs.email && loginInputs.password) {
-  //     console.log(loginInputs.email);
-  //     setLoginInputs({
-  //       email: "",
-  //       password: "",
-  //     });
-  //   } else {
-  //     console.log("inputs must NOT be empty");
-  //     setLoginInputs({
-  //       ...loginInputs,
-  //       password: "",
-  //     });
-  //   }
-  // }
-
   return (
     <View style={styles.container}>
       <Text style={styles.formLabel}> Login </Text>
