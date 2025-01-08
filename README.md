@@ -1,5 +1,6 @@
 # Mirlo Mobile App
 
+**Currently Under Development**
 This is the mobile app for [mirlo](https://mirlo.space) allowing users to listen to recent releases and their purchased songs
 
 ## Get started
