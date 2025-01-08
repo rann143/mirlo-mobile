@@ -57,5 +57,6 @@ export function queryUserPurchases(userId: number | undefined) {
   return queryOptions({
     queryKey: ["fetchUserPurchases", { userId }],
     queryFn: fetchUserPurchases,
+    enabled: !!userId,
   });
 }
