@@ -9,6 +9,7 @@ import * as Clipboard from "expo-clipboard";
 export default function RootLayout() {
   const pathname = usePathname();
 
+  // Needed for TanStack Query Devtools
   const onCopy = async (text: string) => {
     try {
       await Clipboard.setStringAsync(text);
@@ -30,8 +31,7 @@ export default function RootLayout() {
             <Stack.Screen
               name="artist/[id]/album/[slug]"
               options={{
-                title: "Album",
-                headerRight: () => <ProfileLink />,
+                headerShown: false,
               }}
             />
             <Stack.Screen name="login" options={{ title: "Login" }} />

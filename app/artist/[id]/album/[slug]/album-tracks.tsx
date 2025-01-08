@@ -5,13 +5,15 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Button,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, Stack, useRouter } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import { VideoView } from "expo-video";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
+import ProfileLink from "@/components/ProfileLink";
 
 type TrackProps = {
   title: string;
@@ -62,6 +64,8 @@ const TrackItem = ({ title, audio }: TrackProps) => (
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
   const [tracks, setTracks] = useState<TrackProps[]>([]);
+  const [albumTitle, setAlbumTitle] = useState<string>("");
+  const router = useRouter();
   const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
 
   useEffect(() => {
@@ -70,12 +74,22 @@ export default function AlbumTracks() {
         `${API_ROOT}/v1/trackGroups/${slug}/?artistId=${id}`
       ).then((response) => response.json());
       setTracks(fetchedAlbum.result.tracks);
+      setAlbumTitle(fetchedAlbum.result.title);
     };
     callback();
-  }, []);
+  }, [slug, id]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Stack.Screen
+        options={{
+          title: albumTitle || "Loading...",
+          headerRight: () => <ProfileLink />,
+          headerLeft: () => (
+            <Button title="Back" onPress={() => router.dismiss(1)} />
+          ),
+        }}
+      />
       {currentSource && player && (
         <VideoView style={styles.video} player={player} />
       )}
