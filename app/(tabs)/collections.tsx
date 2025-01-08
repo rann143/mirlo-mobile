@@ -10,19 +10,19 @@ export default function Collections() {
   const { user } = useAuthContext();
   const userId = user?.id;
 
+  const { isPending, isError, data, error } = useQuery(
+    queryUserPurchases(userId)
+  );
+  const purchases = data?.results;
+
   if (!user) {
     return (
-      <View style={styles.container}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>Login to see your collection</Text>
         <ProfileLink />
       </View>
     );
   }
-
-  const { isPending, isError, data, error } = useQuery(
-    queryUserPurchases(userId)
-  );
-  const purchases = data?.results;
 
   if (isPending) {
     return (
