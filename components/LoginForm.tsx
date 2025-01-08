@@ -6,7 +6,6 @@ import {
   View,
   TextInput,
 } from "react-native";
-import { useState, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useLoginMutation } from "@/queries/authQueries";
 import { useRouter } from "expo-router";

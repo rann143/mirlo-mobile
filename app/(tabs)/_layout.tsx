@@ -1,7 +1,5 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Feather from "@expo/vector-icons/Feather";
 import { Tabs } from "expo-router";
-import { Link } from "expo-router";
 import ProfileLink from "@/components/ProfileLink";
 
 export default function TabLayout() {
@@ -20,7 +18,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="collections"
         options={{
-          title: "My Collections",
+          title: "My Collection",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="book" color={color} />
           ),

@@ -1,11 +1,9 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image, FlatList } from "react-native";
 import { useAuthContext } from "@/state/AuthContext";
-import { useCallback, useEffect, useState } from "react";
-import { API_ROOT } from "@/constants/api-root";
-import { Link, Redirect } from "expo-router";
 import ProfileLink from "@/components/ProfileLink";
+import { Link } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
-
+import TrackGroupItem from "@/components/TrackGroupItem";
 import { queryUserPurchases } from "@/queries/queries";
 
 export default function Collections() {
@@ -25,23 +23,6 @@ export default function Collections() {
     queryUserPurchases(userId)
   );
   const purchases = data?.results;
-
-  // const [purchases, setPurchases] = useState<UserTrackGroupPurchase[]>();
-
-  // const fetchTrackGroups = useCallback(async () => {
-  //   const { results } = await fetch(`${API_ROOT}/v1/users/${userId}/purchases`)
-  //     .then((response) => response.json())
-  //     .catch((err) => {
-  //       console.log(err.message);
-  //     });
-  //   setPurchases(results);
-  // }, [userId]);
-
-  // useEffect(() => {
-  //   if (userId) {
-  //     fetchTrackGroups();
-  //   }
-  // }, [fetchTrackGroups]);
 
   if (isPending) {
     return (
@@ -65,13 +46,20 @@ export default function Collections() {
 
   return (
     <View style={styles.container}>
-      <Text>My Collection</Text>
-      {purchases?.map(
-        (purchase) =>
-          purchase.trackGroup && (
-            <Text key={purchase.trackGroupId}>{purchase.trackGroup.title}</Text>
-          )
-      )}
+      <FlatList
+        style={{ width: "100%" }}
+        contentContainerStyle={styles.listContainer}
+        data={purchases}
+        renderItem={({ item }) => (
+          <TrackGroupItem
+            cover={item.trackGroup.cover}
+            title={item.trackGroup.title}
+            artist={item.trackGroup.artist}
+            artistId={item.trackGroup.artistId}
+            urlSlug={item.trackGroup.urlSlug}
+          ></TrackGroupItem>
+        )}
+      />
     </View>
   );
 }
@@ -79,7 +67,15 @@ export default function Collections() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: "white",
     alignItems: "center",
+    justifyContent: "space-evenly",
+  },
+  listContainer: {
+    backgroundColor: "#BE3455",
+  },
+  text: {
+    padding: 10,
+    fontWeight: "bold",
   },
 });
