@@ -4,13 +4,16 @@ import { Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useAuthContext } from "@/state/AuthContext";
 import { useLogoutMutation } from "@/queries/authQueries";
 import { useCallback } from "react";
+import { useRouter } from "expo-router";
 
 export default function ProfileLink() {
   const { user } = useAuthContext();
   const { mutate: logout } = useLogoutMutation();
+  const router = useRouter();
   const onLogOut = () => {
     logout(undefined, {
       onSuccess() {
+        router.replace("/");
         console.log("logged out");
       },
     });
