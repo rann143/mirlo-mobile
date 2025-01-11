@@ -4,59 +4,19 @@ import {
   SafeAreaView,
   StyleSheet,
   FlatList,
-  TouchableOpacity,
   Button,
 } from "react-native";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
-import { useState, useEffect, useReducer } from "react";
+import { useState, useEffect } from "react";
 import { VideoView } from "expo-video";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
 import ProfileLink from "@/components/ProfileLink";
-
-type TrackProps = {
-  title: string;
-  audio: {
-    url: string;
-  };
-};
-
-const PlayButton = ({ title, audio }: TrackProps) => {
-  const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
-  const playIcon = <Ionicons name="play" size={20} />;
-  const pauseIcon = <Ionicons name="pause" size={20} />;
-  const audioURL = `${API_ROOT}${audio.url}`;
-
-  function onPress() {
-    // check button's associated song url against current audio source to determine
-    // if we need to change the player's audio source
-    if (audioURL !== currentSource) {
-      player.replace(audioURL);
-      player.play();
-      setCurrentSource(audioURL);
-      return;
-    }
-
-    if (isPlaying) {
-      player.pause();
-    } else {
-      player.play();
-    }
-  }
-
-  return (
-    <TouchableOpacity style={styles.playPauseButtonContainer} onPress={onPress}>
-      <Text style={styles.playPauseButtonText}>
-        {audioURL === currentSource && isPlaying ? pauseIcon : playIcon}
-      </Text>
-    </TouchableOpacity>
-  );
-};
+import PlayButton from "@/components/PlayButton";
 
 const TrackItem = ({ title, audio }: TrackProps) => (
   <View style={styles.listItem}>
-    <PlayButton title={title} audio={audio} />
+    <PlayButton audioUrlFragment={audio.url} />
     <Text style={{ color: "white", fontSize: 20 }}>{title}</Text>
   </View>
 );
@@ -131,19 +91,6 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 4,
     backgroundColor: "#f0f0f0", // placeholder color while loading
-  },
-  playPauseButtonContainer: {
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    marginRight: 10,
-  },
-  playPauseButtonText: {
-    fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
-    alignSelf: "center",
-    textTransform: "uppercase",
   },
   video: {
     width: 0,

@@ -5,6 +5,7 @@ import ProfileLink from "@/components/ProfileLink";
 import { QueryClientWrapper } from "@/queries/QueryClientWrapper";
 import { DevToolsBubble } from "react-native-react-query-devtools";
 import * as Clipboard from "expo-clipboard";
+import Player from "@/components/Player";
 
 export default function RootLayout() {
   const pathname = usePathname();
@@ -36,6 +37,7 @@ export default function RootLayout() {
             />
             <Stack.Screen name="login" options={{ title: "Login" }} />
           </Stack>
+          <Player />
         </PlayerContextProvider>
       </AuthContextProvider>
       <DevToolsBubble onCopy={onCopy} />
