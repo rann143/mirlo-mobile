@@ -40,3 +40,10 @@ interface AlbumProps {
   artistId: number;
   urlSlug: string;
 }
+
+interface TrackProps {
+  title: string;
+  audio: {
+    url: string;
+  };
+}
