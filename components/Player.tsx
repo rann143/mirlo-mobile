@@ -12,13 +12,15 @@ export default function Player() {
         currentSource ? styles.container : { width: 0, height: 0, opacity: 0 }
       }
     >
-      <PlayerPlayButton audioUrlFragment={currentSource} buttonColor="black" />
+      <PlayerPlayButton buttonColor="black" />
+      <Text>
+        {currentSource?.title} by {currentSource?.artist}
+      </Text>
     </View>
   );
 }
 
 type PlayButtonProps = {
-  audioUrlFragment: string;
   buttonColor?: string;
 };
 
@@ -56,6 +58,8 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderWidth: 1,
     alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 20,
   },
   playPauseButtonContainer: {

@@ -4,26 +4,34 @@ import { usePlayer } from "@/state/PlayerContext";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
 type PlayButtonProps = {
-  audioUrlFragment: string;
+  trackObject: TrackProps;
   buttonColor?: string;
 };
 
 export default function PlayButton({
-  audioUrlFragment,
+  trackObject,
   buttonColor,
 }: PlayButtonProps) {
   const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
   const playIcon = <Ionicons name="play" size={20} />;
   const pauseIcon = <Ionicons name="pause" size={20} />;
+  const audioUrlFragment = trackObject.audio.url;
   const audioURL = `${API_ROOT}${audioUrlFragment}`;
 
   function onPress() {
     // check button's associated song url against current audio source to determine
     // if we need to change the player's audio source
-    if (audioURL !== currentSource) {
+    if (!currentSource) {
       player.replace(audioURL);
       player.play();
-      setCurrentSource(audioURL);
+      setCurrentSource(trackObject);
+      return;
+    }
+
+    if (audioUrlFragment !== currentSource?.audio.url) {
+      player.replace(audioURL);
+      player.play();
+      setCurrentSource(trackObject);
       return;
     }
 
@@ -42,7 +50,9 @@ export default function PlayButton({
           { color: buttonColor ? buttonColor : "#fff" },
         ]}
       >
-        {audioURL === currentSource && isPlaying ? pauseIcon : playIcon}
+        {isPlaying && currentSource?.audio.url === audioUrlFragment
+          ? pauseIcon
+          : playIcon}
       </Text>
     </TouchableOpacity>
   );

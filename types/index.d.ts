@@ -43,7 +43,11 @@ interface AlbumProps {
 
 interface TrackProps {
   title: string;
+  order: number | undefined;
+  id: number | undefined;
+  artist: string;
   audio: {
     url: string;
+    duration: number | undefined;
   };
 }

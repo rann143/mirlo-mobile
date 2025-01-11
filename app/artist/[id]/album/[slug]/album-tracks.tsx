@@ -14,10 +14,14 @@ import { usePlayer } from "@/state/PlayerContext";
 import ProfileLink from "@/components/ProfileLink";
 import PlayButton from "@/components/PlayButton";
 
-const TrackItem = ({ title, audio }: TrackProps) => (
+type TrackItemComponentProps = {
+  track: TrackProps;
+};
+
+const TrackItem = ({ track }: TrackItemComponentProps) => (
   <View style={styles.listItem}>
-    <PlayButton audioUrlFragment={audio.url} />
-    <Text style={{ color: "white", fontSize: 20 }}>{title}</Text>
+    <PlayButton trackObject={track} />
+    <Text style={{ color: "white", fontSize: 20 }}>{track.title}</Text>
   </View>
 );
 
@@ -33,6 +37,10 @@ export default function AlbumTracks() {
       const fetchedAlbum = await fetch(
         `${API_ROOT}/v1/trackGroups/${slug}/?artistId=${id}`
       ).then((response) => response.json());
+      const copy = fetchedAlbum.result.tracks;
+      copy.forEach(
+        (track: TrackProps) => (track.artist = fetchedAlbum.result.artist.name)
+      );
       setTracks(fetchedAlbum.result.tracks);
       setAlbumTitle(fetchedAlbum.result.title);
     };
@@ -58,9 +66,7 @@ export default function AlbumTracks() {
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
           data={tracks}
-          renderItem={({ item }) => (
-            <TrackItem title={item.title} audio={item.audio}></TrackItem>
-          )}
+          renderItem={({ item }) => <TrackItem track={item}></TrackItem>}
         ></FlatList>
       </View>
     </SafeAreaView>
