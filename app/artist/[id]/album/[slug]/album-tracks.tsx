@@ -16,11 +16,12 @@ import PlayButton from "@/components/PlayButton";
 
 type TrackItemComponentProps = {
   track: TrackProps;
+  albumTracks: TrackProps[];
 };
 
-const TrackItem = ({ track }: TrackItemComponentProps) => (
+const TrackItem = ({ track, albumTracks }: TrackItemComponentProps) => (
   <View style={styles.listItem}>
-    <PlayButton trackObject={track} />
+    <PlayButton trackObject={track} albumTracks={albumTracks} />
     <Text style={{ color: "white", fontSize: 20 }}>{track.title}</Text>
   </View>
 );
@@ -30,18 +31,21 @@ export default function AlbumTracks() {
   const [tracks, setTracks] = useState<TrackProps[]>([]);
   const [albumTitle, setAlbumTitle] = useState<string>("");
   const router = useRouter();
-  const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
+  const { player, isPlaying, currentSource, setCurrentSource, setPlayerQueue } =
+    usePlayer();
 
   useEffect(() => {
+    // TODO: Refactor to use Tanstack Query
     const callback = async () => {
       const fetchedAlbum = await fetch(
         `${API_ROOT}/v1/trackGroups/${slug}/?artistId=${id}`
       ).then((response) => response.json());
-      const copy = fetchedAlbum.result.tracks;
-      copy.forEach(
-        (track: TrackProps) => (track.artist = fetchedAlbum.result.artist.name)
-      );
-      setTracks(fetchedAlbum.result.tracks);
+      const copy = [...fetchedAlbum.result.tracks];
+      copy.forEach((track: TrackProps) => {
+        track.artist = fetchedAlbum.result.artist.name;
+        track.albumId = fetchedAlbum.result.id;
+      });
+      setTracks(copy);
       setAlbumTitle(fetchedAlbum.result.title);
     };
     callback();
@@ -66,7 +70,9 @@ export default function AlbumTracks() {
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
           data={tracks}
-          renderItem={({ item }) => <TrackItem track={item}></TrackItem>}
+          renderItem={({ item }) => (
+            <TrackItem track={item} albumTracks={tracks}></TrackItem>
+          )}
         ></FlatList>
       </View>
     </SafeAreaView>

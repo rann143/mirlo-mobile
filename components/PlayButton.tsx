@@ -4,30 +4,47 @@ import { usePlayer } from "@/state/PlayerContext";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
 type PlayButtonProps = {
+  albumTracks: Array<TrackProps>;
   trackObject: TrackProps;
   buttonColor?: string;
 };
 
 export default function PlayButton({
+  albumTracks,
   trackObject,
   buttonColor,
 }: PlayButtonProps) {
-  const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
+  const {
+    player,
+    isPlaying,
+    currentSource,
+    setCurrentSource,
+    setPlayerQueue,
+    playerQueue,
+  } = usePlayer();
   const playIcon = <Ionicons name="play" size={20} />;
   const pauseIcon = <Ionicons name="pause" size={20} />;
   const audioUrlFragment = trackObject.audio.url;
   const audioURL = `${API_ROOT}${audioUrlFragment}`;
 
   function onPress() {
-    // check button's associated song url against current audio source to determine
-    // if we need to change the player's audio source
+    // check if currentSource is null to determine if we should initialize it
     if (!currentSource) {
       player.replace(audioURL);
       player.play();
       setCurrentSource(trackObject);
+      setPlayerQueue(albumTracks);
       return;
     }
 
+    // compare album of this track againstour current source's album to determine
+    // if we need to reset our queue
+    if (trackObject.albumId !== currentSource.albumId) {
+      setPlayerQueue(albumTracks);
+    }
+
+    // check button's associated song url against current audio source to determine
+    // if we need to change the player's audio source
     if (audioUrlFragment !== currentSource?.audio.url) {
       player.replace(audioURL);
       player.play();
