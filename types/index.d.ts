@@ -46,6 +46,7 @@ interface TrackProps {
   order: number | undefined;
   id: number | undefined;
   artist: string;
+  albumId: number;
   audio: {
     url: string;
     duration: number | undefined;
