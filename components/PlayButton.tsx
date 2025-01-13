@@ -21,6 +21,7 @@ export default function PlayButton({
     setCurrentSource,
     setPlayerQueue,
     playerQueue,
+    setCurrentlyPlayingIndex,
   } = usePlayer();
   const playIcon = <Ionicons name="play" size={20} />;
   const pauseIcon = <Ionicons name="pause" size={20} />;
@@ -28,6 +29,7 @@ export default function PlayButton({
   const audioURL = `${API_ROOT}${audioUrlFragment}`;
 
   function onPress() {
+    setCurrentlyPlayingIndex(trackObject.order - 1);
     // check if currentSource is null to determine if we should initialize it
     if (!currentSource) {
       player.replace(audioURL);

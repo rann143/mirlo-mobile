@@ -23,6 +23,7 @@ const TrackItem = ({ track, albumTracks }: TrackItemComponentProps) => (
   <View style={styles.listItem}>
     <PlayButton trackObject={track} albumTracks={albumTracks} />
     <Text style={{ color: "white", fontSize: 20 }}>{track.title}</Text>
+    <Text style={{ color: "black", fontSize: 20 }}>{track.audio.duration}</Text>
   </View>
 );
 
@@ -63,7 +64,12 @@ export default function AlbumTracks() {
         }}
       />
       {currentSource && player && (
-        <VideoView style={styles.video} player={player} />
+        <VideoView
+          style={styles.video}
+          player={player}
+          nativeControls={true}
+          showsTimecodes={true}
+        />
       )}
       <View style={styles.container}>
         <FlatList
@@ -105,8 +111,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0", // placeholder color while loading
   },
   video: {
-    width: 0,
-    height: 0,
-    opacity: 0,
+    width: "100%",
+    height: 100,
+    borderColor: "black",
+    borderWidth: 1,
+    zIndex: 1,
+    //opacity: 0,
   },
 });
