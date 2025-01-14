@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     backgroundColor: "#BE3455",
+    paddingBottom: 80,
   },
   text: {
     padding: 10,

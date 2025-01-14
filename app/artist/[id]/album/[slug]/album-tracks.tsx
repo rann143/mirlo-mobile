@@ -111,11 +111,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0", // placeholder color while loading
   },
   video: {
-    width: "100%",
-    height: 100,
-    borderColor: "black",
-    borderWidth: 1,
-    zIndex: 1,
+    width: 0,
+    height: 0,
+    // opacity: 0,
+    // width: "100%",
+    // height: 100,
+    // borderColor: "black",
+    // borderWidth: 1,
+    // zIndex: 1,
     //opacity: 0,
   },
 });

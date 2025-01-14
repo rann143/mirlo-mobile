@@ -2,6 +2,8 @@ import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { usePlayer } from "@/state/PlayerContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { API_ROOT } from "@/constants/api-root";
+import NextButton from "./NextButton";
+import PrevButton from "./PrevButton";
 
 export default function Player() {
   const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
@@ -12,7 +14,11 @@ export default function Player() {
         currentSource ? styles.container : { width: 0, height: 0, opacity: 0 }
       }
     >
-      <PlayerPlayButton buttonColor="black" />
+      <View style={styles.buttonsContainer}>
+        <PrevButton />
+        <PlayerPlayButton buttonColor="black" />
+        <NextButton />
+      </View>
       <Text>
         {currentSource?.title} by {currentSource?.artist}
       </Text>
@@ -38,7 +44,7 @@ function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
   }
 
   return (
-    <TouchableOpacity style={styles.playPauseButtonContainer} onPress={onPress}>
+    <TouchableOpacity style={styles.button} onPress={onPress}>
       <Text
         style={[
           styles.playPauseButtonText,
@@ -54,15 +60,21 @@ function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
 const styles = StyleSheet.create({
   container: {
     width: "90%",
-    borderStyle: "solid",
-    borderColor: "black",
-    borderWidth: 1,
+    position: "absolute",
+    padding: 5,
+    bottom: 100,
+    backgroundColor: "#ededed",
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
+    boxShadow: "0 0 3 5 rgb(0, 0, 0, .5)",
+    borderRadius: 10,
+    zIndex: 10,
   },
-  playPauseButtonContainer: {
+  buttonsContainer: {
+    flexDirection: "row",
+  },
+  button: {
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
