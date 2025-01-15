@@ -6,7 +6,7 @@ import TrackGroupItem from "@/components/TrackGroupItem";
 
 export default function Index() {
   const { isPending, isError, data, error } = useQuery(
-    queryTrackGroups({ take: 20, distinctArtists: true })
+    queryTrackGroups({ take: 20, orderBy: "random", distinctArtists: true })
   );
   const trackGroups = data?.results;
 
