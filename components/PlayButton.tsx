@@ -22,6 +22,8 @@ export default function PlayButton({
     setPlayerQueue,
     playerQueue,
     setCurrentlyPlayingIndex,
+    setShuffled,
+    shuffled,
   } = usePlayer();
   const playIcon = <Ionicons name="play" size={20} />;
   const pauseIcon = <Ionicons name="pause" size={20} />;
@@ -42,6 +44,9 @@ export default function PlayButton({
     // compare album of this track againstour current source's album to determine
     // if we need to reset our queue
     if (trackObject.albumId !== currentSource.albumId) {
+      if (shuffled) {
+        setShuffled(false);
+      }
       setPlayerQueue(albumTracks);
     }
 

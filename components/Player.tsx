@@ -4,6 +4,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { API_ROOT } from "@/constants/api-root";
 import NextButton from "./NextButton";
 import PrevButton from "./PrevButton";
+import LoopButton from "./LoopButton";
+import ShuffleButton from "./ShuffleButton";
 
 export default function Player() {
   const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
@@ -15,9 +17,11 @@ export default function Player() {
       }
     >
       <View style={styles.buttonsContainer}>
+        <ShuffleButton />
         <PrevButton />
         <PlayerPlayButton buttonColor="black" />
         <NextButton />
+        <LoopButton />
       </View>
       <Text>
         {currentSource?.title} by {currentSource?.artist}

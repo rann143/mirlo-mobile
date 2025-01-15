@@ -13,6 +13,10 @@ interface PlayerContextType {
   trackDuration: number;
   currentlyPlayingIndex: number;
   setCurrentlyPlayingIndex: (index: number) => void;
+  looping: "loopTrack" | "loopQueue" | "none";
+  setLooping: (loopType: "loopTrack" | "loopQueue" | "none") => void;
+  shuffled: boolean;
+  setShuffled: (shuffle: boolean) => void;
 }
 
 export const PlayerContext = createContext<PlayerContextType | null>(null);
@@ -23,6 +27,10 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   // Keeps track of our player's current 'source' so we can check against it when changing songs
   const [currentSource, setCurrentSource] = useState<TrackProps | null>(null);
   const [playerQueue, setPlayerQueue] = useState<TrackProps[]>([]);
+  const [shuffled, setShuffled] = useState<boolean>(false);
+  const [looping, setLooping] = useState<"loopTrack" | "loopQueue" | "none">(
+    "none"
+  );
   const [currentlyPlayingIndex, setCurrentlyPlayingIndex] = useState<number>(0);
   const player = useVideoPlayer("", (player) => {
     player.play();
@@ -35,17 +43,39 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEventListener(player, "playToEnd", () => {
     console.log("current track ended");
-    if (currentlyPlayingIndex === playerQueue.length - 1) {
-      setCurrentlyPlayingIndex(0);
-      setCurrentSource(playerQueue[0]);
-      player.replace(API_ROOT + playerQueue[0].audio.url);
-      player.play();
-    } else {
-      const nextTrackIndex = currentlyPlayingIndex + 1;
-      setCurrentSource(playerQueue[nextTrackIndex]);
-      setCurrentlyPlayingIndex(nextTrackIndex);
-      player.replace(API_ROOT + playerQueue[nextTrackIndex].audio.url);
-      player.play();
+    if (looping === "loopQueue") {
+      if (currentlyPlayingIndex === playerQueue.length - 1) {
+        setCurrentlyPlayingIndex(0);
+        setCurrentSource(playerQueue[0]);
+        player.replace(API_ROOT + playerQueue[0].audio.url);
+        player.play();
+        return;
+      } else {
+        const nextTrackIndex = currentlyPlayingIndex + 1;
+        setCurrentSource(playerQueue[nextTrackIndex]);
+        setCurrentlyPlayingIndex(nextTrackIndex);
+        player.replace(API_ROOT + playerQueue[nextTrackIndex].audio.url);
+        player.play();
+        return;
+      }
+    }
+
+    if (looping === "loopTrack") {
+      player.loop === true;
+      return;
+    }
+
+    if (looping === "none") {
+      if (currentlyPlayingIndex === playerQueue.length - 1) {
+        return;
+      } else {
+        const nextTrackIndex = currentlyPlayingIndex + 1;
+        setCurrentSource(playerQueue[nextTrackIndex]);
+        setCurrentlyPlayingIndex(nextTrackIndex);
+        player.replace(API_ROOT + playerQueue[nextTrackIndex].audio.url);
+        player.play();
+        return;
+      }
     }
   });
 
@@ -61,6 +91,10 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     trackDuration,
     currentlyPlayingIndex,
     setCurrentlyPlayingIndex,
+    looping,
+    setLooping,
+    shuffled,
+    setShuffled,
   };
 
   return (
