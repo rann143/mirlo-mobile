@@ -71,6 +71,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
     if (looping === "none") {
       if (currentlyPlayingIndex === playerQueue.length - 1) {
+        player.seekBy(-trackDuration);
         return;
       } else {
         const nextTrackIndex = currentlyPlayingIndex + 1;
