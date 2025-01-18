@@ -25,18 +25,18 @@ export default function PlayButton({
     setShuffled,
     shuffled,
   } = usePlayer();
-  const [localPlaying, setLocalPlaying] = useState(false);
+  //const [localPlaying, setLocalPlaying] = useState(false);
   const playIcon = <Ionicons name="play" size={20} />;
   const pauseIcon = <Ionicons name="pause" size={20} />;
   const audioUrlFragment = trackObject.audio.url;
   const audioURL = `${API_ROOT}${audioUrlFragment}`;
 
   //FIX ME: if toggling play/pause from the player, local button doesn't change icons.
-  useEffect(() => {
-    if (audioUrlFragment === currentSource?.audio.url) {
-      setLocalPlaying(true);
-    }
-  }, [currentSource]);
+  // useEffect(() => {
+  //   if (audioUrlFragment === currentSource?.audio.url) {
+  //     setLocalPlaying(true);
+  //   }
+  // }, [currentSource]);
 
   const onPress = async () => {
     // check if currentSource is null to determine if we should initialize it
@@ -60,7 +60,7 @@ export default function PlayButton({
     // check button's associated song url against current audio source to determine
     // if we need to change the player's audio source
     if (audioUrlFragment !== currentSource?.audio.url) {
-      setLocalPlaying(true);
+      //setLocalPlaying(true);
       setCurrentSource(trackObject);
       setCurrentlyPlayingIndex(trackObject.order - 1);
       player.replace(audioURL);
@@ -70,10 +70,10 @@ export default function PlayButton({
 
     if (isPlaying) {
       player.pause();
-      setLocalPlaying(false);
+      //setLocalPlaying(false);
     } else {
       player.play();
-      setLocalPlaying(true);
+      //setLocalPlaying(true);
     }
   };
 
@@ -94,7 +94,7 @@ export default function PlayButton({
           { color: buttonColor ? buttonColor : "#fff" },
         ]}
       >
-        {localPlaying && currentSource?.audio.url === audioUrlFragment
+        {isPlaying && currentSource?.audio.url === audioUrlFragment
           ? pauseIcon
           : playIcon}
       </Text>

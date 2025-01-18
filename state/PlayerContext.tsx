@@ -43,6 +43,10 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEventListener(player, "playToEnd", () => {
     console.log("current track ended");
+    onEnd();
+  });
+
+  function onEnd() {
     if (looping === "loopQueue") {
       if (currentlyPlayingIndex === playerQueue.length - 1) {
         setCurrentlyPlayingIndex(0);
@@ -77,9 +81,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
     }
-  });
-
-  //const hadEnded = player.currentTime === player.duration ? true : false;
+  }
 
   const value: PlayerContextType = {
     player,

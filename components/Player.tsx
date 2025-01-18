@@ -7,13 +7,23 @@ import PrevButton from "./PrevButton";
 import LoopButton from "./LoopButton";
 import ShuffleButton from "./ShuffleButton";
 
-export default function Player() {
+type PlayerStyleProps = {
+  bottomDistance: number;
+};
+
+type PlayButtonProps = {
+  buttonColor?: string;
+};
+
+export default function Player({ bottomDistance }: PlayerStyleProps) {
   const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
 
   return (
     <View
       style={
-        currentSource ? styles.container : { width: 0, height: 0, opacity: 0 }
+        currentSource
+          ? [styles.container, { bottom: bottomDistance }]
+          : { width: 0, height: 0, opacity: 0 }
       }
     >
       <View style={styles.buttonsContainer}>
@@ -29,10 +39,6 @@ export default function Player() {
     </View>
   );
 }
-
-type PlayButtonProps = {
-  buttonColor?: string;
-};
 
 function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
   const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();

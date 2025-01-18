@@ -37,7 +37,7 @@ export default function RootLayout() {
             />
             <Stack.Screen name="login" options={{ title: "Login" }} />
           </Stack>
-          <Player />
+          {/* <Player /> */}
         </PlayerContextProvider>
       </AuthContextProvider>
       <DevToolsBubble onCopy={onCopy} />
