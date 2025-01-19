@@ -3,7 +3,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
 import { API_ROOT } from "@/constants/api-root";
 
-export default function NextButton() {
+export default function PrevButton() {
   const {
     player,
     setCurrentSource,
@@ -14,6 +14,15 @@ export default function NextButton() {
   const prevIcon = <Ionicons name="play-skip-back" size={20} />;
 
   const onPress = () => {
+    if (player.currentTime > 3) {
+      // We want to pause, then play so our PlayerSlider re-renders its current time.
+      // If we just replay, the player just seeks it's playback to the beginning without ever pausing
+      player.pause();
+      player.replay();
+      player.play();
+      return;
+    }
+
     if (currentlyPlayingIndex === 0) {
       setCurrentlyPlayingIndex(playerQueue.length - 1);
       setCurrentSource(playerQueue[playerQueue.length - 1]);

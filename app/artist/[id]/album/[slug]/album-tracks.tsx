@@ -14,6 +14,17 @@ import { usePlayer } from "@/state/PlayerContext";
 import ProfileLink from "@/components/ProfileLink";
 import PlayButton from "@/components/PlayButton";
 
+function formatTime(seconds: number) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Number(seconds.toFixed(0)) % 60;
+
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  const formattedSeconds =
+    remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
+
+  return `${formattedMinutes}:${formattedSeconds}`;
+}
+
 type TrackItemComponentProps = {
   track: TrackProps;
   albumTracks: TrackProps[];
@@ -23,7 +34,9 @@ const TrackItem = ({ track, albumTracks }: TrackItemComponentProps) => (
   <View style={styles.listItem}>
     <PlayButton trackObject={track} albumTracks={albumTracks} />
     <Text style={{ color: "white", fontSize: 20 }}>{track.title}</Text>
-    <Text style={{ color: "black", fontSize: 20 }}>{track.audio.duration}</Text>
+    <Text style={{ color: "black", fontSize: 20 }}>
+      {track.audio.duration ? formatTime(track.audio.duration) : 0}
+    </Text>
   </View>
 );
 

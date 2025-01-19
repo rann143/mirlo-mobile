@@ -6,6 +6,7 @@ import NextButton from "./NextButton";
 import PrevButton from "./PrevButton";
 import LoopButton from "./LoopButton";
 import ShuffleButton from "./ShuffleButton";
+import PlayerSlider from "./PlayerSlider";
 
 type PlayerStyleProps = {
   bottomDistance: number;
@@ -33,6 +34,7 @@ export default function Player({ bottomDistance }: PlayerStyleProps) {
         <NextButton />
         <LoopButton />
       </View>
+      <PlayerSlider />
       <Text>
         {currentSource?.title} by {currentSource?.artist}
       </Text>
