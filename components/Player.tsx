@@ -7,6 +7,7 @@ import PrevButton from "./PrevButton";
 import LoopButton from "./LoopButton";
 import ShuffleButton from "./ShuffleButton";
 import PlayerSlider from "./PlayerSlider";
+import { Link } from "expo-router";
 
 type PlayerStyleProps = {
   bottomDistance: number;
@@ -18,6 +19,17 @@ type PlayButtonProps = {
 
 export default function Player({ bottomDistance }: PlayerStyleProps) {
   const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
+
+  if (!currentSource) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  const thisArtistId: string = String(currentSource?.trackGroup.artist.id);
+  const thisSlug: string = String(currentSource?.trackGroup.urlSlug);
 
   return (
     <View
@@ -35,9 +47,14 @@ export default function Player({ bottomDistance }: PlayerStyleProps) {
         <LoopButton />
       </View>
       <PlayerSlider />
-      <Text>
+      <Link
+        href={{
+          pathname: "/artist/[id]/album/[slug]/album-tracks",
+          params: { id: thisArtistId, slug: thisSlug },
+        }}
+      >
         {currentSource?.title} by {currentSource?.artist}
-      </Text>
+      </Link>
     </View>
   );
 }

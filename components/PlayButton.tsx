@@ -39,6 +39,7 @@ export default function PlayButton({
   // }, [currentSource]);
 
   const onPress = async () => {
+    console.log(trackObject);
     // check if currentSource is null to determine if we should initialize it
     if (!currentSource) {
       player.replace(audioURL);
@@ -76,11 +77,6 @@ export default function PlayButton({
       //setLocalPlaying(true);
     }
   };
-
-  const isCurrentTrack = currentSource?.audio.url === audioUrlFragment;
-  // If this is the current track, we show play/pause based on isPlaying
-  // If it's not the current track, we always show play
-  const showPauseIcon = isCurrentTrack ? isPlaying : false;
 
   return (
     <TouchableOpacity

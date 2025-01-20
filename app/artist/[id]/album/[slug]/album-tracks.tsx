@@ -83,6 +83,14 @@ export default function AlbumTracks() {
       copy.forEach((track: TrackProps) => {
         track.artist = fetchedAlbum.result.artist.name;
         track.albumId = fetchedAlbum.result.id;
+        track.trackGroup = {
+          cover: fetchedAlbum.result.cover,
+          title: fetchedAlbum.result.title,
+          artist: fetchedAlbum.result.artist,
+          artistId: fetchedAlbum.result.artistId,
+          urlSlug: fetchedAlbum.result.urlSlug,
+          releaseDate: fetchedAlbum.result.releaseDate,
+        };
       });
       setTracks(copy);
       setAlbum(fetchedAlbum.result);
