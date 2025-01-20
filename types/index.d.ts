@@ -36,9 +36,15 @@ interface AlbumProps {
     };
   };
   title: string;
-  artist: { name: string };
+  artist: {
+    name: string;
+    id: number;
+  };
   artistId: number;
   urlSlug: string;
+  userTrackGroupPurchases?: { userId: number }[];
+  releaseDate: string;
+  tracks: TrackProps[];
 }
 
 interface TrackProps {
@@ -47,6 +53,8 @@ interface TrackProps {
   id: number | undefined;
   artist: string;
   albumId: number;
+  trackGroup: AlbumProps;
+  isPreview: boolean;
   audio: {
     url: string;
     duration: number | undefined;

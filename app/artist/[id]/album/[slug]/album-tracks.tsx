@@ -13,6 +13,8 @@ import { VideoView } from "expo-video";
 import { usePlayer } from "@/state/PlayerContext";
 import ProfileLink from "@/components/ProfileLink";
 import PlayButton from "@/components/PlayButton";
+import { isTrackOwnedOrPreview } from "@/app/(tabs)";
+import { useAuthContext } from "@/state/AuthContext";
 
 function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
@@ -27,29 +29,52 @@ function formatTime(seconds: number) {
 
 type TrackItemComponentProps = {
   track: TrackProps;
-  albumTracks: TrackProps[];
+  album: AlbumProps;
 };
 
-const TrackItem = ({ track, albumTracks }: TrackItemComponentProps) => (
-  <View style={styles.listItem}>
-    <PlayButton trackObject={track} albumTracks={albumTracks} />
-    <Text style={{ color: "white", fontSize: 20 }}>{track.title}</Text>
-    <Text style={{ color: "black", fontSize: 20 }}>
-      {track.audio.duration ? formatTime(track.audio.duration) : 0}
-    </Text>
-  </View>
-);
+const TrackItem = ({ track, album }: TrackItemComponentProps) => {
+  const { user } = useAuthContext();
+
+  const canPlayTrack = isTrackOwnedOrPreview(track, user, album);
+
+  if (!canPlayTrack) {
+    return (
+      <View style={[styles.listItem, { backgroundColor: "white" }]}>
+        <Text style={{ color: "grey", fontSize: 20, marginRight: 5 }}>
+          {track.title}
+        </Text>
+        <Text style={{ color: "grey", fontSize: 20 }}>
+          {track.audio.duration ? formatTime(track.audio.duration) : 0}
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.listItem}>
+      <PlayButton trackObject={track} albumTracks={album.tracks} />
+      <Text style={{ color: "white", fontSize: 20, marginRight: 5 }}>
+        {track.title}
+      </Text>
+      <Text style={{ color: "black", fontSize: 20 }}>
+        {track.audio.duration ? formatTime(track.audio.duration) : 0}
+      </Text>
+    </View>
+  );
+};
 
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
   const [tracks, setTracks] = useState<TrackProps[]>([]);
-  const [albumTitle, setAlbumTitle] = useState<string>("");
+  const [album, setAlbum] = useState<AlbumProps>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
   const { player, isPlaying, currentSource, setCurrentSource, setPlayerQueue } =
     usePlayer();
 
   useEffect(() => {
     // TODO: Refactor to use Tanstack Query
+
     const callback = async () => {
       const fetchedAlbum = await fetch(
         `${API_ROOT}/v1/trackGroups/${slug}/?artistId=${id}`
@@ -60,16 +85,25 @@ export default function AlbumTracks() {
         track.albumId = fetchedAlbum.result.id;
       });
       setTracks(copy);
-      setAlbumTitle(fetchedAlbum.result.title);
+      setAlbum(fetchedAlbum.result);
+      setIsLoading(false);
     };
     callback();
   }, [slug, id]);
+
+  if (isLoading) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen
         options={{
-          title: albumTitle || "Loading...",
+          title: album?.title || "Loading...",
           headerRight: () => <ProfileLink />,
           headerLeft: () => (
             <Button title="Back" onPress={() => router.dismiss(1)} />
@@ -90,7 +124,7 @@ export default function AlbumTracks() {
           contentContainerStyle={styles.listContainer}
           data={tracks}
           renderItem={({ item }) => (
-            <TrackItem track={item} albumTracks={tracks}></TrackItem>
+            <TrackItem track={item} album={album}></TrackItem>
           )}
         ></FlatList>
       </View>
