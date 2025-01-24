@@ -28,7 +28,7 @@ export default function PlayerSlider() {
         clearInterval(interval);
       }
     };
-  }, [isPlaying]);
+  }, [isPlaying, Math.floor(player.currentTime)]);
 
   function formatTime(seconds: number) {
     const minutes = Math.floor(seconds / 60);
