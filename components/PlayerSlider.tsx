@@ -1,6 +1,7 @@
 import { usePlayer } from "@/state/PlayerContext";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import SongTimeDisplay from "./SongTimeDisplay";
 
 export default function PlayerSlider() {
   const { player, trackDuration, isPlaying } = usePlayer();
@@ -44,14 +45,16 @@ export default function PlayerSlider() {
     <View
       style={{
         width: "100%",
-        flexDirection: "row",
-        justifyContent: "space-between",
+
         paddingTop: 1,
         paddingBottom: 10,
       }}
     >
-      <Text style={{ marginHorizontal: 5 }}>{formatTime(currentTime)}</Text>
-      <Text style={{ marginHorizontal: 5 }}>{formatTime(trackDuration)}</Text>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <Text style={{ marginHorizontal: 5 }}>{formatTime(currentTime)}</Text>
+        <Text style={{ marginHorizontal: 5 }}>{formatTime(trackDuration)}</Text>
+      </View>
+      <SongTimeDisplay currentSeconds={currentTime} duration={trackDuration} />
     </View>
   );
 }

@@ -31,15 +31,7 @@ export default function PlayButton({
   const audioUrlFragment = trackObject.audio.url;
   const audioURL = `${API_ROOT}${audioUrlFragment}`;
 
-  //FIX ME: if toggling play/pause from the player, local button doesn't change icons.
-  // useEffect(() => {
-  //   if (audioUrlFragment === currentSource?.audio.url) {
-  //     setLocalPlaying(true);
-  //   }
-  // }, [currentSource]);
-
   const onPress = async () => {
-    console.log(trackObject);
     // check if currentSource is null to determine if we should initialize it
     if (!currentSource) {
       player.replace(audioURL);

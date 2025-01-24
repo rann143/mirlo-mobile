@@ -40,7 +40,7 @@ export default function RootLayout() {
           {/* <Player /> */}
         </PlayerContextProvider>
       </AuthContextProvider>
-      <DevToolsBubble onCopy={onCopy} />
+      {/* <DevToolsBubble onCopy={onCopy} /> */}
     </QueryClientWrapper>
   );
 }

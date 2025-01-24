@@ -44,7 +44,7 @@ interface AlbumProps {
   urlSlug: string;
   userTrackGroupPurchases?: { userId: number }[];
   releaseDate: string;
-  tracks: TrackProps[];
+  tracks?: TrackProps[];
 }
 
 interface TrackProps {
