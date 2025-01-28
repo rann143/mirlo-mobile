@@ -5,7 +5,7 @@ import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { useCallback, useState, useEffect } from "react";
 
 type PlayButtonProps = {
-  albumTracks: Array<TrackProps>;
+  albumTracks: TrackProps[];
   trackObject: TrackProps;
   buttonColor?: string;
 };

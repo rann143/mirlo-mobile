@@ -52,7 +52,9 @@ const TrackItem = ({ track, album }: TrackItemComponentProps) => {
 
   return (
     <View style={styles.listItem}>
-      <PlayButton trackObject={track} albumTracks={album.tracks} />
+      {album?.tracks && (
+        <PlayButton trackObject={track} albumTracks={album.tracks} />
+      )}
       <Text style={{ color: "white", fontSize: 20, marginRight: 5 }}>
         {track.title}
       </Text>
@@ -131,9 +133,9 @@ export default function AlbumTracks() {
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
           data={tracks}
-          renderItem={({ item }) => (
-            <TrackItem track={item} album={album}></TrackItem>
-          )}
+          renderItem={({ item }) =>
+            album ? <TrackItem track={item} album={album}></TrackItem> : null
+          }
         ></FlatList>
       </View>
     </SafeAreaView>
