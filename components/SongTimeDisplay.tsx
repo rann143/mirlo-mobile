@@ -18,41 +18,41 @@ export default function SongTimeDisplay({
   duration,
 }: SongDisplayProps) {
   const { player } = usePlayer();
-  const isPressing = useRef(false);
   const pan = useRef(new Animated.Value(0)).current;
   const percent = currentSeconds / duration;
   const sliderWidth = useRef(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    if (!isPressing.current) {
+    if (!isDragging && sliderWidth.current > 0) {
       Animated.timing(pan, {
-        toValue: percent * sliderWidth.current,
-        duration: 0,
+        toValue: percent * sliderWidth.current, // Convert percent to pixel value
+        duration: 200, // Smooth animation
         useNativeDriver: false,
       }).start();
+    } else {
+      pan.stopAnimation();
     }
-  }, [currentSeconds, duration, pan]);
+  }, [currentSeconds, duration, percent, isDragging]);
 
-  //DRAGGING ANIMATION FUNCTINALITY NOT YET WORKING PROPERLY, TRYING TO FIGURE OUT
-  //   const panResponder = useRef(
-  //     PanResponder.create({
-  //       onMoveShouldSetPanResponder: () => true,
-  //       onPanResponderGrant: () => {
-  //         isPressing.current = true; // Set onPressing to true when the interaction begins
-  //         //pan.setValue(percent * duration);
-  //       },
-  //       onPanResponderMove: Animated.event([null, { dx: pan }], {
-  //         useNativeDriver: false,
-  //       }),
-  //       onPanResponderRelease: (event, gestureState) => {
-  //         //pan.extractOffset();
-  //         player.currentTime =
-  //           (gestureState.moveX / sliderWidth.current) * player.duration;
-  //         //pan.setValue(gestureState.moveX);
-  //         isPressing.current = false;
-  //       },
-  //     })
-  //   ).current;
+  // DRAGGING ANIMATION FUNCTINALITY NOT YET WORKING PROPERLY, TRYING TO FIGURE OUT
+  // const panResponder = useRef(
+  //   PanResponder.create({
+  //     onMoveShouldSetPanResponder: () => true,
+  //     onPanResponderMove: Animated.event([null, { dx: pan }], {
+  //       useNativeDriver: false,
+  //     }),
+  //     onPanResponderGrant: () => {
+  //       setIsDragging(true);
+  //     },
+  //     onPanResponderRelease: (event, gestureState) => {
+  //       player.seekBy(
+  //         (gestureState.dx / sliderWidth.current) * player.duration
+  //       );
+  //       setIsDragging(false);
+  //     },
+  //   })
+  // ).current;
 
   return (
     <View
@@ -91,7 +91,7 @@ export default function SongTimeDisplay({
             },
           ],
         }}
-        //{...panResponder.panHandlers}
+        // {...panResponder.panHandlers}
       />
     </View>
   );
