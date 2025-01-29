@@ -29,7 +29,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      <Player bottomDistance={100} />
+      {/* <Player bottomDistance={100} /> */}
     </>
   );
 }

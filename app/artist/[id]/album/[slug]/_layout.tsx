@@ -8,7 +8,7 @@ export default function Layout() {
       <Stack>
         <Stack.Screen name="album-tracks" options={{ headerShown: true }} />
       </Stack>
-      <Player bottomDistance={50} />
+      {/* <Player bottomDistance={50} /> */}
     </>
   );
 }

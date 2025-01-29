@@ -73,7 +73,7 @@ export default function SongTimeDisplay({
           },
         ]}
       />
-      <Animated.View
+      {/* <Animated.View
         style={{
           borderRadius: "50%",
           width: 10,
@@ -91,8 +91,8 @@ export default function SongTimeDisplay({
             },
           ],
         }}
-        // {...panResponder.panHandlers}
-      />
+        {...panResponder.panHandlers}
+      /> */}
     </View>
   );
 }
