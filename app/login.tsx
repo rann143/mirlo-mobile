@@ -13,5 +13,6 @@ const styles = StyleSheet.create({
   form: {
     backgroundColor: "#BE3455",
     flex: 1,
+    justifyContent: "flex-start",
   },
 });

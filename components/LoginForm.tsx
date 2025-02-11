@@ -45,7 +45,6 @@ export default function LoginForm() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.formLabel}> Login </Text>
       <View>
         <Text style={styles.formLabel}>Email:</Text>
         <Controller
@@ -95,7 +94,7 @@ export default function LoginForm() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    marginTop: 100,
     backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",

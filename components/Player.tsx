@@ -55,8 +55,8 @@ export default function Player({ bottomDistance }: PlayerStyleProps) {
 
 function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
   const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
-  const playIcon = <Ionicons name="play" size={20} />;
-  const pauseIcon = <Ionicons name="pause" size={20} />;
+  const playIcon = <Ionicons name="play" size={40} />;
+  const pauseIcon = <Ionicons name="pause" size={40} />;
 
   function onPress() {
     if (isPlaying) {
@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: "row",
+    alignItems: "center",
   },
   button: {
     borderRadius: 10,
