@@ -17,17 +17,17 @@ export default function SongTimeDisplay({
   currentSeconds,
   duration,
 }: SongDisplayProps) {
-  const { player } = usePlayer();
+  const { player, isPlaying } = usePlayer();
   const pan = useRef(new Animated.Value(0)).current;
   const percent = currentSeconds / duration;
   const sliderWidth = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    if (!isDragging && sliderWidth.current > 0) {
+    if (isPlaying) {
       Animated.timing(pan, {
         toValue: percent * sliderWidth.current, // Convert percent to pixel value
-        duration: 200, // Smooth animation
+        //duration: 200, // Smooth animation
         useNativeDriver: false,
       }).start();
     } else {
