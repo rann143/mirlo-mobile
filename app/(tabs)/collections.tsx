@@ -3,7 +3,7 @@ import { useAuthContext } from "@/state/AuthContext";
 import ProfileLink from "@/components/ProfileLink";
 import { Link } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
-import TrackGroupItem from "@/components/TrackGroupItem";
+import CollectionsGroupItem from "@/components/CollectionsgroupItem";
 import { queryUserPurchases } from "@/queries/queries";
 
 export default function Collections() {
@@ -51,13 +51,14 @@ export default function Collections() {
         contentContainerStyle={styles.listContainer}
         data={purchases}
         renderItem={({ item }) => (
-          <TrackGroupItem
+          <CollectionsGroupItem
             cover={item.trackGroup.cover}
             title={item.trackGroup.title}
             artist={item.trackGroup.artist}
             artistId={item.trackGroup.artistId}
             urlSlug={item.trackGroup.urlSlug}
-          ></TrackGroupItem>
+            releaseDate={item.trackGroup.releaseDate}
+          ></CollectionsGroupItem>
         )}
       />
     </View>

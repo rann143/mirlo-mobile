@@ -54,6 +54,7 @@ export default function LoginForm() {
             <TextInput
               style={styles.inputStyle}
               placeholder="Email"
+              placeholderTextColor="#555"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -71,6 +72,7 @@ export default function LoginForm() {
             <TextInput
               style={styles.inputStyle}
               placeholder="Password"
+              placeholderTextColor="#555"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}

@@ -30,12 +30,12 @@ export default function RootLayout() {
               name="(tabs)"
               options={{ headerShown: false, title: "Recent Releases" }}
             />
-            <Stack.Screen
+            {/* <Stack.Screen
               name="artist/[id]/album/[slug]"
               options={{
                 headerShown: false,
               }}
-            />
+            /> */}
             <Stack.Screen name="login" options={{ title: "Login" }} />
           </Stack>
           <Player bottomDistance={100} />

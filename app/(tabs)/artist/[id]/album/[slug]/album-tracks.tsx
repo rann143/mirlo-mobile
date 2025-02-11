@@ -16,6 +16,10 @@ import PlayButton from "@/components/PlayButton";
 import { isTrackOwnedOrPreview } from "@/app/(tabs)";
 import { useAuthContext } from "@/state/AuthContext";
 
+// Currently the difference between album-track.tsx and collections-tracks.tsx
+// is that the back button navigates to different tabs depending on if this album
+// is from recent releases (index page) or collections
+
 function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Number(seconds.toFixed(0)) % 60;
@@ -116,7 +120,12 @@ export default function AlbumTracks() {
           title: album?.title || "Loading...",
           headerRight: () => <ProfileLink />,
           headerLeft: () => (
-            <Button title="Back" onPress={() => router.dismiss(1)} />
+            <Button
+              title="Back"
+              onPress={() => {
+                router.navigate("/");
+              }}
+            />
           ),
         }}
       />

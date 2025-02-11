@@ -28,8 +28,14 @@ export default function TabLayout() {
             headerRight: () => <ProfileLink />,
           }}
         />
+        <Tabs.Screen
+          name="artist/[id]/album/[slug]"
+          options={{
+            headerShown: false,
+            href: null,
+          }}
+        />
       </Tabs>
-      {/* <Player bottomDistance={100} /> */}
     </>
   );
 }
