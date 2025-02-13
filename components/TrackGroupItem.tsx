@@ -10,7 +10,7 @@ export default function TrackGroupItem({
 }: AlbumProps) {
   return (
     <View style={styles.listItem}>
-      <Image source={{ uri: cover.sizes[120] }} style={styles.image} />
+      <Image source={{ uri: cover?.sizes[120] }} style={styles.image} />
       <View style={{ marginLeft: 10 }}>
         <Link
           href={{

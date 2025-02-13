@@ -10,7 +10,7 @@ export default function CollectionsGroupItem({
 }: AlbumProps) {
   return (
     <View style={styles.listItem}>
-      <Image source={{ uri: cover.sizes[120] }} style={styles.image} />
+      <Image source={{ uri: cover?.sizes[120] }} style={styles.image} />
       <View style={{ marginLeft: 10 }}>
         <Link
           href={{
@@ -21,7 +21,7 @@ export default function CollectionsGroupItem({
         >
           {title}
         </Link>
-        <Text style={{ color: "white" }}>{artist.name}</Text>
+        <Text style={{ color: "white" }}>{artist?.name}</Text>
       </View>
     </View>
   );
