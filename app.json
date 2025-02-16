@@ -11,7 +11,10 @@
     "jsEngine": "hermes",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.drod17.mirlo-mobile"
+      "bundleIdentifier": "com.drod17.mirlo-mobile",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -44,12 +47,21 @@
       [
         "expo-video",
         {
-          "supportsBackgroundPlayback": true
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "a2ccd2d1-a537-4697-9df3-43228ba534ef"
+      }
     }
   }
 }
