@@ -58,6 +58,8 @@ export function useAuthRefreshMutation() {
       });
     },
   });
+
+  return { authRefresh: mutate };
 }
 
 const fetchProfile: QueryFunction<

@@ -7,7 +7,10 @@ import {
   useCallback,
 } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { authRefresh, queryAuthProfile } from "@/queries/authQueries";
+import {
+  useAuthRefreshMutation,
+  queryAuthProfile,
+} from "@/queries/authQueries";
 
 const AuthContext = createContext<{ user?: LoggedInUser | null }>({
   user: undefined,
@@ -16,6 +19,7 @@ const AuthContext = createContext<{ user?: LoggedInUser | null }>({
 export function AuthContextProvider({ children }: React.PropsWithChildren) {
   const { data: user } = useQuery(queryAuthProfile());
   const userId = user?.id;
+  const { authRefresh } = useAuthRefreshMutation();
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;

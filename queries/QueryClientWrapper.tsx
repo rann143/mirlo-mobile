@@ -4,6 +4,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { MirloFetchError } from "./fetch/MirloFetchError";
+import { authRefresh } from "./authQueries";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,8 +30,7 @@ const queryClient = new QueryClient({
         (error.status === 400 || error.status === 401)
       ) {
         console.error(`Received a ${error.status} response - refreshing auth`);
-        // below not implemented yet
-        // await authRefresh();
+        await authRefresh();
         queryClient.invalidateQueries({
           predicate: (query) => query.queryKey.includes("auth"),
         });
