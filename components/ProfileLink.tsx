@@ -1,6 +1,6 @@
 import Feather from "@expo/vector-icons/Feather";
 import { Link } from "expo-router";
-import { Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useAuthContext } from "@/state/AuthContext";
 import { useLogoutMutation } from "@/queries/authQueries";
 import { useCallback } from "react";
@@ -19,24 +19,34 @@ export default function ProfileLink() {
     });
   };
 
-  const logInIcon = <Feather name="log-in" size={24} color="black" />;
-  const logOutIcon = <Feather name="log-out" size={24} color="black" />;
+  const logInIcon = <Feather name="log-in" size={20} color="black" />;
+  const logOutIcon = <Feather name="log-out" size={20} color="black" />;
 
   if (!user) {
     return (
-      <Link href={{ pathname: "/login" }} style={styles.link}>
-        {logInIcon}
-      </Link>
+      <View style={styles.link}>
+        <Link href={{ pathname: "/login" }}>
+          <View>
+            <Text>{logInIcon}</Text>
+            <Text>Login</Text>
+          </View>
+        </Link>
+      </View>
     );
   }
 
   return (
     <TouchableOpacity onPress={onLogOut} style={styles.link}>
       <Text>{logOutIcon}</Text>
+      <Text>Logout</Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  link: { marginRight: 15 },
+  link: {
+    marginRight: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });

@@ -1,6 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
+import { Tabs, router } from "expo-router";
 import ProfileLink from "@/components/ProfileLink";
+import { Button } from "react-native";
 import Player from "@/components/Player";
 import React from "react";
 
