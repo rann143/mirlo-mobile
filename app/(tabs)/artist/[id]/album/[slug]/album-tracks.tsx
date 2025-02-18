@@ -15,6 +15,8 @@ import ProfileLink from "@/components/ProfileLink";
 import PlayButton from "@/components/PlayButton";
 import { isTrackOwnedOrPreview } from "@/app/(tabs)";
 import { useAuthContext } from "@/state/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { queryAlbum } from "@/queries/queries";
 
 // Currently the difference between album-track.tsx and collections-tracks.tsx
 // is that the back button navigates to different tabs depending on if this album
@@ -71,6 +73,9 @@ const TrackItem = ({ track, album }: TrackItemComponentProps) => {
 
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
+  const { isPending, isError, data, error } = useQuery(
+    queryAlbum({ slug: slug, id: id })
+  );
   const [tracks, setTracks] = useState<TrackProps[]>([]);
   const [album, setAlbum] = useState<AlbumProps>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -78,34 +83,7 @@ export default function AlbumTracks() {
   const { player, isPlaying, currentSource, setCurrentSource, setPlayerQueue } =
     usePlayer();
 
-  useEffect(() => {
-    // TODO: Refactor to use Tanstack Query
-
-    const callback = async () => {
-      const fetchedAlbum = await fetch(
-        `${API_ROOT}/v1/trackGroups/${slug}/?artistId=${id}`
-      ).then((response) => response.json());
-      const copy = [...fetchedAlbum.result.tracks];
-      copy.forEach((track: TrackProps) => {
-        track.artist = fetchedAlbum.result.artist.name;
-        track.albumId = fetchedAlbum.result.id;
-        track.trackGroup = {
-          cover: fetchedAlbum.result.cover,
-          title: fetchedAlbum.result.title,
-          artist: fetchedAlbum.result.artist,
-          artistId: fetchedAlbum.result.artistId,
-          urlSlug: fetchedAlbum.result.urlSlug,
-          releaseDate: fetchedAlbum.result.releaseDate,
-        };
-      });
-      setTracks(copy);
-      setAlbum(fetchedAlbum.result);
-      setIsLoading(false);
-    };
-    callback();
-  }, [slug, id]);
-
-  if (isLoading) {
+  if (isPending) {
     return (
       <View>
         <Text>Loading...</Text>
@@ -113,11 +91,35 @@ export default function AlbumTracks() {
     );
   }
 
+  if (isError) {
+    return (
+      <View>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
+
+  const selectedAlbum = data.result;
+
+  const copy = [...(selectedAlbum.tracks ?? [])];
+  copy.forEach((track: TrackProps) => {
+    track.artist = selectedAlbum.artist.name;
+    track.albumId = selectedAlbum.id;
+    track.trackGroup = {
+      cover: selectedAlbum.cover,
+      title: selectedAlbum.title,
+      artist: selectedAlbum.artist,
+      artistId: selectedAlbum.artistId,
+      urlSlug: selectedAlbum.urlSlug,
+      releaseDate: selectedAlbum.releaseDate,
+    };
+  });
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen
         options={{
-          title: album?.title || "Loading...",
+          title: selectedAlbum?.title || "Loading...",
           headerRight: () => <ProfileLink />,
           headerLeft: () => (
             <Button
@@ -141,9 +143,11 @@ export default function AlbumTracks() {
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
-          data={tracks}
+          data={selectedAlbum?.tracks}
           renderItem={({ item }) =>
-            album ? <TrackItem track={item} album={album}></TrackItem> : null
+            selectedAlbum ? (
+              <TrackItem track={item} album={selectedAlbum}></TrackItem>
+            ) : null
           }
         ></FlatList>
       </View>

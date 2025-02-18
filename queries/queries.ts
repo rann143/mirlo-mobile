@@ -60,3 +60,30 @@ export function queryUserPurchases(userId: number | undefined) {
     enabled: !!userId,
   });
 }
+
+const fetchAlbum: QueryFunction<
+  { result: AlbumProps },
+  [
+    "fetchAlbum",
+    {
+      slug: string | string[];
+      id: string | string[];
+    }
+  ]
+> = ({ queryKey: [_, { slug, id }], signal }) => {
+  const safeSlug = Array.isArray(slug) ? slug[0] : slug;
+  const safeId = Array.isArray(id) ? id[0] : id;
+
+  return api.get(`/v1/trackGroups/${safeSlug}/?artistId=${safeId}`, { signal });
+};
+
+export function queryAlbum(opts: {
+  slug: string | string[];
+  id: string | string[];
+}) {
+  return queryOptions({
+    queryKey: ["fetchAlbum", opts],
+    queryFn: fetchAlbum,
+    enabled: !!opts.slug && !!opts.id,
+  });
+}
