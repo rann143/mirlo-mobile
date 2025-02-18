@@ -7,8 +7,6 @@ import {
   Button,
 } from "react-native";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
-import { API_ROOT } from "@/constants/api-root";
-import { useState, useEffect } from "react";
 import { VideoView } from "expo-video";
 import { usePlayer } from "@/state/PlayerContext";
 import ProfileLink from "@/components/ProfileLink";
@@ -76,11 +74,8 @@ export default function AlbumTracks() {
   const { isPending, isError, data, error } = useQuery(
     queryAlbum({ slug: slug, id: id })
   );
-  const [tracks, setTracks] = useState<TrackProps[]>([]);
-  const [album, setAlbum] = useState<AlbumProps>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
-  const { player, isPlaying, currentSource, setCurrentSource, setPlayerQueue } =
+  const { player, currentSource, setCurrentSource, setPlayerQueue } =
     usePlayer();
 
   if (isPending) {
