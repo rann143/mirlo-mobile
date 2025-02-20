@@ -21,7 +21,7 @@ export default function Index() {
   if (isError) {
     return (
       <View>
-        <Text>Error: {error.message}</Text>
+        <Text style={{ color: "red" }}>Error: {error.message}</Text>
       </View>
     );
   }

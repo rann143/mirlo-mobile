@@ -89,7 +89,7 @@ export default function AlbumTracks() {
   if (isError) {
     return (
       <View>
-        <Text>Error: {error.message}</Text>
+        <Text>Error: {error.message} </Text>
       </View>
     );
   }
