@@ -33,7 +33,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const [currentlyPlayingIndex, setCurrentlyPlayingIndex] = useState<number>(0);
   const player = useVideoPlayer("", (player) => {
-    //player.play();
     player.staysActiveInBackground = true;
     player.showNowPlayingNotification = true;
   });
