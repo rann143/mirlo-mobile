@@ -17,13 +17,28 @@ export default function NextButton() {
     if (currentlyPlayingIndex === playerQueue.length - 1) {
       setCurrentlyPlayingIndex(0);
       setCurrentSource(playerQueue[0]);
-      player.replace(API_ROOT + playerQueue[0].audio.url);
+      player.replace({
+        uri: API_ROOT + playerQueue[0].audio.url,
+        metadata: {
+          title: playerQueue[0].title,
+          artist: playerQueue[0].artist,
+          artwork: playerQueue[0].trackGroup.cover?.sizes[60],
+        },
+      });
+
       player.play();
     } else {
       const nextTrackIndex = currentlyPlayingIndex + 1;
       setCurrentSource(playerQueue[nextTrackIndex]);
       setCurrentlyPlayingIndex(nextTrackIndex);
-      player.replace(API_ROOT + playerQueue[nextTrackIndex].audio.url);
+      player.replace({
+        uri: API_ROOT + playerQueue[nextTrackIndex].audio.url,
+        metadata: {
+          title: playerQueue[nextTrackIndex].title,
+          artist: playerQueue[nextTrackIndex].artist,
+          artwork: playerQueue[nextTrackIndex].trackGroup.cover?.sizes[60],
+        },
+      });
       player.play();
     }
   };

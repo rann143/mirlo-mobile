@@ -26,13 +26,28 @@ export default function PrevButton() {
     if (currentlyPlayingIndex === 0) {
       setCurrentlyPlayingIndex(playerQueue.length - 1);
       setCurrentSource(playerQueue[playerQueue.length - 1]);
-      player.replace(API_ROOT + playerQueue[playerQueue.length - 1].audio.url);
+      player.replace({
+        uri: API_ROOT + playerQueue[playerQueue.length - 1].audio.url,
+        metadata: {
+          title: playerQueue[playerQueue.length - 1].title,
+          artist: playerQueue[playerQueue.length - 1].artist,
+          artwork:
+            playerQueue[playerQueue.length - 1].trackGroup.cover?.sizes[60],
+        },
+      });
       player.play();
     } else {
       const prevTrackIndex = currentlyPlayingIndex - 1;
       setCurrentSource(playerQueue[prevTrackIndex]);
       setCurrentlyPlayingIndex(prevTrackIndex);
-      player.replace(API_ROOT + playerQueue[prevTrackIndex].audio.url);
+      player.replace({
+        uri: API_ROOT + playerQueue[prevTrackIndex].audio.url,
+        metadata: {
+          title: playerQueue[prevTrackIndex].title,
+          artist: playerQueue[prevTrackIndex].artist,
+          artwork: playerQueue[prevTrackIndex].trackGroup.cover?.sizes[60],
+        },
+      });
       player.play();
     }
   };

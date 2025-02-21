@@ -34,7 +34,14 @@ export default function PlayButton({
   const onPress = async () => {
     // check if currentSource is null to determine if we should initialize it
     if (!currentSource) {
-      player.replace(audioURL);
+      player.replace({
+        uri: audioURL,
+        metadata: {
+          title: trackObject.title,
+          artist: trackObject.artist,
+          artwork: trackObject.trackGroup.cover?.sizes[60],
+        },
+      });
       player.play();
       setCurrentSource(trackObject);
       setPlayerQueue(albumTracks);
@@ -56,7 +63,14 @@ export default function PlayButton({
       //setLocalPlaying(true);
       setCurrentSource(trackObject);
       setCurrentlyPlayingIndex(trackObject.order - 1);
-      player.replace(audioURL);
+      player.replace({
+        uri: audioURL,
+        metadata: {
+          title: trackObject.title,
+          artist: trackObject.artist,
+          artwork: trackObject.trackGroup.cover?.sizes[60],
+        },
+      });
       player.play();
       return;
     }
