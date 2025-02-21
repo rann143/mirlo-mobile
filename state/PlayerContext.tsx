@@ -46,6 +46,12 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     onEnd();
   });
 
+  useEventListener(player, "statusChange", ({ status }) => {
+    if (status !== "error") {
+      player.showNowPlayingNotification = true;
+    }
+  });
+
   function onEnd() {
     if (looping === "loopQueue") {
       if (currentlyPlayingIndex === playerQueue.length - 1) {
