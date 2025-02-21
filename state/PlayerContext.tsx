@@ -35,6 +35,8 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const player = useVideoPlayer("", (player) => {
     player.staysActiveInBackground = true;
     player.showNowPlayingNotification = true;
+    player.muted = false;
+    player.audioMixingMode = "doNotMix";
   });
   const { isPlaying } = useEvent(player, "playingChange", {
     isPlaying: player.playing,
