@@ -2,6 +2,7 @@ import { useVideoPlayer } from "expo-video";
 import { useEvent, useEventListener } from "expo";
 import { createContext, useState, useContext } from "react";
 import { API_ROOT } from "@/constants/api-root";
+import * as Notifications from "expo-notifications";
 
 interface PlayerContextType {
   player: ReturnType<typeof useVideoPlayer>;
@@ -49,7 +50,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   useEventListener(player, "statusChange", ({ status }) => {
-    if (status !== "error") {
+    if (status === "readyToPlay" || "loading" || "idle") {
       player.showNowPlayingNotification = true;
     }
   });

@@ -78,6 +78,9 @@ export default function AlbumTracks() {
   const { player, currentSource, setCurrentSource, setPlayerQueue } =
     usePlayer();
 
+  console.log(id);
+  console.log(slug);
+
   if (isPending) {
     return (
       <View>
