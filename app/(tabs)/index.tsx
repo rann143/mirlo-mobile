@@ -35,6 +35,7 @@ export default function Index() {
           data={trackGroups}
           renderItem={({ item }) => (
             <TrackGroupItem
+              id={item.id}
               cover={item.cover}
               title={item.title}
               artist={item.artist}

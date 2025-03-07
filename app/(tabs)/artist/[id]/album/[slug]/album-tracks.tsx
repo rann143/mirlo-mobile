@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   image: {
     width: 170,
     height: 170,
-    borderRadius: 5,
+    borderRadius: 10,
     marginVertical: 10,
     backgroundColor: "#f0f0f0", // placeholder color while loading
     alignSelf: "center",
