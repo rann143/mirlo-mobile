@@ -24,6 +24,7 @@ interface UserTrackGroupPurchase {
 }
 
 interface AlbumProps {
+  id: number;
   cover: {
     sizes: {
       60: string;

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   FlatList,
   Button,
+  Image,
 } from "react-native";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
@@ -15,6 +16,8 @@ import ProfileLink from "@/components/ProfileLink";
 import PlayButton from "@/components/PlayButton";
 import { isTrackOwnedOrPreview } from "@/app/(tabs)";
 import { useAuthContext } from "@/state/AuthContext";
+
+//CURRENT DIFFERENCE BETWEEN THIS AND album-track.tsx IS THE BACK BUTTON NAVIGATION IN STACK.SCREEN
 
 function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
@@ -39,8 +42,8 @@ const TrackItem = ({ track, album }: TrackItemComponentProps) => {
 
   if (!canPlayTrack) {
     return (
-      <View style={[styles.listItem, { backgroundColor: "white" }]}>
-        <Text style={{ color: "grey", fontSize: 20, marginRight: 5 }}>
+      <View style={[styles.listItem, { backgroundColor: "#BE3455" }]}>
+        <Text style={{ color: "darkgrey", fontSize: 20, marginRight: 5 }}>
           {track.title}
         </Text>
         <Text style={{ color: "grey", fontSize: 20 }}>
@@ -52,13 +55,26 @@ const TrackItem = ({ track, album }: TrackItemComponentProps) => {
 
   return (
     <View style={styles.listItem}>
-      {album?.tracks && (
-        <PlayButton trackObject={track} albumTracks={album.tracks} />
-      )}
-      <Text style={{ color: "white", fontSize: 20, marginRight: 5 }}>
-        {track.title}
-      </Text>
-      <Text style={{ color: "black", fontSize: 20 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          width: "70%",
+        }}
+      >
+        {album?.tracks && (
+          <PlayButton trackObject={track} albumTracks={album.tracks} />
+        )}
+        <Text
+          style={{ color: "white", fontSize: 20, marginRight: 5 }}
+          ellipsizeMode="tail"
+          numberOfLines={1}
+        >
+          {track.title}
+        </Text>
+      </View>
+      <Text style={{ color: "white", fontSize: 15, marginRight: 20 }}>
         {track.audio.duration ? formatTime(track.audio.duration) : 0}
       </Text>
     </View>
@@ -92,6 +108,7 @@ export default function CollectionsTracks() {
           artistId: fetchedAlbum.result.artistId,
           urlSlug: fetchedAlbum.result.urlSlug,
           releaseDate: fetchedAlbum.result.releaseDate,
+          id: fetchedAlbum.result.id,
         };
       });
       setTracks(copy);
@@ -141,6 +158,25 @@ export default function CollectionsTracks() {
           renderItem={({ item }) =>
             album ? <TrackItem track={item} album={album}></TrackItem> : null
           }
+          ListHeaderComponent={() => (
+            <View>
+              <Image
+                source={{ uri: album?.cover?.sizes[960] }}
+                style={styles.image}
+              />
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: "rgba(255,255,255,0.9)",
+                  marginBottom: 5,
+                }}
+              >
+                {album?.artist.name} | {album?.tracks?.length}{" "}
+                {album?.tracks?.length == 1 ? "Track" : "Tracks"} |{" "}
+                {new Date(album.releaseDate).getFullYear()}
+              </Text>
+            </View>
+          )}
         ></FlatList>
       </View>
     </SafeAreaView>
@@ -150,37 +186,38 @@ export default function CollectionsTracks() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#BE3455",
     alignItems: "center",
     justifyContent: "space-evenly",
   },
   listContainer: {
     backgroundColor: "#BE3455",
+    paddingBottom: 160,
   },
   listItem: {
     flexDirection: "row",
     alignItems: "center",
     padding: 5,
+    justifyContent: "space-between",
+    marginTop: 5,
+  },
+  listHeader: {
+    alignContent: "center",
   },
   text: {
     padding: 10,
     fontWeight: "bold",
   },
   image: {
-    width: 60,
-    height: 60,
-    borderRadius: 4,
+    width: 170,
+    height: 170,
+    borderRadius: 5,
+    marginVertical: 10,
     backgroundColor: "#f0f0f0", // placeholder color while loading
+    alignSelf: "center",
   },
   video: {
     width: 0,
     height: 0,
-    // opacity: 0,
-    // width: "100%",
-    // height: 100,
-    // borderColor: "black",
-    // borderWidth: 1,
-    // zIndex: 1,
-    //opacity: 0,
   },
 });

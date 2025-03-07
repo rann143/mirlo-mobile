@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    marginRight: 10,
+    marginRight: 0,
   },
   playPauseButtonText: {
     fontSize: 18,
