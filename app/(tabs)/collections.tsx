@@ -52,6 +52,7 @@ export default function Collections() {
         data={purchases}
         renderItem={({ item }) => (
           <CollectionsGroupItem
+            id={item.trackGroup.id}
             cover={item.trackGroup.cover}
             title={item.trackGroup.title}
             artist={item.trackGroup.artist}

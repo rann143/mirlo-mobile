@@ -50,6 +50,13 @@
           "supportsBackgroundPlayback": true,
           "supportsPictureInPicture": true
         }
+      ],
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true,
+          "faceIDPermission": "Allow Mirlo-Mobile to access your Face ID biometric data."
+        }
       ]
     ],
     "experiments": {

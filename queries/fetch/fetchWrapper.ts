@@ -1,5 +1,7 @@
 import { API_ROOT } from "@/constants/api-root";
 import { MirloFetchError } from "./MirloFetchError";
+import * as SecureStorage from "expo-secure-store";
+import { head } from "lodash";
 
 /**
  * Wraps fetch() calls to Mirlo's API with error handling.
@@ -14,10 +16,28 @@ async function fetchWrapper<R>(
   endpoint: string,
   init: RequestInit
 ): Promise<R> {
+  const jwtToken = await SecureStorage.getItemAsync("jwt");
+  console.log("token: " + jwtToken);
+  const refreshToken = await SecureStorage.getItemAsync("refresh");
+  console.log("refresh: " + refreshToken);
+
+  let cookieHeader = "";
+  if (jwtToken) cookieHeader += `jwt=${jwtToken}; `;
+  if (refreshToken) cookieHeader += `refresh=${refreshToken}`;
+
+  const headers = new Headers(init.headers);
+
+  if (cookieHeader) {
+    headers.append("Cookie", cookieHeader);
+  }
+
   const res = await fetch(`${API_ROOT}${endpoint}`, {
-    credentials: "include",
+    //credentials: "include",
     ...init,
+    headers,
   });
+  console.log(headers);
+  console.log(res);
 
   if (!res.ok) {
     let message;
