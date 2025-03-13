@@ -15,35 +15,15 @@ type LoginBody = {
   password: string;
 };
 
-function extractCookieFromHeader(
-  setCookieHeader: Array<string>,
-  cookieName: string
-) {
-  if (!setCookieHeader || !Array.isArray(setCookieHeader)) return null;
-
-  for (const cookieString of setCookieHeader) {
-    const match = cookieString.match(new RegExp(`^${cookieName}=([^;]+)`));
-    if (match) return match[1];
-  }
-  return null;
-}
-
 async function storeTokens(res: Response): Promise<boolean> {
   try {
     const cookies = await CookieManager.getAll();
 
-    console.log("setcookieheader: ");
-    console.log(cookies);
     const jwtToken = cookies.jwt.value;
     const refreshToken = cookies.refresh.value;
 
-    if (jwtToken) {
-      let result = await SecureStore.setItemAsync("jwt", jwtToken);
-    }
-
-    if (refreshToken) {
-      let result = await SecureStore.setItemAsync("refresh", refreshToken);
-    }
+    await SecureStore.setItemAsync("jwt", jwtToken);
+    await SecureStore.setItemAsync("refresh", refreshToken);
 
     return true;
   } catch (err) {

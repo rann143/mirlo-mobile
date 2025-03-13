@@ -30,7 +30,6 @@ async function fetchWrapper<R>(
   }
 
   const res = await fetch(`${API_ROOT}${endpoint}`, {
-    //credentials: "include",
     ...init,
     headers,
   });
