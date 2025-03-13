@@ -17,9 +17,7 @@ async function fetchWrapper<R>(
   init: RequestInit
 ): Promise<R> {
   const jwtToken = await SecureStorage.getItemAsync("jwt");
-  console.log("token: " + jwtToken);
   const refreshToken = await SecureStorage.getItemAsync("refresh");
-  console.log("refresh: " + refreshToken);
 
   let cookieHeader = "";
   if (jwtToken) cookieHeader += `jwt=${jwtToken}; `;
@@ -36,8 +34,6 @@ async function fetchWrapper<R>(
     ...init,
     headers,
   });
-  console.log(headers);
-  console.log(res);
 
   if (!res.ok) {
     let message;

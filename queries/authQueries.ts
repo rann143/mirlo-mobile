@@ -39,12 +39,10 @@ async function storeTokens(res: Response): Promise<boolean> {
 
     if (jwtToken) {
       let result = await SecureStore.setItemAsync("jwt", jwtToken);
-      console.log("heres you jwt: " + result);
     }
 
     if (refreshToken) {
       let result = await SecureStore.setItemAsync("refresh", refreshToken);
-      console.log("heres your refresh: " + result);
     }
 
     return true;
