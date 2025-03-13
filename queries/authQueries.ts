@@ -6,7 +6,9 @@ import {
 } from "@tanstack/react-query";
 import * as api from "./fetch/fetchWrapper";
 import { MirloFetchError } from "./fetch/MirloFetchError";
+import CookieManager from "@react-native-cookies/cookies";
 import * as SecureStore from "expo-secure-store";
+import { API_ROOT } from "@/constants/api-root";
 
 type LoginBody = {
   email: string;
@@ -28,14 +30,12 @@ function extractCookieFromHeader(
 
 async function storeTokens(res: Response): Promise<boolean> {
   try {
-    //const setCookieHeader = res.headers.getSetCookie();
-    const setCookieHeader = res.headers.get("Set-Cookie");
-    const cookies = setCookieHeader
-      ? setCookieHeader.split(",").map((v) => v.trimStart())
-      : [];
-    console.log(setCookieHeader);
-    const jwtToken = extractCookieFromHeader(cookies, "jwt");
-    const refreshToken = extractCookieFromHeader(cookies, "refresh");
+    const cookies = await CookieManager.getAll();
+
+    console.log("setcookieheader: ");
+    console.log(cookies);
+    const jwtToken = cookies.jwt.value;
+    const refreshToken = cookies.refresh.value;
 
     if (jwtToken) {
       let result = await SecureStore.setItemAsync("jwt", jwtToken);
@@ -76,15 +76,15 @@ export function useLoginMutation() {
 
 async function logout() {
   // Clear stored tokens regardless of response
-  await api.get("/auth/logout", {});
-  // try {
-  //   await SecureStore.deleteItemAsync("jwt");
-  //   await SecureStore.deleteItemAsync("refresh");
-  //   await api.get("/auth/logout", {});
-  // } catch (err) {
-  //   console.error("issue logging out");
-  //   await api.get("/auth/logout", {});
-  // }
+
+  try {
+    await api.get("/auth/logout", {});
+    await CookieManager.clearAll();
+    await SecureStore.deleteItemAsync("jwt");
+    await SecureStore.deleteItemAsync("refresh");
+  } catch (err) {
+    console.error("issue logging out");
+  }
 }
 
 export function useLogoutMutation() {
@@ -101,15 +101,11 @@ export function useLogoutMutation() {
 
 export async function authRefresh() {
   try {
+    await CookieManager.clearAll();
     const res: Response = await api.post("/auth/refresh", {});
-
-    if (res.ok) {
-      await SecureStore.deleteItemAsync("jwt");
-      await SecureStore.deleteItemAsync("refresh");
-
-      const success = await storeTokens(res);
-      return success;
-    }
+    await SecureStore.deleteItemAsync("jwt");
+    await SecureStore.deleteItemAsync("refresh");
+    await storeTokens(res);
 
     return false;
   } catch (err) {
