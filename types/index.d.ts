@@ -45,7 +45,7 @@ interface AlbumProps {
   urlSlug: string;
   userTrackGroupPurchases?: { userId: number }[];
   releaseDate: string;
-  tracks?: TrackProps[];
+  tracks?: RNTrack[];
 }
 
 interface TrackProps {
@@ -60,4 +60,21 @@ interface TrackProps {
     url: string;
     duration: number | undefined;
   };
+}
+
+interface RNTrack {
+  title: string;
+  artist: string;
+  artwork: string;
+  url: string;
+  trackGroup: {
+    userTrackGroupPurchases?: { userId: number }[];
+    artistId: number;
+  };
+  audio: {
+    url: string;
+    duration: number | undefined;
+  };
+  isPreview: boolean;
+  order: number;
 }

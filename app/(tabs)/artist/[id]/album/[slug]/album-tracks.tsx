@@ -16,6 +16,8 @@ import { isTrackOwnedOrPreview } from "@/app/(tabs)";
 import { useAuthContext } from "@/state/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryAlbum } from "@/queries/queries";
+import { useEffect } from "react";
+import { API_ROOT } from "@/constants/api-root";
 
 // Currently the difference between album-track.tsx and collections-tracks.tsx
 // is that the back button navigates to different tabs depending on if this album
@@ -33,7 +35,7 @@ function formatTime(seconds: number) {
 }
 
 type TrackItemComponentProps = {
-  track: TrackProps;
+  track: RNTrack;
   album: AlbumProps;
 };
 
@@ -89,8 +91,34 @@ export default function AlbumTracks() {
     queryAlbum({ slug: slug, id: id })
   );
   const router = useRouter();
-  const { player, currentSource, setCurrentSource, setPlayerQueue } =
-    usePlayer();
+  const { album, setAlbum } = usePlayer();
+
+  useEffect(() => {
+    const tracks: RNTrack[] = [];
+    if (data && data.result.tracks) {
+      data.result.tracks.forEach((track) => {
+        const newTrack: RNTrack = {
+          title: track.title,
+          artist: data.result.artist.name,
+          artwork: data.result.cover.sizes[60],
+          url: `${API_ROOT}${track.audio.url}`,
+          trackGroup: {
+            userTrackGroupPurchases: data.result.userTrackGroupPurchases,
+            artistId: data.result.artistId,
+          },
+          audio: {
+            url: track.audio.url,
+            duration: track.audio.duration,
+          },
+          isPreview: track.isPreview,
+          order: track.order,
+        };
+        tracks.push(newTrack);
+      });
+    }
+
+    setAlbum(tracks);
+  }, [data]);
 
   if (isPending) {
     return (
@@ -110,21 +138,6 @@ export default function AlbumTracks() {
 
   const selectedAlbum = data.result;
 
-  const copy = [...(selectedAlbum.tracks ?? [])];
-  copy.forEach((track: TrackProps) => {
-    track.artist = selectedAlbum.artist.name;
-    track.albumId = selectedAlbum.id;
-    track.trackGroup = {
-      cover: selectedAlbum.cover,
-      title: selectedAlbum.title,
-      artist: selectedAlbum.artist,
-      artistId: selectedAlbum.artistId,
-      urlSlug: selectedAlbum.urlSlug,
-      releaseDate: selectedAlbum.releaseDate,
-      id: selectedAlbum.id,
-    };
-  });
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen
@@ -141,19 +154,11 @@ export default function AlbumTracks() {
           ),
         }}
       />
-      {currentSource && player && (
-        <VideoView
-          style={styles.video}
-          player={player}
-          nativeControls={true}
-          showsTimecodes={true}
-        />
-      )}
       <View style={styles.container}>
         <FlatList
           style={{ width: "100%", marginTop: 10 }}
           contentContainerStyle={styles.listContainer}
-          data={selectedAlbum?.tracks}
+          data={album}
           renderItem={({ item }) =>
             selectedAlbum ? (
               <TrackItem track={item} album={selectedAlbum}></TrackItem>

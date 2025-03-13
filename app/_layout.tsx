@@ -7,6 +7,9 @@ import { DevToolsBubble } from "react-native-react-query-devtools";
 import * as Clipboard from "expo-clipboard";
 import Player from "@/components/Player";
 import { StatusBar } from "expo-status-bar";
+import TrackPlayer from "react-native-track-player";
+
+TrackPlayer.registerPlaybackService(() => require("../scripts/service"));
 
 export default function RootLayout() {
   const pathname = usePathname();
@@ -38,7 +41,7 @@ export default function RootLayout() {
             /> */}
             <Stack.Screen name="login" options={{ title: "Login" }} />
           </Stack>
-          <Player bottomDistance={100} />
+          {/* <Player bottomDistance={100} /> */}
           <StatusBar style="dark" />
         </PlayerContextProvider>
       </AuthContextProvider>

@@ -1,23 +1,28 @@
 import { useVideoPlayer } from "expo-video";
 import { useEvent, useEventListener } from "expo";
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 import { API_ROOT } from "@/constants/api-root";
 import * as Notifications from "expo-notifications";
+import TrackPlayer, {
+  Capability,
+  State,
+  Event,
+  usePlaybackState,
+  useProgress,
+  useTrackPlayerEvents,
+  PlaybackState,
+  Progress,
+  Track,
+} from "react-native-track-player";
+import { setupPlayer } from "react-native-track-player/lib/src/trackPlayer";
 
 interface PlayerContextType {
-  player: ReturnType<typeof useVideoPlayer>;
-  isPlaying: boolean;
-  currentSource: TrackProps | null;
-  setCurrentSource: (track: TrackProps) => void;
-  playerQueue: TrackProps[];
-  setPlayerQueue: (tracks: TrackProps[]) => void;
-  trackDuration: number;
-  currentlyPlayingIndex: number;
-  setCurrentlyPlayingIndex: (index: number) => void;
-  looping: "loopTrack" | "loopQueue" | "none";
-  setLooping: (loopType: "loopTrack" | "loopQueue" | "none") => void;
-  shuffled: boolean;
-  setShuffled: (shuffle: boolean) => void;
+  playbackState: PlaybackState | { state: undefined };
+  progress: Progress;
+  album: Array<RNTrack>;
+  setAlbum: (tracks: RNTrack[]) => void;
+  activeTrack: Track | undefined;
+  setActiveTrack: (track: Track) => void;
 }
 
 export const PlayerContext = createContext<PlayerContextType | null>(null);
@@ -26,108 +31,71 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   // Keeps track of our player's current 'source' so we can check against it when changing songs
-  const [currentSource, setCurrentSource] = useState<TrackProps | null>(null);
-  const [playerQueue, setPlayerQueue] = useState<TrackProps[]>([]);
-  const [shuffled, setShuffled] = useState<boolean>(false);
-  const [looping, setLooping] = useState<"loopTrack" | "loopQueue" | "none">(
-    "none"
-  );
-  const [currentlyPlayingIndex, setCurrentlyPlayingIndex] = useState<number>(0);
-  const player = useVideoPlayer("", (player) => {
-    player.staysActiveInBackground = true;
-    player.showNowPlayingNotification = true;
-    player.muted = false;
-    player.audioMixingMode = "doNotMix";
+  // const [currentSource, setCurrentSource] = useState<TrackProps | null>(null);
+  // const [playerQueue, setPlayerQueue] = useState<TrackProps[]>([]);
+  // const [shuffled, setShuffled] = useState<boolean>(false);
+  // const [looping, setLooping] = useState<"loopTrack" | "loopQueue" | "none">(
+  //   "none"
+  // );
+  // const [currentlyPlayingIndex, setCurrentlyPlayingIndex] = useState<number>(0);
+  const [album, setAlbum] = useState<RNTrack[]>([]);
+  const [trackIndex, setTrackIndex] = useState(0);
+  const [trackTitle, setTrackTitle] = useState<string>();
+  const [trackArtist, setTrackArtist] = useState<string>();
+  const [trackArtwork, setTrackArtwork] = useState<string>();
+  const [activeTrack, setActiveTrack] = useState<Track>();
+
+  const playBackState = usePlaybackState();
+  const progress = useProgress();
+
+  // **************************************
+
+  useEffect(() => {
+    setUpTrackPlayer();
+  }, []);
+
+  useTrackPlayerEvents([Event.PlaybackActiveTrackChanged], async (event) => {
+    if (typeof event.index !== "number") return;
+
+    const queue = await TrackPlayer.getQueue();
+
+    const currentIndex = event.index;
+    const track = await TrackPlayer.getTrack(currentIndex);
+    if (track == undefined) return;
+    const { title, artwork, artist } = track;
+    setTrackIndex(currentIndex);
+    setTrackTitle(title);
+    setTrackArtist(artist);
+    setTrackArtwork(artwork);
+    setActiveTrack(track);
   });
-  const { isPlaying } = useEvent(player, "playingChange", {
-    isPlaying: player.playing,
-  });
-  const trackDuration = player.duration;
 
-  useEventListener(player, "playToEnd", () => {
-    console.log("current track ended");
-    onEnd();
-  });
-
-  useEventListener(player, "statusChange", ({ status }) => {
-    if (status === "readyToPlay" || "loading" || "idle") {
-      player.showNowPlayingNotification = true;
-    }
-  });
-
-  function onEnd() {
-    if (looping === "loopQueue") {
-      if (currentlyPlayingIndex === playerQueue.length - 1) {
-        setCurrentlyPlayingIndex(0);
-        setCurrentSource(playerQueue[0]);
-        player.replace({
-          uri: API_ROOT + playerQueue[0].audio.url,
-          metadata: {
-            title: playerQueue[0].title,
-            artist: playerQueue[0].artist,
-            artwork: playerQueue[0].trackGroup.cover?.sizes[60],
-          },
-        });
-        player.play();
-        return;
-      } else {
-        const nextTrackIndex = currentlyPlayingIndex + 1;
-        setCurrentSource(playerQueue[nextTrackIndex]);
-        setCurrentlyPlayingIndex(nextTrackIndex);
-        player.replace({
-          uri: API_ROOT + playerQueue[nextTrackIndex].audio.url,
-          metadata: {
-            title: playerQueue[nextTrackIndex].title,
-            artist: playerQueue[nextTrackIndex].artist,
-            artwork: playerQueue[nextTrackIndex].trackGroup.cover?.sizes[60],
-          },
-        });
-        player.play();
-        return;
-      }
-    }
-
-    if (looping === "loopTrack") {
-      player.loop === true;
-      return;
-    }
-
-    if (looping === "none") {
-      if (currentlyPlayingIndex === playerQueue.length - 1) {
-        player.seekBy(-trackDuration);
-        return;
-      } else {
-        const nextTrackIndex = currentlyPlayingIndex + 1;
-        setCurrentSource(playerQueue[nextTrackIndex]);
-        setCurrentlyPlayingIndex(nextTrackIndex);
-        player.replace({
-          uri: API_ROOT + playerQueue[nextTrackIndex].audio.url,
-          metadata: {
-            title: playerQueue[nextTrackIndex].title,
-            artist: playerQueue[nextTrackIndex].artist,
-            artwork: playerQueue[nextTrackIndex].trackGroup.cover?.sizes[60],
-          },
-        });
-        player.play();
-        return;
-      }
+  async function setUpTrackPlayer() {
+    try {
+      await TrackPlayer.setupPlayer();
+      await TrackPlayer.updateOptions({
+        capabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
+        ],
+      });
+      console.log("track player set up");
+    } catch (err) {
+      console.error("Issue setting up Track Player", err);
     }
   }
 
+  // **************************************
+
   const value: PlayerContextType = {
-    player,
-    isPlaying,
-    currentSource,
-    setCurrentSource,
-    playerQueue,
-    setPlayerQueue,
-    trackDuration,
-    currentlyPlayingIndex,
-    setCurrentlyPlayingIndex,
-    looping,
-    setLooping,
-    shuffled,
-    setShuffled,
+    playbackState: playBackState,
+    progress: progress,
+    album: album,
+    setAlbum: setAlbum,
+    activeTrack: activeTrack,
+    setActiveTrack: setActiveTrack,
   };
 
   return (

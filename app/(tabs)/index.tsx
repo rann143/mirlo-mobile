@@ -53,7 +53,7 @@ export default function Index() {
 }
 
 export const isTrackOwnedOrPreview = (
-  track: TrackProps,
+  track: RNTrack,
   user?: LoggedInUser | null,
   trackGroup?: AlbumProps
 ): boolean => {
@@ -70,7 +70,7 @@ export const isTrackOwnedOrPreview = (
     return false;
   }
   const lookInTrackGroup = trackGroup ?? track.trackGroup;
-  const ownsTrack = lookInTrackGroup.artist?.id === user.id;
+  const ownsTrack = lookInTrackGroup.artistId === user.id;
   const boughtTrack = !!lookInTrackGroup.userTrackGroupPurchases?.find(
     (utgp) => utgp.userId === user.id
   );

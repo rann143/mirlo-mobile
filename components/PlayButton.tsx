@@ -3,10 +3,12 @@ import { API_ROOT } from "@/constants/api-root";
 import { usePlayer } from "@/state/PlayerContext";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { useCallback, useState, useEffect } from "react";
+import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
+import { isEqual } from "lodash";
 
 type PlayButtonProps = {
-  albumTracks: TrackProps[];
-  trackObject: TrackProps;
+  albumTracks: RNTrack[];
+  trackObject: RNTrack;
   buttonColor?: string;
 };
 
@@ -15,92 +17,95 @@ export default function PlayButton({
   trackObject,
   buttonColor,
 }: PlayButtonProps) {
-  const {
-    player,
-    isPlaying,
-    currentSource,
-    setCurrentSource,
-    setPlayerQueue,
-    setCurrentlyPlayingIndex,
-    setShuffled,
-    shuffled,
-  } = usePlayer();
+  const { playbackState, album, activeTrack, setActiveTrack } = usePlayer();
   //const [localPlaying, setLocalPlaying] = useState(false);
   const playIcon = <Ionicons name="play" size={20} />;
   const pauseIcon = <Ionicons name="pause" size={20} />;
-  const audioUrlFragment = trackObject.audio.url;
-  const audioURL = `${API_ROOT}${audioUrlFragment}`;
+  const audioURL = trackObject.url;
 
-  const onPress = async () => {
-    // check if currentSource is null to determine if we should initialize it
-    if (!currentSource) {
-      player.replace({
-        uri: audioURL,
-        metadata: {
-          title: trackObject.title,
-          artist: trackObject.artist,
-          artwork: trackObject.trackGroup.cover?.sizes[60],
-        },
-      });
-      player.play();
-      setCurrentSource(trackObject);
-      setPlayerQueue(albumTracks);
-      return;
-    }
+  const togglePlayBack = async (
+    playBackState: PlaybackState | { state: undefined }
+  ) => {
+    try {
+      const queue = await TrackPlayer.getQueue();
+      const currentTrack = await TrackPlayer.getActiveTrack();
+      //console.log(queue);
 
-    // compare album of this track againstour current source's album to determine
-    // if we need to reset our queue
-    if (trackObject.albumId !== currentSource.albumId) {
-      if (shuffled) {
-        setShuffled(false);
+      if (!queue || !currentTrack) {
+        console.log("no curr track");
+        await TrackPlayer.setQueue(album);
+        await TrackPlayer.load(trackObject);
+        await TrackPlayer.play();
+        setActiveTrack(trackObject);
+        return;
       }
-      setPlayerQueue(albumTracks);
-    }
 
-    // check button's associated song url against current audio source to determine
-    // if we need to change the player's audio source
-    if (audioUrlFragment !== currentSource?.audio.url) {
-      //setLocalPlaying(true);
-      setCurrentSource(trackObject);
-      setCurrentlyPlayingIndex(trackObject.order - 1);
-      player.replace({
-        uri: audioURL,
-        metadata: {
-          title: trackObject.title,
-          artist: trackObject.artist,
-          artwork: trackObject.trackGroup.cover?.sizes[60],
-        },
-      });
-      player.play();
-      return;
-    }
+      const isSameAlbum = queue.some((track) => isEqual(track, trackObject));
 
-    if (isPlaying) {
-      player.pause();
-      //setLocalPlaying(false);
-    } else {
-      player.play();
-      //setLocalPlaying(true);
+      if (!isSameAlbum) {
+        console.log("changing albums");
+        await TrackPlayer.setQueue(album);
+      }
+
+      // if (queue && !queue.includes(trackObject)) {
+      //   console.log("changing albums");
+      //   await TrackPlayer.setQueue(album);
+      // }
+
+      if (currentTrack?.url !== audioURL) {
+        console.log("song change");
+        setActiveTrack(trackObject);
+        await TrackPlayer.skip(trackObject.order - 1);
+        await TrackPlayer.play();
+        return;
+      } else {
+        if (
+          playbackState.state === State.Paused ||
+          playbackState.state === State.Ready
+        ) {
+          console.log("play");
+          await TrackPlayer.play();
+        } else {
+          console.log("pause");
+          await TrackPlayer.pause();
+        }
+      }
+    } catch (err) {
+      console.error("issue with playback", err);
     }
   };
 
   return (
-    <TouchableOpacity
-      style={styles.playPauseButtonContainer}
-      onPress={onPress}
-      activeOpacity={1}
-    >
-      <Text
-        style={[
-          styles.playPauseButtonText,
-          { color: buttonColor ? buttonColor : "#fff" },
-        ]}
-      >
-        {isPlaying && currentSource?.audio.url === audioUrlFragment
-          ? pauseIcon
-          : playIcon}
-      </Text>
+    <TouchableOpacity onPress={() => togglePlayBack(playbackState)}>
+      <Ionicons
+        name={
+          playbackState.state === State.Playing && activeTrack?.url === audioURL
+            ? "pause-circle"
+            : // : playbackState.state === State.Loading &&
+              //   activeTrack?.url == audioURL
+              // ? "caret-down-circle"
+              "play-circle"
+        }
+        size={75}
+        color="#FFD369"
+      />
     </TouchableOpacity>
+    // <TouchableOpacity
+    //   style={styles.playPauseButtonContainer}
+    //   onPress={togglePlayBack}
+    //   activeOpacity={1}
+    // >
+    //   <Text
+    //     style={[
+    //       styles.playPauseButtonText,
+    //       { color: buttonColor ? buttonColor : "#fff" },
+    //     ]}
+    //   >
+    //     {isPlaying && currentSource?.audio.url === audioUrlFragment
+    //       ? pauseIcon
+    //       : playIcon}
+    //   </Text>
+    // </TouchableOpacity>
   );
 }
 
