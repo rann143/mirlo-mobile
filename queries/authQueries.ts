@@ -15,7 +15,7 @@ type LoginBody = {
   password: string;
 };
 
-async function storeTokens(res: Response): Promise<boolean> {
+async function storeTokens(): Promise<boolean> {
   try {
     const cookies = await CookieManager.getAll();
 
@@ -35,7 +35,7 @@ async function storeTokens(res: Response): Promise<boolean> {
 async function login(body: LoginBody) {
   const res: Response = await api.post("/auth/login", body);
 
-  await storeTokens(res);
+  await storeTokens();
 
   return res;
 }
@@ -83,7 +83,7 @@ export async function authRefresh() {
     const res: Response = await api.post("/auth/refresh", {});
     await SecureStore.deleteItemAsync("jwt");
     await SecureStore.deleteItemAsync("refresh");
-    await storeTokens(res);
+    await storeTokens();
 
     return false;
   } catch (err) {
