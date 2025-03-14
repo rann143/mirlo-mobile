@@ -22,7 +22,7 @@ interface PlayerContextType {
   album: Array<RNTrack>;
   setAlbum: (tracks: RNTrack[]) => void;
   activeTrack: Track | undefined;
-  setActiveTrack: (track: Track) => void;
+  setActiveTrack: (track: RNTrack) => void;
 }
 
 export const PlayerContext = createContext<PlayerContextType | null>(null);
@@ -43,7 +43,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [trackTitle, setTrackTitle] = useState<string>();
   const [trackArtist, setTrackArtist] = useState<string>();
   const [trackArtwork, setTrackArtwork] = useState<string>();
-  const [activeTrack, setActiveTrack] = useState<Track>();
+  const [activeTrack, setActiveTrack] = useState<RNTrack>();
 
   const playBackState = usePlaybackState();
   const progress = useProgress();
@@ -67,7 +67,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     setTrackTitle(title);
     setTrackArtist(artist);
     setTrackArtwork(artwork);
-    setActiveTrack(track);
   });
 
   async function setUpTrackPlayer() {

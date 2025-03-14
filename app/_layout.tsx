@@ -41,7 +41,7 @@ export default function RootLayout() {
             /> */}
             <Stack.Screen name="login" options={{ title: "Login" }} />
           </Stack>
-          {/* <Player bottomDistance={100} /> */}
+          <Player bottomDistance={100} />
           <StatusBar style="dark" />
         </PlayerContextProvider>
       </AuthContextProvider>

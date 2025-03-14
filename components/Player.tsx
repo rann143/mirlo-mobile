@@ -9,6 +9,7 @@ import ShuffleButton from "./ShuffleButton";
 import PlayerSlider from "./PlayerSlider";
 import { Link } from "expo-router";
 import SongTimeDisplay from "./SongTimeDisplay";
+import TrackPlayer, { State, PlaybackState } from "react-native-track-player";
 
 type PlayerStyleProps = {
   bottomDistance: number;
@@ -19,27 +20,27 @@ type PlayButtonProps = {
 };
 
 export default function Player({ bottomDistance }: PlayerStyleProps) {
-  const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
+  const { activeTrack } = usePlayer();
 
-  const thisArtistId: string = String(currentSource?.trackGroup.artist.id);
-  const thisSlug: string = String(currentSource?.trackGroup.urlSlug);
+  const thisArtistId: string = String(activeTrack?.trackGroup.artistId);
+  const thisSlug: string = String(activeTrack?.trackGroup.urlSlug);
 
   return (
     <View
       style={
-        currentSource
+        activeTrack
           ? [styles.container, { bottom: bottomDistance }]
           : { width: 0, height: 0, opacity: 0 }
       }
     >
       <View style={styles.buttonsContainer}>
-        <ShuffleButton />
-        <PrevButton />
+        {/* <ShuffleButton />
+        <PrevButton /> */}
         <PlayerPlayButton buttonColor="black" />
-        <NextButton />
-        <LoopButton />
+        {/* <NextButton />
+        <LoopButton /> */}
       </View>
-      <PlayerSlider />
+      {/* <PlayerSlider /> */}
 
       <Link
         href={{
@@ -47,35 +48,47 @@ export default function Player({ bottomDistance }: PlayerStyleProps) {
           params: { id: thisArtistId, slug: thisSlug },
         }}
       >
-        {currentSource?.title} by {currentSource?.artist}
+        {activeTrack?.title} by {activeTrack?.artist}
       </Link>
     </View>
   );
 }
 
 function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
-  const { player, isPlaying, currentSource, setCurrentSource } = usePlayer();
+  const { playbackState } = usePlayer();
   const playIcon = <Ionicons name="play" size={40} />;
   const pauseIcon = <Ionicons name="pause" size={40} />;
 
-  function onPress() {
-    if (isPlaying) {
-      player.pause();
+  async function onPress(playbackState: PlaybackState | { state: undefined }) {
+    if (
+      playbackState.state === State.Paused ||
+      playbackState.state === State.Ready
+    ) {
+      console.log("play");
+      await TrackPlayer.play();
     } else {
-      player.play();
+      console.log("pause");
+      await TrackPlayer.pause();
     }
   }
 
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text
-        style={[
-          styles.playPauseButtonText,
-          { color: buttonColor ? buttonColor : "#fff" },
-        ]}
-      >
-        {isPlaying ? pauseIcon : playIcon}
-      </Text>
+    <TouchableOpacity
+      style={styles.button}
+      onPress={() => onPress(playbackState)}
+    >
+      <Ionicons
+        name={
+          playbackState.state === State.Playing
+            ? "pause-circle"
+            : // : playbackState.state === State.Loading &&
+              //   activeTrack?.url == audioURL
+              // ? "caret-down-circle"
+              "play-circle"
+        }
+        size={75}
+        color="#FFD369"
+      />
     </TouchableOpacity>
   );
 }
