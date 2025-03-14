@@ -105,6 +105,7 @@ export default function AlbumTracks() {
           trackGroup: {
             userTrackGroupPurchases: data.result.userTrackGroupPurchases,
             artistId: data.result.artistId,
+            urlSlug: data.result.urlSlug,
           },
           audio: {
             url: track.audio.url,

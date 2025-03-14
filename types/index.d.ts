@@ -70,6 +70,7 @@ interface RNTrack {
   trackGroup: {
     userTrackGroupPurchases?: { userId: number }[];
     artistId: number;
+    urlSlug: string;
   };
   audio: {
     url: string;
