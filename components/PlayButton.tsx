@@ -47,11 +47,6 @@ export default function PlayButton({
         await TrackPlayer.setQueue(album);
       }
 
-      // if (queue && !queue.includes(trackObject)) {
-      //   console.log("changing albums");
-      //   await TrackPlayer.setQueue(album);
-      // }
-
       if (currentTrack?.url !== audioURL) {
         console.log("song change");
         setActiveTrack(trackObject);
@@ -81,31 +76,12 @@ export default function PlayButton({
         name={
           playbackState.state === State.Playing && activeTrack?.url === audioURL
             ? "pause-circle"
-            : // : playbackState.state === State.Loading &&
-              //   activeTrack?.url == audioURL
-              // ? "caret-down-circle"
-              "play-circle"
+            : "play-circle"
         }
         size={75}
         color="#FFD369"
       />
     </TouchableOpacity>
-    // <TouchableOpacity
-    //   style={styles.playPauseButtonContainer}
-    //   onPress={togglePlayBack}
-    //   activeOpacity={1}
-    // >
-    //   <Text
-    //     style={[
-    //       styles.playPauseButtonText,
-    //       { color: buttonColor ? buttonColor : "#fff" },
-    //     ]}
-    //   >
-    //     {isPlaying && currentSource?.audio.url === audioUrlFragment
-    //       ? pauseIcon
-    //       : playIcon}
-    //   </Text>
-    // </TouchableOpacity>
   );
 }
 

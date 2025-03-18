@@ -1,4 +1,5 @@
 import { API_ROOT } from "@/constants/api-root";
+import { API_KEY } from "@/constants/api-key";
 import { MirloFetchError } from "./MirloFetchError";
 import * as SecureStorage from "expo-secure-store";
 import { head } from "lodash";
@@ -27,6 +28,10 @@ async function fetchWrapper<R>(
 
   if (cookieHeader) {
     headers.append("Cookie", cookieHeader);
+  }
+
+  if (API_KEY) {
+    headers.append("mirlo-api-key", API_KEY);
   }
 
   const res = await fetch(`${API_ROOT}${endpoint}`, {
