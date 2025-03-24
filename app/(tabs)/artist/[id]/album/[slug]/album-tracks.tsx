@@ -18,6 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { queryAlbum } from "@/queries/queries";
 import { useEffect } from "react";
 import { API_ROOT } from "@/constants/api-root";
+import { API_KEY } from "@/constants/api-key";
 
 // Currently the difference between album-track.tsx and collections-tracks.tsx
 // is that the back button navigates to different tabs depending on if this album
@@ -113,6 +114,9 @@ export default function AlbumTracks() {
           },
           isPreview: track.isPreview,
           order: track.order,
+          headers: {
+            "mirlo-api-key": API_KEY,
+          },
         };
         tracks.push(newTrack);
       });

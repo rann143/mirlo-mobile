@@ -78,4 +78,5 @@ interface RNTrack {
   };
   isPreview: boolean;
   order: number;
+  headers: {};
 }

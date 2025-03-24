@@ -60,15 +60,21 @@ function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
   const pauseIcon = <Ionicons name="pause" size={40} />;
 
   async function onPress(playbackState: PlaybackState | { state: undefined }) {
-    if (
-      playbackState.state === State.Paused ||
-      playbackState.state === State.Ready
-    ) {
-      console.log("play");
-      await TrackPlayer.play();
-    } else {
-      console.log("pause");
-      await TrackPlayer.pause();
+    try {
+      if (
+        playbackState.state === State.Paused ||
+        playbackState.state === State.Ready
+      ) {
+        await TrackPlayer.play();
+        console.log("play: " + playbackState.state);
+      } else if (playbackState.state === State.Playing) {
+        await TrackPlayer.pause();
+        console.log("pause: " + playbackState.state);
+      } else {
+        console.log(playbackState.state);
+      }
+    } catch (error) {
+      console.error("issue with player toggle playback botton", error);
     }
   }
 
@@ -79,12 +85,7 @@ function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
     >
       <Ionicons
         name={
-          playbackState.state === State.Playing
-            ? "pause-circle"
-            : // : playbackState.state === State.Loading &&
-              //   activeTrack?.url == audioURL
-              // ? "caret-down-circle"
-              "play-circle"
+          playbackState.state === State.Playing ? "pause-circle" : "play-circle"
         }
         size={75}
         color="#FFD369"

@@ -14,7 +14,6 @@ import TrackPlayer, {
   Progress,
   Track,
 } from "react-native-track-player";
-import { setupPlayer } from "react-native-track-player/lib/src/trackPlayer";
 
 interface PlayerContextType {
   playbackState: PlaybackState | { state: undefined };

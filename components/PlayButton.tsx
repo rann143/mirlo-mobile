@@ -31,8 +31,8 @@ export default function PlayButton({
       const currentTrack = await TrackPlayer.getActiveTrack();
       //console.log(queue);
 
-      if (!queue || !currentTrack) {
-        console.log("no curr track");
+      if (!queue) {
+        console.log("no curr track: setting track");
         await TrackPlayer.setQueue(album);
         await TrackPlayer.load(trackObject);
         await TrackPlayer.play();
@@ -43,8 +43,12 @@ export default function PlayButton({
       const isSameAlbum = queue.some((track) => isEqual(track, trackObject));
 
       if (!isSameAlbum) {
-        console.log("changing albums");
-        await TrackPlayer.setQueue(album);
+        try {
+          console.log("changing albums");
+          await TrackPlayer.setQueue(album);
+        } catch (err) {
+          console.error("issue changing albums", err);
+        }
       }
 
       if (currentTrack?.url !== audioURL) {
@@ -59,9 +63,11 @@ export default function PlayButton({
           playbackState.state === State.Ready
         ) {
           console.log("play");
+          console.log(playbackState.state);
           await TrackPlayer.play();
         } else {
           console.log("pause");
+          console.log(playbackState.state);
           await TrackPlayer.pause();
         }
       }
