@@ -2,26 +2,33 @@ import { Image, Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
 import { API_ROOT } from "@/constants/api-root";
+import TrackPlayer, { RepeatMode } from "react-native-track-player";
+import { useState } from "react";
 
 export default function LoopButton() {
-  const { player, setCurrentSource, looping, setLooping } = usePlayer();
+  const [looping, setLooping] = useState<"none" | "track" | "queue">("none");
   const loopIcon = (
     <Ionicons
       name="repeat"
       size={20}
-      color={
-        looping === "loopQueue" || looping === "loopTrack" ? "#BE3455" : "black"
-      }
+      color={looping === "queue" || looping === "track" ? "#BE3455" : "black"}
     />
   );
 
-  const onPress = () => {
-    if (looping === "none") {
-      setLooping("loopQueue");
-    } else if (looping === "loopQueue") {
-      setLooping("loopTrack");
-    } else {
-      setLooping("none");
+  const onPress = async () => {
+    try {
+      if (looping === "none") {
+        setLooping("queue");
+        await TrackPlayer.setRepeatMode(RepeatMode.Queue);
+      } else if (looping === "queue") {
+        setLooping("track");
+        await TrackPlayer.setRepeatMode(RepeatMode.Track);
+      } else {
+        setLooping("none");
+        await TrackPlayer.setRepeatMode(RepeatMode.Off);
+      }
+    } catch (err) {
+      console.error("Issue setting loop mode");
     }
   };
 
@@ -29,7 +36,7 @@ export default function LoopButton() {
     <View>
       <TouchableOpacity style={styles.button} onPress={onPress}>
         <Text>{loopIcon}</Text>
-        {looping === "loopTrack" && <LoopIndicator />}
+        {looping === "track" && <LoopIndicator />}
       </TouchableOpacity>
     </View>
   );

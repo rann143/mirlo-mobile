@@ -2,50 +2,38 @@ import { Image, Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
 import { API_ROOT } from "@/constants/api-root";
+import TrackPlayer, { PlaybackState } from "react-native-track-player";
 
 export default function NextButton() {
-  const {
-    player,
-    setCurrentSource,
-    currentlyPlayingIndex,
-    setCurrentlyPlayingIndex,
-    playerQueue,
-  } = usePlayer();
+  const { setActiveTrack } = usePlayer();
   const nextIcon = <Ionicons name="play-skip-forward" size={20} />;
 
-  const onPress = () => {
-    if (currentlyPlayingIndex === playerQueue.length - 1) {
-      setCurrentlyPlayingIndex(0);
-      setCurrentSource(playerQueue[0]);
-      player.replace({
-        uri: API_ROOT + playerQueue[0].audio.url,
-        metadata: {
-          title: playerQueue[0].title,
-          artist: playerQueue[0].artist,
-          artwork: playerQueue[0].trackGroup.cover?.sizes[60],
-        },
-      });
+  const nextSong = async () => {
+    try {
+      const queue = await TrackPlayer.getQueue();
+      const trackIndex = await TrackPlayer.getActiveTrackIndex();
+      const queueLength = queue.length;
 
-      player.play();
-    } else {
-      const nextTrackIndex = currentlyPlayingIndex + 1;
-      setCurrentSource(playerQueue[nextTrackIndex]);
-      setCurrentlyPlayingIndex(nextTrackIndex);
-      player.replace({
-        uri: API_ROOT + playerQueue[nextTrackIndex].audio.url,
-        metadata: {
-          title: playerQueue[nextTrackIndex].title,
-          artist: playerQueue[nextTrackIndex].artist,
-          artwork: playerQueue[nextTrackIndex].trackGroup.cover?.sizes[60],
-        },
-      });
-      player.play();
+      if (trackIndex === queueLength - 1) {
+        await TrackPlayer.skip(0);
+      } else {
+        await TrackPlayer.skipToNext();
+      }
+
+      const newTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
+      if (newTrack) {
+        setActiveTrack(newTrack);
+      } else {
+        throw new Error("Couldn't get next Track");
+      }
+    } catch (err) {
+      console.error("issue skipping to next song", err);
     }
   };
 
   return (
     <View>
-      <TouchableOpacity style={styles.button} onPress={onPress}>
+      <TouchableOpacity style={styles.button} onPress={nextSong}>
         <Text>{nextIcon}</Text>
       </TouchableOpacity>
     </View>

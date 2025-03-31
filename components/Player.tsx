@@ -34,11 +34,11 @@ export default function Player({ bottomDistance }: PlayerStyleProps) {
       }
     >
       <View style={styles.buttonsContainer}>
-        {/* <ShuffleButton />
-        <PrevButton /> */}
+        {/* <ShuffleButton /> */}
+        <PrevButton />
         <PlayerPlayButton buttonColor="black" />
-        {/* <NextButton />
-        <LoopButton /> */}
+        <NextButton />
+        <LoopButton />
       </View>
       {/* <PlayerSlider /> */}
 
