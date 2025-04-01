@@ -18,7 +18,6 @@ export default function PlayButton({
   buttonColor,
 }: PlayButtonProps) {
   const { playbackState, album, activeTrack, setActiveTrack } = usePlayer();
-  //const [localPlaying, setLocalPlaying] = useState(false);
   const playIcon = <Ionicons name="play" size={20} />;
   const pauseIcon = <Ionicons name="pause" size={20} />;
   const audioURL = trackObject.url;

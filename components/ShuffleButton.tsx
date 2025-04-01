@@ -3,44 +3,107 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
 import { API_ROOT } from "@/constants/api-root";
 import { shuffle, pullAt } from "lodash";
+import TrackPlayer, { State } from "react-native-track-player";
+import { useEffect, useState } from "react";
 
 export default function ShuffleButton() {
-  const {
-    player,
-    isPlaying,
-    currentSource,
-    setCurrentSource,
-    currentlyPlayingIndex,
-    setCurrentlyPlayingIndex,
-    playerQueue,
-    setPlayerQueue,
-    shuffled,
-    setShuffled,
-  } = usePlayer();
+  const { shuffled, setShuffled, album } = usePlayer();
+  const [q, setQ] = useState<RNTrack[]>([]);
   const shuffleIcon = (
     <Ionicons name="shuffle" size={20} color={shuffled ? "#BE3455" : "black"} />
   );
 
-  const onPress = () => {
+  useEffect(() => {
+    setQ(album);
+  }, [album]);
+
+  const onPress = async () => {
     if (!shuffled) {
-      let shuffled: TrackProps[] = [];
-      if (isPlaying) {
-        const queueCopy = [...playerQueue];
-        const currentTrack = pullAt(queueCopy, currentlyPlayingIndex);
-        shuffled = [...currentTrack, ...shuffle(queueCopy)];
-      } else {
-        shuffled = shuffle(playerQueue);
-      }
-      setPlayerQueue(shuffled);
+      const queue = [...album];
+      const activeTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
+
+      // In order to prevent any hiccups in playing, we always want to keep the active track in the TrackPlayer's Queue
+      // What we're doing here is removing all tracks except the active track, shuffling them, and re-adding them to
+      // the TrackPlayer's queue. This way, the active track never stops playing
+
+      // Get all track except active track and keep track (pun intended) of their current indices for removal
+      const toBeShuffled = queue
+        .map((track, index) => {
+          return { track: track, index: index };
+        })
+        .filter((item) => {
+          return item.track.title !== activeTrack.title;
+        });
+
+      // get all indices that need to be removed
+      const toBeRemoved: number[] = toBeShuffled.map((item) => {
+        return item.index;
+      });
+      // Remove from TrackPlayer
+      await TrackPlayer.remove(toBeRemoved);
+
+      // Since toBeShuffled contains objects in the form of {track: track, index: index},
+      // We need to isolate just the track values since we need an array of objects of type RNTrack
+      const shuffledQ = toBeShuffled.map((item) => {
+        return item.track;
+      });
+
+      // Shuffle
+      shuffledQ.sort(() => Math.random() - 0.5);
+
+      // Add to TrackPlayer Queue
+      await TrackPlayer.add(shuffledQ);
       setShuffled(true);
     } else {
-      setShuffled(false);
-      let unshuffled: TrackProps[] = new Array(playerQueue.length);
-      for (let i = 0; i < playerQueue.length; i++) {
-        unshuffled[playerQueue[i].order - 1] = playerQueue[i];
+      const queue = (await TrackPlayer.getQueue()) as RNTrack[];
+      const activeTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
+
+      // The goal with Re-ordering is also to re-order the TrackPlayer's Queue without removing the active track.
+      // This way the active track doesn't stop & restart when resetting the Queue in proper order.
+      // The method here is again to remove all tracks except the active track, sort them by their 'order' property,
+      // and add them back to the TrackPlayer's queue.
+
+      const toBeReordered = queue
+        .map((track, index) => {
+          return { track, index };
+        })
+        .filter((item) => {
+          return item.track.title !== activeTrack.title;
+        });
+
+      const toBeRemoved = toBeReordered.map((item) => {
+        return item.index;
+      });
+      await TrackPlayer.remove(toBeRemoved);
+
+      const sorted = toBeReordered
+        .sort((itemA, itemB) => {
+          return itemA.track.order - itemB.track.order;
+        })
+        .map((item) => {
+          return item.track;
+        });
+
+      const pre: RNTrack[] = [];
+      const post: RNTrack[] = [];
+      for (let i = 0; i < sorted.length; i++) {
+        if (sorted[i].order < activeTrack.order) {
+          pre.push(sorted[i]);
+        } else {
+          post.push(sorted[i]);
+        }
       }
-      setPlayerQueue(unshuffled);
-      if (currentSource) setCurrentlyPlayingIndex(currentSource.order - 1);
+
+      // Add all tracks that originally come after the active track
+      await TrackPlayer.add(post);
+      // prepend all tracks that originally come before active track.
+      await TrackPlayer.add(pre, 0);
+
+      // const toBeRemoved = toBeReordered.map((item) => {
+      //   return item.index;
+      // });
+
+      setShuffled(false);
     }
   };
 

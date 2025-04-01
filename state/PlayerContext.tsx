@@ -22,6 +22,8 @@ interface PlayerContextType {
   setAlbum: (tracks: RNTrack[]) => void;
   activeTrack: Track | undefined;
   setActiveTrack: (track: RNTrack) => void;
+  shuffled: boolean;
+  setShuffled: (shuffled: boolean) => void;
 }
 
 export const PlayerContext = createContext<PlayerContextType | null>(null);
@@ -29,29 +31,20 @@ export const PlayerContext = createContext<PlayerContextType | null>(null);
 export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // Keeps track of our player's current 'source' so we can check against it when changing songs
-  // const [currentSource, setCurrentSource] = useState<TrackProps | null>(null);
-  // const [playerQueue, setPlayerQueue] = useState<TrackProps[]>([]);
-  // const [shuffled, setShuffled] = useState<boolean>(false);
-  // const [looping, setLooping] = useState<"loopTrack" | "loopQueue" | "none">(
-  //   "none"
-  // );
-  // const [currentlyPlayingIndex, setCurrentlyPlayingIndex] = useState<number>(0);
+  const [shuffled, setShuffled] = useState<boolean>(false);
   const [album, setAlbum] = useState<RNTrack[]>([]);
-  const [trackIndex, setTrackIndex] = useState(0);
-  const [trackTitle, setTrackTitle] = useState<string>();
-  const [trackArtist, setTrackArtist] = useState<string>();
-  const [trackArtwork, setTrackArtwork] = useState<string>();
   const [activeTrack, setActiveTrack] = useState<RNTrack>();
 
   const playBackState = usePlaybackState();
   const progress = useProgress();
 
-  // **************************************
-
   useEffect(() => {
     setUpTrackPlayer();
   }, []);
+
+  useEffect(() => {
+    setShuffled(false);
+  }, [album]);
 
   useTrackPlayerEvents([Event.PlaybackActiveTrackChanged], async (event) => {
     if (typeof event.index !== "number") return;
@@ -62,10 +55,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     const track = await TrackPlayer.getTrack(currentIndex);
     if (track == undefined) return;
     const { title, artwork, artist } = track;
-    setTrackIndex(currentIndex);
-    setTrackTitle(title);
-    setTrackArtist(artist);
-    setTrackArtwork(artwork);
   });
 
   async function setUpTrackPlayer() {
@@ -85,8 +74,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }
 
-  // **************************************
-
   const value: PlayerContextType = {
     playbackState: playBackState,
     progress: progress,
@@ -94,6 +81,8 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     setAlbum: setAlbum,
     activeTrack: activeTrack,
     setActiveTrack: setActiveTrack,
+    shuffled: shuffled,
+    setShuffled: setShuffled,
   };
 
   return (

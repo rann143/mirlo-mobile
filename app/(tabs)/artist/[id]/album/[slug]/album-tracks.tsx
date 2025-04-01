@@ -16,7 +16,7 @@ import { isTrackOwnedOrPreview } from "@/app/(tabs)";
 import { useAuthContext } from "@/state/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryAlbum } from "@/queries/queries";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { API_ROOT } from "@/constants/api-root";
 import { API_KEY } from "@/constants/api-key";
 
@@ -48,10 +48,14 @@ const TrackItem = ({ track, album }: TrackItemComponentProps) => {
   if (!canPlayTrack) {
     return (
       <View style={[styles.listItem, { backgroundColor: "#BE3455" }]}>
-        <Text style={{ color: "darkgrey", fontSize: 20, marginRight: 5 }}>
+        <Text
+          style={{ color: "darkgrey", fontSize: 20, marginRight: 5 }}
+          ellipsizeMode="tail"
+          numberOfLines={1}
+        >
           {track.title}
         </Text>
-        <Text style={{ color: "grey", fontSize: 20 }}>
+        <Text style={{ color: "grey", fontSize: 15, marginRight: 20 }}>
           {track.audio.duration ? formatTime(track.audio.duration) : 0}
         </Text>
       </View>
@@ -93,6 +97,7 @@ export default function AlbumTracks() {
   );
   const router = useRouter();
   const { album, setAlbum } = usePlayer();
+  // const [album, setAlbum] = useState<RNTrack[]>([]);
 
   useEffect(() => {
     const tracks: RNTrack[] = [];
