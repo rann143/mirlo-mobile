@@ -16,6 +16,9 @@ import ProfileLink from "@/components/ProfileLink";
 import PlayButton from "@/components/PlayButton";
 import { isTrackOwnedOrPreview } from "@/app/(tabs)";
 import { useAuthContext } from "@/state/AuthContext";
+import { queryAlbum } from "@/queries/queries";
+import { useQuery } from "@tanstack/react-query";
+import { API_KEY } from "@/constants/api-key";
 
 //CURRENT DIFFERENCE BETWEEN THIS AND album-track.tsx IS THE BACK BUTTON NAVIGATION IN STACK.SCREEN
 
@@ -31,7 +34,7 @@ function formatTime(seconds: number) {
 }
 
 type TrackItemComponentProps = {
-  track: TrackProps;
+  track: RNTrack;
   album: AlbumProps;
 };
 
@@ -83,42 +86,45 @@ const TrackItem = ({ track, album }: TrackItemComponentProps) => {
 
 export default function CollectionsTracks() {
   const { id, slug } = useLocalSearchParams();
-  const [tracks, setTracks] = useState<TrackProps[]>([]);
-  const [album, setAlbum] = useState<AlbumProps>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { isPending, isError, data, error } = useQuery(
+    queryAlbum({ slug: slug, id: id })
+  );
   const router = useRouter();
-  const { player, isPlaying, currentSource, setCurrentSource, setPlayerQueue } =
-    usePlayer();
+  const { album, setAlbum } = usePlayer();
+  //const [album, setAlbum] = useState<RNTrack[]>([]);
 
   useEffect(() => {
-    // TODO: Refactor to use Tanstack Query
-
-    const callback = async () => {
-      const fetchedAlbum = await fetch(
-        `${API_ROOT}/v1/trackGroups/${slug}/?artistId=${id}`
-      ).then((response) => response.json());
-      const copy = [...fetchedAlbum.result.tracks];
-      copy.forEach((track: TrackProps) => {
-        track.artist = fetchedAlbum.result.artist.name;
-        track.albumId = fetchedAlbum.result.id;
-        track.trackGroup = {
-          cover: fetchedAlbum.result.cover,
-          title: fetchedAlbum.result.title,
-          artist: fetchedAlbum.result.artist,
-          artistId: fetchedAlbum.result.artistId,
-          urlSlug: fetchedAlbum.result.urlSlug,
-          releaseDate: fetchedAlbum.result.releaseDate,
-          id: fetchedAlbum.result.id,
+    const tracks: RNTrack[] = [];
+    if (data && data.result.tracks) {
+      data.result.tracks.forEach((track) => {
+        const newTrack: RNTrack = {
+          title: track.title,
+          artist: data.result.artist.name,
+          artwork: data.result.cover.sizes[60],
+          url: `${API_ROOT}${track.audio.url}`,
+          trackGroup: {
+            userTrackGroupPurchases: data.result.userTrackGroupPurchases,
+            artistId: data.result.artistId,
+            urlSlug: data.result.urlSlug,
+          },
+          audio: {
+            url: track.audio.url,
+            duration: track.audio.duration,
+          },
+          isPreview: track.isPreview,
+          order: track.order,
+          headers: {
+            "mirlo-api-key": API_KEY,
+          },
         };
+        tracks.push(newTrack);
       });
-      setTracks(copy);
-      setAlbum(fetchedAlbum.result);
-      setIsLoading(false);
-    };
-    callback();
-  }, [slug, id]);
+    }
 
-  if (isLoading) {
+    setAlbum(tracks);
+  }, [data]);
+
+  if (isPending) {
     return (
       <View>
         <Text>Loading...</Text>
@@ -126,11 +132,21 @@ export default function CollectionsTracks() {
     );
   }
 
+  if (isError) {
+    return (
+      <View>
+        <Text>Error: {error.message} </Text>
+      </View>
+    );
+  }
+
+  const selectedAlbum = data.result;
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen
         options={{
-          title: album?.title || "Loading...",
+          title: selectedAlbum?.title || "Loading...",
           headerRight: () => <ProfileLink />,
           headerLeft: () => (
             <Button
@@ -142,26 +158,20 @@ export default function CollectionsTracks() {
           ),
         }}
       />
-      {currentSource && player && (
-        <VideoView
-          style={styles.video}
-          player={player}
-          nativeControls={true}
-          showsTimecodes={true}
-        />
-      )}
       <View style={styles.container}>
         <FlatList
-          style={{ width: "100%" }}
+          style={{ width: "100%", marginTop: 10 }}
           contentContainerStyle={styles.listContainer}
-          data={tracks}
+          data={album}
           renderItem={({ item }) =>
-            album ? <TrackItem track={item} album={album}></TrackItem> : null
+            selectedAlbum ? (
+              <TrackItem track={item} album={selectedAlbum}></TrackItem>
+            ) : null
           }
           ListHeaderComponent={() => (
             <View>
               <Image
-                source={{ uri: album?.cover?.sizes[960] }}
+                source={{ uri: selectedAlbum.cover?.sizes[960] }}
                 style={styles.image}
               />
               <Text
@@ -171,9 +181,9 @@ export default function CollectionsTracks() {
                   marginBottom: 5,
                 }}
               >
-                {album?.artist.name} | {album?.tracks?.length}{" "}
-                {album?.tracks?.length == 1 ? "Track" : "Tracks"} |{" "}
-                {new Date(album.releaseDate).getFullYear()}
+                {selectedAlbum.artist.name} | {selectedAlbum.tracks?.length}{" "}
+                {selectedAlbum.tracks?.length == 1 ? "Track" : "Tracks"} |{" "}
+                {new Date(selectedAlbum.releaseDate).getFullYear()}
               </Text>
             </View>
           )}
