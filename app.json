@@ -14,6 +14,10 @@
       "bundleIdentifier": "com.drod17.mirlo-mobile",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "icon": {
+        "dark": "./assets/images/mirlo-logo-logoOnly-dark.png",
+        "light": "./assets/images/mirlo-logo-logoOnly-light.png"
       }
     },
     "android": {
@@ -37,10 +41,14 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/Logo-Mirlo_LogoOnly.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "image": "./assets/images/Logo-Mirlo_LogoOnly.png",
+            "backgroundColor": "#000000"
+          }
         }
       ],
       "expo-audio",
