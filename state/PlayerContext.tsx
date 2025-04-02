@@ -66,6 +66,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
           Capability.Pause,
           Capability.SkipToNext,
           Capability.SkipToPrevious,
+          Capability.SeekTo,
         ],
       });
       console.log("track player set up");

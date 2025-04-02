@@ -17,4 +17,7 @@ module.exports = async function () {
     Event.RemotePrevious,
     async () => await TrackPlayer.skipToPrevious()
   );
+  TrackPlayer.addEventListener(Event.RemoteSeek, ({ position }) =>
+    TrackPlayer.seekTo(position)
+  );
 };
