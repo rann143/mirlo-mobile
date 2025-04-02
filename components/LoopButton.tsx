@@ -10,7 +10,7 @@ export default function LoopButton() {
   const loopIcon = (
     <Ionicons
       name="repeat"
-      size={20}
+      size={30}
       color={looping === "queue" || looping === "track" ? "#BE3455" : "black"}
     />
   );
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 10,
     paddingVertical: 10,
-    paddingHorizontal: 12,
-    marginRight: 10,
+    paddingHorizontal: 10,
+    marginHorizontal: 10,
     flexDirection: "row",
     position: "relative",
   },

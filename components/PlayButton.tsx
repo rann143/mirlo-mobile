@@ -18,8 +18,6 @@ export default function PlayButton({
   buttonColor,
 }: PlayButtonProps) {
   const { playbackState, album, activeTrack, setActiveTrack } = usePlayer();
-  const playIcon = <Ionicons name="play" size={20} />;
-  const pauseIcon = <Ionicons name="pause" size={20} />;
   const audioURL = trackObject.url;
 
   const togglePlayBack = async (
@@ -84,11 +82,12 @@ export default function PlayButton({
       <Ionicons
         name={
           playbackState.state === State.Playing && activeTrack?.url === audioURL
-            ? "pause-circle"
-            : "play-circle"
+            ? "pause"
+            : "play"
         }
-        size={75}
-        color="#FFD369"
+        size={40}
+        style={{ marginHorizontal: 5 }}
+        color="white"
       />
     </TouchableOpacity>
   );

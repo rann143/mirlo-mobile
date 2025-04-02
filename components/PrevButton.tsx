@@ -6,7 +6,7 @@ import TrackPlayer from "react-native-track-player";
 
 export default function PrevButton() {
   const { setActiveTrack } = usePlayer();
-  const prevIcon = <Ionicons name="play-skip-back" size={20} />;
+  const prevIcon = <Ionicons name="play-skip-back" size={40} />;
 
   const prevSong = async () => {
     try {
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 10,
     paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingHorizontal: 5,
     marginRight: 10,
   },
 });

@@ -10,7 +10,7 @@ export default function ShuffleButton() {
   const { shuffled, setShuffled, album } = usePlayer();
   const [q, setQ] = useState<RNTrack[]>([]);
   const shuffleIcon = (
-    <Ionicons name="shuffle" size={20} color={shuffled ? "#BE3455" : "black"} />
+    <Ionicons name="shuffle" size={30} color={shuffled ? "#BE3455" : "black"} />
   );
 
   useEffect(() => {
@@ -121,6 +121,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    marginRight: 10,
+    marginHorizontal: 10,
   },
 });

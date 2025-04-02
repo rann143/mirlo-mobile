@@ -1,15 +1,17 @@
 import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { usePlayer } from "@/state/PlayerContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { API_ROOT } from "@/constants/api-root";
 import NextButton from "./NextButton";
 import PrevButton from "./PrevButton";
 import LoopButton from "./LoopButton";
 import ShuffleButton from "./ShuffleButton";
-import PlayerSlider from "./PlayerSlider";
 import { Link } from "expo-router";
-import SongTimeDisplay from "./SongTimeDisplay";
-import TrackPlayer, { State, PlaybackState } from "react-native-track-player";
+import TrackPlayer, {
+  State,
+  PlaybackState,
+  useProgress,
+} from "react-native-track-player";
+import Slider from "@react-native-community/slider";
 
 type PlayerStyleProps = {
   bottomDistance: number;
@@ -22,6 +24,7 @@ type PlayButtonProps = {
 export default function Player({ bottomDistance }: PlayerStyleProps) {
   const { activeTrack } = usePlayer();
 
+  const progress = useProgress();
   const thisArtistId: string = String(activeTrack?.trackGroup.artistId);
   const thisSlug: string = String(activeTrack?.trackGroup.urlSlug);
 
@@ -40,7 +43,16 @@ export default function Player({ bottomDistance }: PlayerStyleProps) {
         <NextButton />
         <LoopButton />
       </View>
-      {/* <PlayerSlider /> */}
+      <Slider
+        style={styles.progressBar}
+        value={progress.position}
+        minimumValue={0}
+        maximumValue={progress.duration}
+        thumbTintColor="#BE3455"
+        minimumTrackTintColor="#BE3455"
+        maximumTrackTintColor="#FFF"
+        onSlidingComplete={async (value) => await TrackPlayer.seekTo(value)}
+      />
 
       <Link
         href={{
@@ -88,13 +100,17 @@ function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
           playbackState.state === State.Playing ? "pause-circle" : "play-circle"
         }
         size={75}
-        color="#FFD369"
       />
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
+  progressBar: {
+    alignSelf: "stretch",
+    marginLeft: 5,
+    marginRight: 5,
+  },
   container: {
     width: "90%",
     position: "absolute",
@@ -116,8 +132,8 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 10,
     paddingVertical: 10,
-    paddingHorizontal: 12,
-    marginRight: 10,
+    paddingHorizontal: 5,
+    marginHorizontal: 5,
   },
   playPauseButtonText: {
     fontSize: 18,
