@@ -1,19 +1,27 @@
-import { Stack, usePathname } from "expo-router";
+import { Stack } from "expo-router";
 import { PlayerContextProvider } from "@/state/PlayerContext";
 import { AuthContextProvider } from "@/state/AuthContext";
-import ProfileLink from "@/components/ProfileLink";
 import { QueryClientWrapper } from "@/queries/QueryClientWrapper";
 import { DevToolsBubble } from "react-native-react-query-devtools";
 import * as Clipboard from "expo-clipboard";
 import Player from "@/components/Player";
 import { StatusBar } from "expo-status-bar";
 import TrackPlayer from "react-native-track-player";
+import * as SplashScreen from "expo-splash-screen";
+import { AppReadyContextProvider } from "@/state/AppReadyContext";
+import { useCallback, useEffect, useState } from "react";
+
+SplashScreen.preventAutoHideAsync();
+
+SplashScreen.setOptions({
+  duration: 500,
+  fade: true,
+});
 
 TrackPlayer.registerPlaybackService(() => require("../scripts/service"));
 
 export default function RootLayout() {
-  const pathname = usePathname();
-
+  const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
   // Needed for TanStack Query Devtools
   const onCopy = async (text: string) => {
     try {
@@ -24,28 +32,40 @@ export default function RootLayout() {
     }
   };
 
+  const onLayoutRootView = useCallback(() => {
+    if (isDataLoaded) {
+      SplashScreen.hide();
+    }
+  }, [isDataLoaded]);
+
+  useEffect(() => {
+    if (isDataLoaded) {
+      SplashScreen.hide();
+    }
+  }, [isDataLoaded]);
+
   return (
-    <QueryClientWrapper>
-      <AuthContextProvider>
-        <PlayerContextProvider>
-          <Stack>
-            <Stack.Screen
-              name="(tabs)"
-              options={{ headerShown: false, title: "Recent Releases" }}
-            />
-            {/* <Stack.Screen
-              name="artist/[id]/album/[slug]"
-              options={{
-                headerShown: false,
-              }}
-            /> */}
-            <Stack.Screen name="login" options={{ title: "Login" }} />
-          </Stack>
-          <Player bottomDistance={100} />
-          <StatusBar style="dark" />
-        </PlayerContextProvider>
-      </AuthContextProvider>
-      <DevToolsBubble onCopy={onCopy} />
-    </QueryClientWrapper>
+    <AppReadyContextProvider
+      value={{ isDataLoaded: isDataLoaded, setIsDataLoaded: setIsDataLoaded }}
+    >
+      {/* <View style={{ flex: 1 }} onLayout={onLayoutRootView}> */}
+      <QueryClientWrapper>
+        <AuthContextProvider>
+          <PlayerContextProvider>
+            <Stack>
+              <Stack.Screen
+                name="(tabs)"
+                options={{ headerShown: false, title: "Recent Releases" }}
+              />
+              <Stack.Screen name="login" options={{ title: "Login" }} />
+            </Stack>
+            <Player bottomDistance={100} />
+            <StatusBar style="dark" />
+          </PlayerContextProvider>
+        </AuthContextProvider>
+        <DevToolsBubble onCopy={onCopy} />
+      </QueryClientWrapper>
+      {/* </View> */}
+    </AppReadyContextProvider>
   );
 }

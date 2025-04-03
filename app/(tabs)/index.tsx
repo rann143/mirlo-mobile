@@ -1,19 +1,41 @@
-import { Text, View, FlatList, SafeAreaView } from "react-native";
+import {
+  ActivityIndicator,
+  Text,
+  View,
+  FlatList,
+  SafeAreaView,
+} from "react-native";
 import { StyleSheet } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { queryTrackGroups } from "@/queries/queries";
 import TrackGroupItem from "@/components/TrackGroupItem";
+import { useEffect } from "react";
+import { useAppIsReadyContext } from "@/state/AppReadyContext";
 
 export default function Index() {
-  const { isPending, isError, data, error } = useQuery(
+  const { setIsDataLoaded } = useAppIsReadyContext();
+  const { isPending, isError, data, error, status } = useQuery(
     queryTrackGroups({ take: 20, orderBy: "random", distinctArtists: true })
   );
   const trackGroups = data?.results;
 
+  useEffect(() => {
+    if (data) {
+      const timer = setTimeout(() => {
+        setIsDataLoaded(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [data]);
+
   if (isPending) {
     return (
       <View>
-        <Text>Loading...</Text>
+        <ActivityIndicator
+          size="large"
+          color="#BE3455"
+          style={styles.loadSpinner}
+        />
       </View>
     );
   }
@@ -91,5 +113,8 @@ const styles = StyleSheet.create({
   text: {
     padding: 10,
     fontWeight: "bold",
+  },
+  loadSpinner: {
+    flex: 1,
   },
 });

@@ -1,11 +1,6 @@
-import { useVideoPlayer } from "expo-video";
-import { useEvent, useEventListener } from "expo";
 import { createContext, useState, useContext, useEffect } from "react";
-import { API_ROOT } from "@/constants/api-root";
-import * as Notifications from "expo-notifications";
 import TrackPlayer, {
   Capability,
-  State,
   Event,
   usePlaybackState,
   useProgress,
@@ -46,16 +41,13 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     setShuffled(false);
   }, [album]);
 
-  useTrackPlayerEvents([Event.PlaybackActiveTrackChanged], async (event) => {
-    if (typeof event.index !== "number") return;
-
-    const queue = await TrackPlayer.getQueue();
-
-    const currentIndex = event.index;
-    const track = await TrackPlayer.getTrack(currentIndex);
-    if (track == undefined) return;
-    const { title, artwork, artist } = track;
-  });
+  useTrackPlayerEvents(
+    [Event.RemoteNext, Event.RemotePrevious],
+    async (event) => {
+      const track = (await TrackPlayer.getActiveTrack()) as RNTrack;
+      setActiveTrack(track);
+    }
+  );
 
   async function setUpTrackPlayer() {
     try {

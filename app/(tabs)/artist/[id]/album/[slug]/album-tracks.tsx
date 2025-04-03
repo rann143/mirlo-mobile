@@ -6,9 +6,9 @@ import {
   FlatList,
   Button,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
-import { VideoView } from "expo-video";
 import { usePlayer } from "@/state/PlayerContext";
 import ProfileLink from "@/components/ProfileLink";
 import PlayButton from "@/components/PlayButton";
@@ -132,8 +132,12 @@ export default function AlbumTracks() {
 
   if (isPending) {
     return (
-      <View>
-        <Text>Loading...</Text>
+      <View style={{ flex: 1 }}>
+        <ActivityIndicator
+          size="large"
+          color="#BE3455"
+          style={styles.loadSpinner}
+        />
       </View>
     );
   }
@@ -232,8 +236,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0", // placeholder color while loading
     alignSelf: "center",
   },
-  video: {
-    width: 0,
-    height: 0,
+  loadSpinner: {
+    flex: 1,
   },
 });

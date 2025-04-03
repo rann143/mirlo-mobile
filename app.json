@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/Logo-Mirlo_LogoOnly.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
