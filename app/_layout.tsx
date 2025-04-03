@@ -48,7 +48,6 @@ export default function RootLayout() {
     <AppReadyContextProvider
       value={{ isDataLoaded: isDataLoaded, setIsDataLoaded: setIsDataLoaded }}
     >
-      {/* <View style={{ flex: 1 }} onLayout={onLayoutRootView}> */}
       <QueryClientWrapper>
         <AuthContextProvider>
           <PlayerContextProvider>
@@ -63,9 +62,8 @@ export default function RootLayout() {
             <StatusBar style="dark" />
           </PlayerContextProvider>
         </AuthContextProvider>
-        <DevToolsBubble onCopy={onCopy} />
+        {/* <DevToolsBubble onCopy={onCopy} /> */}
       </QueryClientWrapper>
-      {/* </View> */}
     </AppReadyContextProvider>
   );
 }

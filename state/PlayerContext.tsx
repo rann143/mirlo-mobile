@@ -42,7 +42,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [album]);
 
   useTrackPlayerEvents(
-    [Event.RemoteNext, Event.RemotePrevious],
+    [Event.RemoteNext, Event.RemotePrevious, Event.PlaybackActiveTrackChanged],
     async (event) => {
       const track = (await TrackPlayer.getActiveTrack()) as RNTrack;
       setActiveTrack(track);
