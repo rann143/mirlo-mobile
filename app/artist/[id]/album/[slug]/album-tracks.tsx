@@ -9,18 +9,20 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
-import { API_ROOT } from "@/constants/api-root";
-import { useEffect } from "react";
 import { usePlayer } from "@/state/PlayerContext";
 import ProfileLink from "@/components/ProfileLink";
 import PlayButton from "@/components/PlayButton";
-import { isTrackOwnedOrPreview } from "@/app/(tabs)";
+import { isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
-import { queryAlbum } from "@/queries/queries";
 import { useQuery } from "@tanstack/react-query";
+import { queryAlbum } from "@/queries/queries";
+import { useEffect, useState } from "react";
+import { API_ROOT } from "@/constants/api-root";
 import { API_KEY } from "@/constants/api-key";
 
-//CURRENT DIFFERENCE BETWEEN THIS AND album-track.tsx IS THE BACK BUTTON NAVIGATION IN STACK.SCREEN
+// Currently the difference between album-track.tsx and collections-tracks.tsx
+// is that the back button navigates to different tabs depending on if this album
+// is from recent releases (index page) or collections
 
 function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
@@ -46,10 +48,14 @@ const TrackItem = ({ track, album }: TrackItemComponentProps) => {
   if (!canPlayTrack) {
     return (
       <View style={[styles.listItem, { backgroundColor: "#BE3455" }]}>
-        <Text style={{ color: "darkgrey", fontSize: 20, marginRight: 5 }}>
+        <Text
+          style={{ color: "darkgrey", fontSize: 20, marginRight: 5 }}
+          ellipsizeMode="tail"
+          numberOfLines={1}
+        >
           {track.title}
         </Text>
-        <Text style={{ color: "grey", fontSize: 20 }}>
+        <Text style={{ color: "grey", fontSize: 15, marginRight: 20 }}>
           {track.audio.duration ? formatTime(track.audio.duration) : 0}
         </Text>
       </View>
@@ -84,14 +90,14 @@ const TrackItem = ({ track, album }: TrackItemComponentProps) => {
   );
 };
 
-export default function CollectionsTracks() {
+export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
   const { isPending, isError, data, error } = useQuery(
     queryAlbum({ slug: slug, id: id })
   );
   const router = useRouter();
   const { album, setAlbum } = usePlayer();
-  //const [album, setAlbum] = useState<RNTrack[]>([]);
+  // const [album, setAlbum] = useState<RNTrack[]>([]);
 
   useEffect(() => {
     const tracks: RNTrack[] = [];
@@ -156,7 +162,7 @@ export default function CollectionsTracks() {
             <Button
               title="Back"
               onPress={() => {
-                router.navigate("/(tabs)/collections");
+                router.dismiss();
               }}
             />
           ),
@@ -225,7 +231,7 @@ const styles = StyleSheet.create({
   image: {
     width: 170,
     height: 170,
-    borderRadius: 5,
+    borderRadius: 10,
     marginVertical: 10,
     backgroundColor: "#f0f0f0", // placeholder color while loading
     alignSelf: "center",

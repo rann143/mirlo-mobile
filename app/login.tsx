@@ -1,17 +1,45 @@
 import LoginForm from "@/components/LoginForm";
-import { Text, View, SafeAreaView, StyleSheet } from "react-native";
+import { Text, View, SafeAreaView, StyleSheet, Pressable } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { router } from "expo-router";
 
 export default function Login() {
   return (
     <SafeAreaView style={styles.form}>
-      <LoginForm />
+      <View style={{ flex: 1, backgroundColor: "#BE3455" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 10,
+            width: "100%",
+            height: 60,
+            backgroundColor: "white",
+          }}
+        >
+          <Pressable onPress={() => router.dismiss(2)}>
+            <Ionicons
+              name="chevron-back-outline"
+              size={40}
+              style={{ color: "#b8b8b8" }}
+            ></Ionicons>
+          </Pressable>
+          <Ionicons
+            name="menu-outline"
+            size={40}
+            style={{ color: "#b8b8b8", marginRight: 15 }}
+          ></Ionicons>
+        </View>
+        <LoginForm />
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   form: {
-    backgroundColor: "#BE3455",
+    backgroundColor: "white",
     flex: 1,
     justifyContent: "flex-start",
   },

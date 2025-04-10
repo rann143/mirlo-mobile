@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Image, FlatList } from "react-native";
 import { useAuthContext } from "@/state/AuthContext";
 import ProfileLink from "@/components/ProfileLink";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import CollectionsGroupItem from "@/components/CollectionsgroupItem";
 import { queryUserPurchases } from "@/queries/queries";
@@ -16,12 +16,7 @@ export default function Collections() {
   const purchases = data?.results;
 
   if (!user) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Login to see your collection</Text>
-        <ProfileLink />
-      </View>
-    );
+    router.push("/login");
   }
 
   if (isPending) {

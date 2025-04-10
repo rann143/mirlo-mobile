@@ -11,12 +11,20 @@ import { queryTrackGroups } from "@/queries/queries";
 import TrackGroupItem from "@/components/TrackGroupItem";
 import { useEffect } from "react";
 import { useAppIsReadyContext } from "@/state/AppReadyContext";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import {
+  useSafeAreaFrame,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import Footer from "@/components/Footer";
+import { Pressable } from "react-native";
 
 export default function Index() {
   const { setIsDataLoaded } = useAppIsReadyContext();
   const { isPending, isError, data, error, status } = useQuery(
     queryTrackGroups({ take: 20, orderBy: "random", distinctArtists: true })
   );
+  const { top } = useSafeAreaInsets();
   const trackGroups = data?.results;
 
   useEffect(() => {
@@ -49,8 +57,32 @@ export default function Index() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
       <View style={styles.container}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 10,
+            width: "100%",
+            height: 60,
+            borderBottomWidth: 3,
+            borderBottomColor: "#e8e9eb",
+            backgroundColor: "white",
+          }}
+        >
+          <Ionicons
+            name="search-outline"
+            size={30}
+            style={{ color: "#d6d6d6" }}
+          ></Ionicons>
+          <Ionicons
+            name="menu-outline"
+            size={30}
+            style={{ color: "#d6d6d6", marginRight: 15 }}
+          ></Ionicons>
+        </View>
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
@@ -70,45 +102,20 @@ export default function Index() {
           )}
         ></FlatList>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
-
-export const isTrackOwnedOrPreview = (
-  track: RNTrack,
-  user?: LoggedInUser | null,
-  trackGroup?: AlbumProps
-): boolean => {
-  if (track.isPreview) {
-    return true;
-  }
-  if (
-    trackGroup?.releaseDate &&
-    new Date(trackGroup.releaseDate) > new Date()
-  ) {
-    return false;
-  }
-  if (!user) {
-    return false;
-  }
-  const lookInTrackGroup = trackGroup ?? track.trackGroup;
-  const ownsTrack = lookInTrackGroup.artistId === user.id;
-  const boughtTrack = !!lookInTrackGroup.userTrackGroupPurchases?.find(
-    (utgp) => utgp.userId === user.id
-  );
-  return ownsTrack || boughtTrack;
-};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#f0f0f0",
     alignItems: "center",
     justifyContent: "space-evenly",
   },
   listContainer: {
-    backgroundColor: "#BE3455",
-    paddingBottom: 160,
+    backgroundColor: "#FFF",
+    zIndex: 10,
   },
   text: {
     padding: 10,

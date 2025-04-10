@@ -34,7 +34,7 @@ export default function LoginForm() {
     login(data, {
       onSuccess() {
         console.log("logged in successfully");
-        router.replace("/(tabs)/collections");
+        router.replace("/collections");
       },
       onError(e) {
         console.error("e", e.message);
@@ -45,6 +45,16 @@ export default function LoginForm() {
 
   return (
     <View style={styles.container}>
+      <Text
+        style={{
+          color: "white",
+          fontWeight: "bold",
+          fontSize: 20,
+          marginTop: 20,
+        }}
+      >
+        Log In
+      </Text>
       <View>
         <Text style={styles.formLabel}>Email:</Text>
         <Controller

@@ -10,6 +10,8 @@ import TrackPlayer from "react-native-track-player";
 import * as SplashScreen from "expo-splash-screen";
 import { AppReadyContextProvider } from "@/state/AppReadyContext";
 import { useCallback, useEffect, useState } from "react";
+import ProfileLink from "@/components/ProfileLink";
+import Footer from "@/components/Footer";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -52,14 +54,37 @@ export default function RootLayout() {
         <AuthContextProvider>
           <PlayerContextProvider>
             <Stack>
-              <Stack.Screen
+              {/* <Stack.Screen
                 name="(tabs)"
                 options={{ headerShown: false, title: "Recent Releases" }}
+              /> */}
+              <Stack.Screen name="login" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="index"
+                options={{
+                  headerShown: false,
+                  // title: "Recent Releases",
+                  // headerRight: () => <ProfileLink />,
+                }}
               />
-              <Stack.Screen name="login" options={{ title: "Login" }} />
+              <Stack.Screen
+                name="collections"
+                options={{
+                  title: "My Collection",
+                  headerRight: () => <ProfileLink />,
+                }}
+              />
+              <Stack.Screen
+                name="artist/[id]/album/[slug]"
+                options={{
+                  headerShown: false,
+                  //href: null,
+                }}
+              />
             </Stack>
-            <Player bottomDistance={100} />
-            <StatusBar style="dark" />
+            <Footer />
+            {/* <Player bottomDistance={100} /> */}
+            <StatusBar style="dark" backgroundColor="white" />
           </PlayerContextProvider>
         </AuthContextProvider>
         {/* <DevToolsBubble onCopy={onCopy} /> */}
