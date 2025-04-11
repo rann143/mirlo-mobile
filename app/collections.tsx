@@ -5,6 +5,7 @@ import { Link, router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import CollectionsGroupItem from "@/components/CollectionsgroupItem";
 import { queryUserPurchases } from "@/queries/queries";
+import { useEffect } from "react";
 
 export default function Collections() {
   const { user } = useAuthContext();
@@ -15,9 +16,11 @@ export default function Collections() {
   );
   const purchases = data?.results;
 
-  if (!user) {
-    router.push("/login");
-  }
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user]);
 
   if (isPending) {
     return (

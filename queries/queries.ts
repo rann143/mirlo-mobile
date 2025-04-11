@@ -1,4 +1,5 @@
 import {
+  keepPreviousData,
   QueryFunction,
   queryOptions,
   useMutation,
@@ -23,9 +24,10 @@ const fetchTrackGroups: QueryFunction<
 > = ({
   queryKey: [_, { skip, take, orderBy, tag, distinctArtists }],
   signal,
+  pageParam = 0,
 }) => {
   const params = new URLSearchParams();
-  if (skip) params.append("skip", String("skip"));
+  if (skip || pageParam) params.append("skip", String(pageParam || skip));
   if (take) params.append("take", String(take));
   if (orderBy) params.append("orderBy", orderBy);
   if (tag) params.append("tag", tag);
@@ -43,6 +45,7 @@ export function queryTrackGroups(opts: {
   return queryOptions({
     queryKey: ["fetchTrackGroups", opts],
     queryFn: fetchTrackGroups,
+    placeholderData: keepPreviousData,
   });
 }
 

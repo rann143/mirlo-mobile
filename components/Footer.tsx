@@ -11,7 +11,6 @@ import { router } from "expo-router";
 export default function Footer() {
   const progress = useProgress();
   const { bottom } = useSafeAreaInsets();
-  const { activeTrack } = usePlayer();
 
   return (
     <View
@@ -91,12 +90,12 @@ const styles = StyleSheet.create({
   progressBar: {
     alignSelf: "stretch",
     marginLeft: -16,
-    marginRight: -5,
+    marginRight: -20,
     padding: 0,
     marginTop: -21,
   },
   image: {
-    width: 70,
+    width: 80,
     height: "100%",
     marginTop: -20,
   },

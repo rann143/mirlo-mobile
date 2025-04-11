@@ -6,10 +6,10 @@ import {
   SafeAreaView,
 } from "react-native";
 import { StyleSheet } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { queryTrackGroups } from "@/queries/queries";
 import TrackGroupItem from "@/components/TrackGroupItem";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppIsReadyContext } from "@/state/AppReadyContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
@@ -18,14 +18,35 @@ import {
 } from "react-native-safe-area-context";
 import Footer from "@/components/Footer";
 import { Pressable } from "react-native";
+import * as api from "../queries/fetch/fetchWrapper";
 
 export default function Index() {
   const { setIsDataLoaded } = useAppIsReadyContext();
-  const { isPending, isError, data, error, status } = useQuery(
-    queryTrackGroups({ take: 20, orderBy: "random", distinctArtists: true })
-  );
+  const {
+    isPending,
+    isError,
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery<{ results: AlbumProps[] }>({
+    queryKey: ["infiniteTrackGroups"],
+    queryFn: ({ pageParam = 0 }) => {
+      const params = new URLSearchParams();
+      params.append("skip", String(pageParam));
+      params.append("take", String(20));
+      params.append("distinctArtists", "true");
+
+      return api.get(`/v1/trackGroups?${params}`, {});
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.results.length === 20 ? allPages.length * 10 : null;
+    },
+  });
   const { top } = useSafeAreaInsets();
-  const trackGroups = data?.results;
+  const trackGroups = data?.pages.flatMap((page) => page.results) || [];
 
   useEffect(() => {
     if (data) {
@@ -55,6 +76,20 @@ export default function Index() {
       </View>
     );
   }
+
+  const renderLoadingFooter = () => {
+    if (!isFetchingNextPage) return null;
+
+    return (
+      <View style={{ marginVertical: 30 }}>
+        <ActivityIndicator
+          size="large"
+          color="#BE3455"
+          style={styles.loadSpinner}
+        />
+      </View>
+    );
+  };
 
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
@@ -87,6 +122,7 @@ export default function Index() {
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
           data={trackGroups}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
           renderItem={({ item }) => (
             <TrackGroupItem
               id={item.id}
@@ -100,6 +136,9 @@ export default function Index() {
               tracks={item.tracks}
             ></TrackGroupItem>
           )}
+          onEndReached={() => !isFetchingNextPage && fetchNextPage()}
+          onEndReachedThreshold={0.0}
+          ListFooterComponent={renderLoadingFooter}
         ></FlatList>
       </View>
     </View>
