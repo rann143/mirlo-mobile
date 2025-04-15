@@ -12,7 +12,6 @@ export default function Layout() {
           options={{ headerShown: true }}
         />
       </Stack>
-      {/* <Player bottomDistance={50} /> */}
     </>
   );
 }

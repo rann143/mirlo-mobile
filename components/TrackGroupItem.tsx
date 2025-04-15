@@ -12,18 +12,14 @@ export default function TrackGroupItem({
   return (
     <View style={styles.listItem}>
       <Image source={{ uri: cover?.sizes[120] }} style={styles.image} />
-      <View style={{ marginLeft: 15, width: 200 }}>
-        <Link
-          href={{
-            pathname: "/artist/[id]/album/[slug]/album-tracks",
-            params: { id: artistId, slug: urlSlug },
-          }}
+      <View style={{ marginLeft: 15, width: 300 }}>
+        <Text
           style={{ color: "black", fontSize: 15, fontWeight: "bold" }}
           ellipsizeMode="tail"
           numberOfLines={1}
         >
           {title}
-        </Link>
+        </Text>
         <Text style={{ color: "black", fontSize: 14 }}>{artist.name}</Text>
       </View>
     </View>

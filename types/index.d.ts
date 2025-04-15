@@ -89,3 +89,33 @@ interface PlayButtonProps {
   buttonColor?: string;
   albumInfo?: AlbumProps;
 }
+
+interface Artist {
+  name: string;
+  bio: string;
+  activityPub: boolean;
+  urlSlug?: string;
+  userId: number;
+  id: number;
+  location?: string;
+  enabled: boolean;
+  createdAt: string;
+  artistLabels?: ArtistLabel[];
+  trackGroups: TrackGroup[];
+  links?: string[];
+  linksJson?: Link[];
+  properties?: {
+    colors: ArtistColors;
+  };
+  user?: Partial<User>;
+  banner?: {
+    url: string;
+    sizes?: { [key: number]: string };
+    updatedAt: string;
+  };
+  avatar?: {
+    url: string;
+    sizes?: { [key: string]: string };
+    updatedAt: string;
+  };
+}

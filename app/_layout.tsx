@@ -54,17 +54,11 @@ export default function RootLayout() {
         <AuthContextProvider>
           <PlayerContextProvider>
             <Stack>
-              {/* <Stack.Screen
-                name="(tabs)"
-                options={{ headerShown: false, title: "Recent Releases" }}
-              /> */}
               <Stack.Screen name="login" options={{ headerShown: false }} />
               <Stack.Screen
                 name="index"
                 options={{
                   headerShown: false,
-                  // title: "Recent Releases",
-                  // headerRight: () => <ProfileLink />,
                 }}
               />
               <Stack.Screen
@@ -75,15 +69,13 @@ export default function RootLayout() {
                 }}
               />
               <Stack.Screen
-                name="artist/[id]/album/[slug]"
+                name="artist/[id]"
                 options={{
                   headerShown: false,
-                  //href: null,
                 }}
               />
             </Stack>
             <Footer />
-            {/* <Player bottomDistance={100} /> */}
             <StatusBar style="dark" backgroundColor="white" />
           </PlayerContextProvider>
         </AuthContextProvider>

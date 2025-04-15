@@ -4,6 +4,7 @@ import {
   View,
   FlatList,
   SafeAreaView,
+  TouchableOpacity,
 } from "react-native";
 import { StyleSheet } from "react-native";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
@@ -19,6 +20,7 @@ import {
 import Footer from "@/components/Footer";
 import { Pressable } from "react-native";
 import * as api from "../queries/fetch/fetchWrapper";
+import { Link } from "expo-router";
 
 export default function Index() {
   const { setIsDataLoaded } = useAppIsReadyContext();
@@ -124,17 +126,24 @@ export default function Index() {
           data={trackGroups}
           keyExtractor={(item, index) => `${item.id}-${index}`}
           renderItem={({ item }) => (
-            <TrackGroupItem
-              id={item.id}
-              cover={item.cover}
-              title={item.title}
-              artist={item.artist}
-              artistId={item.artistId}
-              urlSlug={item.urlSlug}
-              userTrackGroupPurchases={item.userTrackGroupPurchases}
-              releaseDate={item.releaseDate}
-              tracks={item.tracks}
-            ></TrackGroupItem>
+            <Link
+              href={{
+                pathname: "/artist/[id]/album/[slug]/album-tracks",
+                params: { id: item.artistId, slug: item.urlSlug },
+              }}
+            >
+              <TrackGroupItem
+                id={item.id}
+                cover={item.cover}
+                title={item.title}
+                artist={item.artist}
+                artistId={item.artistId}
+                urlSlug={item.urlSlug}
+                userTrackGroupPurchases={item.userTrackGroupPurchases}
+                releaseDate={item.releaseDate}
+                tracks={item.tracks}
+              ></TrackGroupItem>
+            </Link>
           )}
           onEndReached={() => !isFetchingNextPage && fetchNextPage()}
           onEndReachedThreshold={0.0}

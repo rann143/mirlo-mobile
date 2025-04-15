@@ -90,3 +90,27 @@ export function queryAlbum(opts: {
     enabled: !!opts.slug && !!opts.id,
   });
 }
+
+const fetchArtist: QueryFunction<
+  Artist,
+  ["fetchArtist", { artistSlug: string }]
+> = ({ queryKey: [_, { artistSlug }], signal }) => {
+  return api
+    .get<{ result: Artist }>(`/v1/artists/${artistSlug}`, {
+      signal,
+    })
+    .then((r) => r.result);
+};
+
+export function queryArtist(opts: { artistSlug: string }) {
+  return queryOptions({
+    queryKey: [
+      "fetchArtist",
+      {
+        artistSlug: opts.artistSlug,
+      },
+    ],
+    queryFn: fetchArtist,
+    enabled: !!opts.artistSlug,
+  });
+}

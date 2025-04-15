@@ -343,7 +343,10 @@ export default function AlbumTracks() {
                   <Text>
                     By{" "}
                     <Link
-                      href={"/"}
+                      href={{
+                        pathname: "/artist/[id]/artist-page",
+                        params: { id: selectedAlbum?.artistId },
+                      }}
                       style={{ color: "#BE3455", fontWeight: "bold" }}
                     >
                       {selectedAlbum?.artist.name}
