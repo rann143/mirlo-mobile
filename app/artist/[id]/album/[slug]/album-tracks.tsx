@@ -182,13 +182,20 @@ function AlbumPlayButton() {
 function formatUTCDate(utcDate: string | undefined) {
   if (!utcDate) return undefined;
   const date = new Date(utcDate);
+
+  // Account for timezone offset
+  const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
   const options: DateTimeFormatOptions = {
     month: "long",
     day: "numeric",
     year: "numeric",
   };
-  const result = date.toLocaleDateString("en-US", options);
-  return result;
+  const result = localDate.toLocaleDateString("en-US", options);
+
+  return date.getTime() > Date.now()
+    ? `Will be released on ${result}`
+    : `Released ${result}`;
 }
 
 export default function AlbumTracks() {
@@ -198,8 +205,6 @@ export default function AlbumTracks() {
   );
   const router = useRouter();
   const { album, setAlbum } = usePlayer();
-
-  console.log("render me");
 
   useEffect(() => {
     const tracks: RNTrack[] = [];
@@ -230,8 +235,6 @@ export default function AlbumTracks() {
     }
 
     setAlbum(tracks);
-
-    console.log("querying");
   }, [data]);
 
   if (isPending) {
@@ -255,11 +258,11 @@ export default function AlbumTracks() {
   }
 
   const selectedAlbum = data.result;
-  console.log(selectedAlbum);
 
-  const tagPills = selectedAlbum.tags?.map((tag) => {
+  const tagPills = selectedAlbum.tags?.map((tag, index) => {
     return (
       <View
+        key={index}
         style={{
           backgroundColor: "#f0f0f0",
           borderWidth: 1,
@@ -365,7 +368,7 @@ export default function AlbumTracks() {
                 About
               </Text>
               <Text style={{ fontStyle: "italic", marginBottom: 20 }}>
-                Released {formatUTCDate(selectedAlbum?.releaseDate)}
+                {formatUTCDate(selectedAlbum?.releaseDate)}
               </Text>
               <Text style={{ marginBottom: 20 }}>{selectedAlbum?.about}</Text>
 
