@@ -93,6 +93,8 @@ export default function CollectionsTracks() {
   const { album, setAlbum } = usePlayer();
   //const [album, setAlbum] = useState<RNTrack[]>([]);
 
+  console.log("rendering");
+
   useEffect(() => {
     const tracks: RNTrack[] = [];
     if (data && data.result.tracks) {
@@ -156,7 +158,7 @@ export default function CollectionsTracks() {
             <Button
               title="Back"
               onPress={() => {
-                router.navigate("/collections");
+                router.dismiss();
               }}
             />
           ),

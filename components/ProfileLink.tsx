@@ -13,7 +13,7 @@ export default function ProfileLink() {
   const onLogOut = () => {
     logout(undefined, {
       onSuccess() {
-        router.replace("/");
+        router.dismissTo("/");
         console.log("logged out");
       },
     });

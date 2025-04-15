@@ -46,6 +46,8 @@ interface AlbumProps {
   userTrackGroupPurchases?: { userId: number }[];
   releaseDate: string;
   tracks?: RNTrack[];
+  about?: string;
+  tags?: string[];
 }
 
 interface TrackProps {
@@ -79,4 +81,11 @@ interface RNTrack {
   isPreview: boolean;
   order: number;
   headers: {};
+}
+
+interface PlayButtonProps {
+  albumTracks: RNTrack[];
+  trackObject: RNTrack;
+  buttonColor?: string;
+  albumInfo?: AlbumProps;
 }

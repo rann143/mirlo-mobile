@@ -61,7 +61,7 @@ export default function Footer() {
 
           <Pressable
             onPress={() => {
-              router.push("/collections");
+              router.navigate("/collections");
             }}
           >
             <Ionicons

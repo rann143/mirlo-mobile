@@ -6,19 +6,13 @@ import { useCallback, useState, useEffect } from "react";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import { isEqual } from "lodash";
 
-type PlayButtonProps = {
-  albumTracks: RNTrack[];
-  trackObject: RNTrack;
-  buttonColor?: string;
-};
-
 export default function PlayButton({
   albumTracks,
   trackObject,
   buttonColor,
 }: PlayButtonProps) {
   const { playbackState, album, activeTrack, setActiveTrack } = usePlayer();
-  const audioURL = trackObject.url;
+  const audioURL = trackObject?.url;
 
   const togglePlayBack = async (
     playBackState: PlaybackState | { state: undefined }
@@ -87,7 +81,7 @@ export default function PlayButton({
         }
         size={40}
         style={{ marginHorizontal: 5 }}
-        color="white"
+        color="black"
       />
     </TouchableOpacity>
   );

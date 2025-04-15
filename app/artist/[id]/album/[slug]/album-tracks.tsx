@@ -7,11 +7,11 @@ import {
   Button,
   Image,
   ActivityIndicator,
+  TouchableOpacity,
+  Pressable,
 } from "react-native";
-import { useLocalSearchParams, Stack, useRouter } from "expo-router";
+import { useLocalSearchParams, Stack, useRouter, Link } from "expo-router";
 import { usePlayer } from "@/state/PlayerContext";
-import ProfileLink from "@/components/ProfileLink";
-import PlayButton from "@/components/PlayButton";
 import { isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { useQuery } from "@tanstack/react-query";
@@ -19,6 +19,10 @@ import { queryAlbum } from "@/queries/queries";
 import { useEffect, useState } from "react";
 import { API_ROOT } from "@/constants/api-root";
 import { API_KEY } from "@/constants/api-key";
+import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
 // Currently the difference between album-track.tsx and collections-tracks.tsx
 // is that the back button navigates to different tabs depending on if this album
@@ -49,7 +53,7 @@ const TrackItem = ({ track, album }: TrackItemComponentProps) => {
     return (
       <View style={[styles.listItem, { backgroundColor: "#BE3455" }]}>
         <Text
-          style={{ color: "darkgrey", fontSize: 20, marginRight: 5 }}
+          style={{ color: "darkgrey", fontSize: 20, paddingRight: 10 }}
           ellipsizeMode="tail"
           numberOfLines={1}
         >
@@ -73,22 +77,119 @@ const TrackItem = ({ track, album }: TrackItemComponentProps) => {
         }}
       >
         {album?.tracks && (
-          <PlayButton trackObject={track} albumTracks={album.tracks} />
+          <Text
+            style={{
+              color: "black",
+              fontSize: 20,
+              marginRight: 30,
+              marginLeft: 5,
+            }}
+          >
+            {track.order}.
+          </Text>
         )}
         <Text
-          style={{ color: "white", fontSize: 20, marginRight: 5 }}
+          style={{ color: "black", fontSize: 18, marginRight: 5 }}
           ellipsizeMode="tail"
           numberOfLines={1}
         >
           {track.title}
         </Text>
       </View>
-      <Text style={{ color: "white", fontSize: 15, marginRight: 20 }}>
-        {track.audio.duration ? formatTime(track.audio.duration) : 0}
-      </Text>
+      <View>
+        <Text style={{ color: "black", fontSize: 15, marginRight: 10 }}>
+          {track.audio.duration ? formatTime(track.audio.duration) : 0}
+        </Text>
+      </View>
     </View>
   );
 };
+
+function AlbumPlayButton() {
+  const { playbackState, activeTrack, album, setActiveTrack } = usePlayer();
+
+  const togglePlayBack = async (
+    playBackState: PlaybackState | { state: undefined }
+  ) => {
+    try {
+      const queue = await TrackPlayer.getQueue();
+      // Set queue if no queue currently set
+      if (!queue) {
+        console.log("no curr track: setting track");
+        await TrackPlayer.setQueue(album);
+        await TrackPlayer.play();
+        const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
+        setActiveTrack(current);
+        return;
+      }
+
+      const currentTrack = await TrackPlayer.getActiveTrack();
+
+      const isSameAlbum =
+        currentTrack?.trackGroup.urlSlug === album[0].trackGroup.urlSlug
+          ? true
+          : false;
+
+      // Song Change to different album
+      if (!isSameAlbum) {
+        try {
+          await TrackPlayer.setQueue(album);
+          await TrackPlayer.play();
+          const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
+          setActiveTrack(current);
+          return;
+        } catch (err) {
+          console.error("issue changing albums", err);
+          return;
+        }
+      }
+
+      if (
+        playbackState.state === State.Paused ||
+        playbackState.state === State.Ready
+      ) {
+        await TrackPlayer.play();
+        return;
+      } else if (playbackState.state === State.Playing) {
+        await TrackPlayer.pause();
+        return;
+      } else {
+        console.log(playbackState.state);
+        return;
+      }
+    } catch (err) {
+      console.error("issue with playback", err);
+    }
+  };
+
+  return (
+    <TouchableOpacity onPress={() => togglePlayBack(playbackState)}>
+      <Ionicons
+        name={
+          playbackState.state === State.Playing &&
+          activeTrack?.trackGroup.urlSlug === album[0].trackGroup.urlSlug
+            ? "pause-circle-outline"
+            : "play-circle-outline"
+        }
+        size={60}
+        style={{ marginHorizontal: 5 }}
+        color="black"
+      />
+    </TouchableOpacity>
+  );
+}
+
+function formatUTCDate(utcDate: string | undefined) {
+  if (!utcDate) return undefined;
+  const date = new Date(utcDate);
+  const options: DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  };
+  const result = date.toLocaleDateString("en-US", options);
+  return result;
+}
 
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
@@ -97,7 +198,8 @@ export default function AlbumTracks() {
   );
   const router = useRouter();
   const { album, setAlbum } = usePlayer();
-  // const [album, setAlbum] = useState<RNTrack[]>([]);
+
+  console.log("render me");
 
   useEffect(() => {
     const tracks: RNTrack[] = [];
@@ -106,7 +208,7 @@ export default function AlbumTracks() {
         const newTrack: RNTrack = {
           title: track.title,
           artist: data.result.artist.name,
-          artwork: data.result.cover.sizes[60],
+          artwork: data.result.cover.sizes[600],
           url: `${API_ROOT}${track.audio.url}`,
           trackGroup: {
             userTrackGroupPurchases: data.result.userTrackGroupPurchases,
@@ -128,6 +230,8 @@ export default function AlbumTracks() {
     }
 
     setAlbum(tracks);
+
+    console.log("querying");
   }, [data]);
 
   if (isPending) {
@@ -151,23 +255,53 @@ export default function AlbumTracks() {
   }
 
   const selectedAlbum = data.result;
+  console.log(selectedAlbum);
+
+  const tagPills = selectedAlbum.tags?.map((tag) => {
+    return (
+      <View
+        style={{
+          backgroundColor: "#f0f0f0",
+          borderWidth: 1,
+          borderColor: "#e3e1e1",
+          padding: 10,
+          paddingHorizontal: 15,
+          borderRadius: 18,
+          marginRight: 10,
+          marginVertical: 5,
+        }}
+      >
+        <Text>{tag}</Text>
+      </View>
+    );
+  });
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen
         options={{
-          title: selectedAlbum?.title || "Loading...",
-          headerRight: () => <ProfileLink />,
-          headerLeft: () => (
-            <Button
-              title="Back"
-              onPress={() => {
-                router.dismiss();
-              }}
-            />
-          ),
+          headerShown: false,
         }}
       />
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: 10,
+          width: "100%",
+          height: 60,
+          backgroundColor: "#fafafa",
+        }}
+      >
+        <Pressable onPress={() => router.dismiss()}>
+          <Ionicons
+            name="chevron-back-outline"
+            size={40}
+            style={{ color: "#696969" }}
+          ></Ionicons>
+        </Pressable>
+      </View>
       <View style={styles.container}>
         <FlatList
           style={{ width: "100%", marginTop: 10 }}
@@ -179,22 +313,65 @@ export default function AlbumTracks() {
             ) : null
           }
           ListHeaderComponent={() => (
-            <View>
+            <View style={{ marginBottom: 10 }}>
               <Image
-                source={{ uri: selectedAlbum.cover?.sizes[960] }}
+                source={{ uri: selectedAlbum?.cover?.sizes[600] }}
                 style={styles.image}
+                resizeMode="contain"
               />
-              <Text
+              <View
                 style={{
-                  textAlign: "center",
-                  color: "rgba(255,255,255,0.9)",
-                  marginBottom: 5,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginVertical: 10,
                 }}
               >
-                {selectedAlbum.artist.name} | {selectedAlbum.tracks?.length}{" "}
-                {selectedAlbum.tracks?.length == 1 ? "Track" : "Tracks"} |{" "}
-                {new Date(selectedAlbum.releaseDate).getFullYear()}
+                <View>
+                  <Text
+                    style={{
+                      color: "black",
+                      marginBottom: 5,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {selectedAlbum?.title}
+                  </Text>
+                  <Text>
+                    By{" "}
+                    <Link
+                      href={"/"}
+                      style={{ color: "#BE3455", fontWeight: "bold" }}
+                    >
+                      {selectedAlbum?.artist.name}
+                    </Link>
+                  </Text>
+                </View>
+                <View>
+                  <AlbumPlayButton />
+                </View>
+              </View>
+            </View>
+          )}
+          ListFooterComponent={() => (
+            <View style={{ marginVertical: 10 }}>
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 20,
+                  marginBottom: 15,
+                }}
+              >
+                About
               </Text>
+              <Text style={{ fontStyle: "italic", marginBottom: 20 }}>
+                Released {formatUTCDate(selectedAlbum?.releaseDate)}
+              </Text>
+              <Text style={{ marginBottom: 20 }}>{selectedAlbum?.about}</Text>
+
+              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                {selectedAlbum.tags && tagPills}
+              </View>
             </View>
           )}
         ></FlatList>
@@ -206,20 +383,20 @@ export default function AlbumTracks() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#BE3455",
-    alignItems: "center",
+    backgroundColor: "white",
+    alignItems: "flex-start",
     justifyContent: "space-evenly",
   },
   listContainer: {
-    backgroundColor: "#BE3455",
-    paddingBottom: 160,
+    backgroundColor: "white",
+    paddingHorizontal: "5%",
   },
   listItem: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 5,
+    paddingVertical: 5,
     justifyContent: "space-between",
-    marginTop: 5,
+    marginVertical: 5,
   },
   listHeader: {
     alignContent: "center",
@@ -229,9 +406,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   image: {
-    width: 170,
-    height: 170,
-    borderRadius: 10,
+    width: 380,
+    height: 380,
     marginVertical: 10,
     backgroundColor: "#f0f0f0", // placeholder color while loading
     alignSelf: "center",
