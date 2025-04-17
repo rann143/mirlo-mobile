@@ -45,8 +45,6 @@ function AlbumPlayButton() {
         await TrackPlayer.setQueue(playableTracks);
         await TrackPlayer.play();
         const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
-        const q = await TrackPlayer.getQueue();
-        console.log(q);
         setActiveTrack(current);
         return;
       }
@@ -94,19 +92,21 @@ function AlbumPlayButton() {
   return (
     <TouchableOpacity
       onPress={() => togglePlayBack(playbackState)}
-      disabled={playableTracks ? false : true}
+      disabled={playableTracks.length ? false : true}
     >
       <Ionicons
         name={
-          playbackState.state === State.Playing &&
-          activeTrack?.trackGroup?.urlSlug ===
-            playableTracks[0].trackGroup?.urlSlug
-            ? "pause-circle-outline"
+          playableTracks.length
+            ? playbackState.state === State.Playing &&
+              activeTrack?.trackGroup?.urlSlug ===
+                playableTracks[0].trackGroup?.urlSlug
+              ? "pause-circle-outline"
+              : "play-circle-outline"
             : "play-circle-outline"
         }
         size={60}
         style={{ marginHorizontal: 5 }}
-        color={playableTracks ? "black" : "lightgrey"}
+        color={playableTracks.length ? "black" : "lightgrey"}
       />
     </TouchableOpacity>
   );
@@ -139,6 +139,7 @@ export default function AlbumTracks() {
   const router = useRouter();
   const { playableTracks, setPlayableTracks } = usePlayer();
   const [album, setAlbum] = useState<RNTrack[]>();
+  const { user } = useAuthContext();
 
   useEffect(() => {
     const tracksToPlay: RNTrack[] = [];
@@ -167,7 +168,7 @@ export default function AlbumTracks() {
         };
         allTracks.push(newTrack);
 
-        if (newTrack.isPreview === true) {
+        if (isTrackOwnedOrPreview(newTrack, user, data.result)) {
           tracksToPlay.push(newTrack);
         }
       });
@@ -220,11 +221,6 @@ export default function AlbumTracks() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-      />
       <View
         style={{
           flexDirection: "row",

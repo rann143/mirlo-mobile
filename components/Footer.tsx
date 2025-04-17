@@ -1,6 +1,10 @@
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Slider from "@react-native-community/slider";
-import TrackPlayer, { useProgress } from "react-native-track-player";
+import TrackPlayer, {
+  PlaybackState,
+  State,
+  useProgress,
+} from "react-native-track-player";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
@@ -11,6 +15,7 @@ import { router } from "expo-router";
 export default function Footer() {
   const progress = useProgress();
   const { bottom } = useSafeAreaInsets();
+  const { playableTracks, activeTrack } = usePlayer();
 
   return (
     <View
@@ -71,12 +76,66 @@ export default function Footer() {
             ></Ionicons>
           </Pressable>
         </View>
-        <Image
-          source={require("@/assets/images/mirlo-logo-logoOnly-dark.png")}
-          style={styles.image}
-        ></Image>
+        <View
+          style={{
+            flexDirection: "row",
+            height: "100%",
+            alignItems: "center",
+            marginTop: -20,
+            // borderWidth: 1,
+            // borderColor: "black",
+          }}
+        >
+          <FooterPlayButton />
+          <Image
+            source={
+              activeTrack && activeTrack.artwork
+                ? { uri: activeTrack.artwork }
+                : require("@/assets/images/mirlo-logo-logoOnly-dark.png")
+            }
+            style={styles.image}
+          />
+        </View>
       </View>
     </View>
+  );
+}
+
+function FooterPlayButton() {
+  const { playbackState } = usePlayer();
+  const playIcon = <Ionicons name="play" size={40} />;
+  const pauseIcon = <Ionicons name="pause" size={40} />;
+
+  async function onPress(playbackState: PlaybackState | { state: undefined }) {
+    try {
+      if (
+        playbackState.state === State.Paused ||
+        playbackState.state === State.Ready
+      ) {
+        await TrackPlayer.play();
+      } else if (playbackState.state === State.Playing) {
+        await TrackPlayer.pause();
+      } else {
+      }
+    } catch (error) {
+      console.error("issue with player toggle playback botton", error);
+    }
+  }
+
+  return (
+    <TouchableOpacity
+      style={styles.button}
+      onPress={() => onPress(playbackState)}
+    >
+      <Ionicons
+        name={
+          playbackState.state === State.Playing
+            ? "pause-circle-outline"
+            : "play-circle-outline"
+        }
+        size={60}
+      />
+    </TouchableOpacity>
   );
 }
 
@@ -97,6 +156,14 @@ const styles = StyleSheet.create({
   image: {
     width: 80,
     height: "100%",
-    marginTop: -20,
+    //marginTop: -20,
+  },
+  button: {
+    // borderWidth: 1,
+    // borderColor: "black",
+    //marginTop: -20,
+    height: "100%",
+    justifyContent: "center",
+    marginRight: 10,
   },
 });

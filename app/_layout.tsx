@@ -64,8 +64,7 @@ export default function RootLayout() {
               <Stack.Screen
                 name="collections"
                 options={{
-                  title: "My Collection",
-                  headerRight: () => <ProfileLink />,
+                  headerShown: false,
                 }}
               />
               <Stack.Screen

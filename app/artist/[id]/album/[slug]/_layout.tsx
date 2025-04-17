@@ -6,10 +6,10 @@ export default function Layout() {
   return (
     <>
       <Stack>
-        <Stack.Screen name="album-tracks" options={{ headerShown: true }} />
+        <Stack.Screen name="album-tracks" options={{ headerShown: false }} />
         <Stack.Screen
           name="collections-tracks"
-          options={{ headerShown: true }}
+          options={{ headerShown: false }}
         />
       </Stack>
     </>
