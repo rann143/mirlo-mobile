@@ -10,12 +10,13 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
 import { useEffect } from "react";
 import { Pressable } from "react-native";
-import { router } from "expo-router";
+import { router, usePathname, useRootNavigationState } from "expo-router";
 
 export default function Footer() {
   const progress = useProgress();
   const { bottom } = useSafeAreaInsets();
   const { playableTracks, activeTrack } = usePlayer();
+  const pathname = usePathname();
 
   return (
     <View
@@ -66,7 +67,13 @@ export default function Footer() {
 
           <Pressable
             onPress={() => {
-              router.navigate("/collections");
+              if (pathname === "/") {
+                router.navigate("/collections");
+              } else if (pathname === "/collections") {
+                return;
+              } else {
+                router.dismissTo("/collections");
+              }
             }}
           >
             <Ionicons

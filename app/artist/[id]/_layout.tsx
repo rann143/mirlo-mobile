@@ -5,7 +5,10 @@ export default function Layout() {
   return (
     <>
       <Stack>
-        <Stack.Screen name="artist-page" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="artist-page"
+          options={{ headerShown: false, animation: "none" }}
+        />
         <Stack.Screen
           name="album/[slug]"
           options={{
@@ -13,7 +16,6 @@ export default function Layout() {
           }}
         />
       </Stack>
-      {/* <Player bottomDistance={50} /> */}
     </>
   );
 }

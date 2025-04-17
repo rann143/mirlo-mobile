@@ -53,7 +53,7 @@ export default function RootLayout() {
       <QueryClientWrapper>
         <AuthContextProvider>
           <PlayerContextProvider>
-            <Stack>
+            <Stack screenOptions={{ animation: "none" }}>
               <Stack.Screen name="login" options={{ headerShown: false }} />
               <Stack.Screen
                 name="index"
@@ -71,6 +71,7 @@ export default function RootLayout() {
                 name="artist/[id]"
                 options={{
                   headerShown: false,
+                  animation: "flip",
                 }}
               />
             </Stack>
