@@ -21,6 +21,8 @@ import { API_ROOT } from "@/constants/api-root";
 import { API_KEY } from "@/constants/api-key";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { TrackItem } from "@/components/TrackItem";
+import PlayPauseWrapper from "@/components/PlayButton";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -28,85 +30,9 @@ type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 // is that the back button navigates to different tabs depending on if this album
 // is from recent releases (index page) or collections
 
-function formatTime(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Number(seconds.toFixed(0)) % 60;
-
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  const formattedSeconds =
-    remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
-
-  return `${formattedMinutes}:${formattedSeconds}`;
-}
-
-type TrackItemComponentProps = {
-  track: RNTrack;
-  album: AlbumProps;
-};
-
-const TrackItem = ({ track, album }: TrackItemComponentProps) => {
-  const { user } = useAuthContext();
-
-  const canPlayTrack = isTrackOwnedOrPreview(track, user, album);
-
-  if (!canPlayTrack) {
-    return (
-      <View style={[styles.listItem, { backgroundColor: "#BE3455" }]}>
-        <Text
-          style={{ color: "darkgrey", fontSize: 20, paddingRight: 10 }}
-          ellipsizeMode="tail"
-          numberOfLines={1}
-        >
-          {track.title}
-        </Text>
-        <Text style={{ color: "grey", fontSize: 15, marginRight: 20 }}>
-          {track.audio.duration ? formatTime(track.audio.duration) : 0}
-        </Text>
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.listItem}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          width: "70%",
-        }}
-      >
-        {album?.tracks && (
-          <Text
-            style={{
-              color: "black",
-              fontSize: 20,
-              marginRight: 30,
-              marginLeft: 5,
-            }}
-          >
-            {track.order}.
-          </Text>
-        )}
-        <Text
-          style={{ color: "black", fontSize: 18, marginRight: 5 }}
-          ellipsizeMode="tail"
-          numberOfLines={1}
-        >
-          {track.title}
-        </Text>
-      </View>
-      <View>
-        <Text style={{ color: "black", fontSize: 15, marginRight: 10 }}>
-          {track.audio.duration ? formatTime(track.audio.duration) : 0}
-        </Text>
-      </View>
-    </View>
-  );
-};
-
 function AlbumPlayButton() {
-  const { playbackState, activeTrack, album, setActiveTrack } = usePlayer();
+  const { playbackState, activeTrack, playableTracks, setActiveTrack } =
+    usePlayer();
 
   const togglePlayBack = async (
     playBackState: PlaybackState | { state: undefined }
@@ -116,9 +42,11 @@ function AlbumPlayButton() {
       // Set queue if no queue currently set
       if (!queue) {
         console.log("no curr track: setting track");
-        await TrackPlayer.setQueue(album);
+        await TrackPlayer.setQueue(playableTracks);
         await TrackPlayer.play();
         const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
+        const q = await TrackPlayer.getQueue();
+        console.log(q);
         setActiveTrack(current);
         return;
       }
@@ -126,14 +54,15 @@ function AlbumPlayButton() {
       const currentTrack = await TrackPlayer.getActiveTrack();
 
       const isSameAlbum =
-        currentTrack?.trackGroup.urlSlug === album[0].trackGroup.urlSlug
+        currentTrack?.trackGroup.urlSlug ===
+        playableTracks[0].trackGroup.urlSlug
           ? true
           : false;
 
       // Song Change to different album
       if (!isSameAlbum) {
         try {
-          await TrackPlayer.setQueue(album);
+          await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.play();
           const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
           setActiveTrack(current);
@@ -163,17 +92,21 @@ function AlbumPlayButton() {
   };
 
   return (
-    <TouchableOpacity onPress={() => togglePlayBack(playbackState)}>
+    <TouchableOpacity
+      onPress={() => togglePlayBack(playbackState)}
+      disabled={playableTracks ? false : true}
+    >
       <Ionicons
         name={
           playbackState.state === State.Playing &&
-          activeTrack?.trackGroup.urlSlug === album[0].trackGroup.urlSlug
+          activeTrack?.trackGroup?.urlSlug ===
+            playableTracks[0].trackGroup?.urlSlug
             ? "pause-circle-outline"
             : "play-circle-outline"
         }
         size={60}
         style={{ marginHorizontal: 5 }}
-        color="black"
+        color={playableTracks ? "black" : "lightgrey"}
       />
     </TouchableOpacity>
   );
@@ -204,10 +137,12 @@ export default function AlbumTracks() {
     queryAlbum({ slug: slug, id: id })
   );
   const router = useRouter();
-  const { album, setAlbum } = usePlayer();
+  const { playableTracks, setPlayableTracks } = usePlayer();
+  const [album, setAlbum] = useState<RNTrack[]>();
 
   useEffect(() => {
-    const tracks: RNTrack[] = [];
+    const tracksToPlay: RNTrack[] = [];
+    const allTracks: RNTrack[] = [];
     if (data && data.result.tracks) {
       data.result.tracks.forEach((track) => {
         const newTrack: RNTrack = {
@@ -230,11 +165,15 @@ export default function AlbumTracks() {
             "mirlo-api-key": API_KEY,
           },
         };
-        tracks.push(newTrack);
+        allTracks.push(newTrack);
+
+        if (newTrack.isPreview === true) {
+          tracksToPlay.push(newTrack);
+        }
       });
     }
-
-    setAlbum(tracks);
+    setAlbum(allTracks);
+    setPlayableTracks(tracksToPlay);
   }, [data]);
 
   if (isPending) {
@@ -312,7 +251,10 @@ export default function AlbumTracks() {
           data={album}
           renderItem={({ item }) =>
             selectedAlbum ? (
-              <TrackItem track={item} album={selectedAlbum}></TrackItem>
+              <PlayPauseWrapper
+                trackObject={item}
+                selectedAlbum={selectedAlbum}
+              ></PlayPauseWrapper>
             ) : null
           }
           ListHeaderComponent={() => (

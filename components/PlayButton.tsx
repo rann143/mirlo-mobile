@@ -1,18 +1,32 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { API_ROOT } from "@/constants/api-root";
 import { usePlayer } from "@/state/PlayerContext";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
-import { useCallback, useState, useEffect } from "react";
+import { TouchableOpacity, Text, StyleSheet, Pressable } from "react-native";
+import { useCallback, useState, useEffect, PropsWithChildren } from "react";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import { isEqual } from "lodash";
+import { TrackItem } from "./TrackItem";
 
-export default function PlayButton({
-  albumTracks,
+type PlayPauseWrapper = PropsWithChildren<PlayPauseWrapperProps>;
+
+export default function PlayPauseWrapper({
   trackObject,
-  buttonColor,
-}: PlayButtonProps) {
-  const { playbackState, album, activeTrack, setActiveTrack } = usePlayer();
+  children,
+  style,
+  selectedAlbum,
+}: PlayPauseWrapper) {
+  const { playbackState, playableTracks, activeTrack, setActiveTrack } =
+    usePlayer();
   const audioURL = trackObject?.url;
+  const [thisSongSelected, setThisSongSelected] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (activeTrack?.url == audioURL) {
+      setThisSongSelected(true);
+    } else {
+      setThisSongSelected(false);
+    }
+  }, [activeTrack]);
 
   const togglePlayBack = async (
     playBackState: PlaybackState | { state: undefined }
@@ -22,7 +36,7 @@ export default function PlayButton({
       // Set queue if no queue currently set
       if (!queue) {
         console.log("no curr track: setting track");
-        await TrackPlayer.setQueue(album);
+        await TrackPlayer.setQueue(playableTracks);
         await TrackPlayer.load(trackObject);
         await TrackPlayer.play();
         setActiveTrack(trackObject);
@@ -39,7 +53,7 @@ export default function PlayButton({
       // Song Change to different album
       if (!isSameAlbum) {
         try {
-          await TrackPlayer.setQueue(album);
+          await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.load(trackObject);
           await TrackPlayer.play();
           setActiveTrack(trackObject);
@@ -72,18 +86,13 @@ export default function PlayButton({
   };
 
   return (
-    <TouchableOpacity onPress={() => togglePlayBack(playbackState)}>
-      <Ionicons
-        name={
-          playbackState.state === State.Playing && activeTrack?.url === audioURL
-            ? "pause"
-            : "play"
-        }
-        size={40}
-        style={{ marginHorizontal: 5 }}
-        color="black"
-      />
-    </TouchableOpacity>
+    <Pressable onPress={() => togglePlayBack(playbackState)} style={style}>
+      <TrackItem
+        track={trackObject}
+        album={selectedAlbum}
+        thisSongSelected={thisSongSelected}
+      ></TrackItem>
+    </Pressable>
   );
 }
 

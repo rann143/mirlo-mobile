@@ -90,6 +90,16 @@ interface PlayButtonProps {
   albumInfo?: AlbumProps;
 }
 
+interface PropsWithChildren<P> extends P {
+  children?: ReactNode;
+}
+
+interface PlayPauseWrapperProps {
+  trackObject: RNTrack;
+  style?: StyleProp<ViewStyle>;
+  selectedAlbum: AlbumProps;
+}
+
 interface Artist {
   name: string;
   bio: string;

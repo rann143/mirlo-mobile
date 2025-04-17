@@ -13,8 +13,8 @@ import TrackPlayer, {
 interface PlayerContextType {
   playbackState: PlaybackState | { state: undefined };
   progress: Progress;
-  album: Array<RNTrack>;
-  setAlbum: (tracks: RNTrack[]) => void;
+  playableTracks: Array<RNTrack>;
+  setPlayableTracks: (tracks: RNTrack[]) => void;
   activeTrack: Track | undefined;
   setActiveTrack: (track: RNTrack) => void;
   shuffled: boolean;
@@ -27,7 +27,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [shuffled, setShuffled] = useState<boolean>(false);
-  const [album, setAlbum] = useState<RNTrack[]>([]);
+  const [playableTracks, setPlayableTracks] = useState<RNTrack[]>([]);
   const [activeTrack, setActiveTrack] = useState<RNTrack>();
 
   const playBackState = usePlaybackState();
@@ -39,7 +39,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     setShuffled(false);
-  }, [album]);
+  }, [playableTracks]);
 
   useTrackPlayerEvents(
     [Event.RemoteNext, Event.RemotePrevious, Event.PlaybackActiveTrackChanged],
@@ -70,8 +70,8 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const value: PlayerContextType = {
     playbackState: playBackState,
     progress: progress,
-    album: album,
-    setAlbum: setAlbum,
+    playableTracks: playableTracks,
+    setPlayableTracks: setPlayableTracks,
     activeTrack: activeTrack,
     setActiveTrack: setActiveTrack,
     shuffled: shuffled,
