@@ -107,21 +107,23 @@ export default function ArtistPage() {
               <Text style={{ color: "black", fontWeight: "bold" }}>
                 {data.name}
               </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  gap: 5,
-                }}
-              >
-                <Ionicons
-                  name="location-outline"
-                  size={20}
-                  color={"#b5b5b5"}
-                ></Ionicons>
-                <Text style={{ color: "#b5b5b5" }}>{data.location}</Text>
-              </View>
+              {artistInfo.location && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    gap: 5,
+                  }}
+                >
+                  <Ionicons
+                    name="location-outline"
+                    size={20}
+                    color={"#b5b5b5"}
+                  ></Ionicons>
+                  <Text style={{ color: "#b5b5b5" }}>{data.location}</Text>
+                </View>
+              )}
             </View>
           </View>
           <ScrollView>
