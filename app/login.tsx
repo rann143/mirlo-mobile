@@ -6,7 +6,12 @@ import { router } from "expo-router";
 export default function Login() {
   return (
     <SafeAreaView style={styles.form}>
-      <View style={{ flex: 1, backgroundColor: "#BE3455" }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#BE3455",
+        }}
+      >
         <View
           style={{
             flexDirection: "row",

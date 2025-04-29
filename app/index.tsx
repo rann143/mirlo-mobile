@@ -61,7 +61,7 @@ export default function Index() {
 
   if (isPending) {
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         <ActivityIndicator
           size="large"
           color="#BE3455"

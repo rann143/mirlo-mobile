@@ -5,10 +5,13 @@ import {
   SafeAreaView,
   View,
   TextInput,
+  Button,
+  Pressable,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useLoginMutation } from "@/queries/authQueries";
 import { useRouter } from "expo-router";
+import * as Linking from "expo-linking";
 
 type LoginInputs = {
   email: string;
@@ -63,7 +66,6 @@ export default function LoginForm() {
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               style={styles.inputStyle}
-              placeholder="Email"
               placeholderTextColor="#555"
               onBlur={onBlur}
               onChangeText={onChange}
@@ -81,7 +83,6 @@ export default function LoginForm() {
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               style={styles.inputStyle}
-              placeholder="Password"
               placeholderTextColor="#555"
               onBlur={onBlur}
               onChangeText={onChange}
@@ -99,6 +100,24 @@ export default function LoginForm() {
         >
           <Text style={styles.text}>Submit</Text>
         </TouchableOpacity>
+
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "row",
+            marginTop: 30,
+          }}
+        >
+          <Text style={{ color: "white" }}>Don't have an account? </Text>
+          <Pressable
+            onPress={() => Linking.openURL("https://mirlo.space/signup")}
+          >
+            <Text style={{ color: "white", textDecorationLine: "underline" }}>
+              Sign Up
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -106,11 +125,11 @@ export default function LoginForm() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100,
     backgroundColor: "transparent",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     height: 50,
+    flex: 1,
   },
 
   formLabel: {
@@ -123,8 +142,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 40,
     paddingHorizontal: 10,
-    borderRadius: 50,
-    backgroundColor: "#DCDCDC",
+    backgroundColor: "white",
   },
   formText: {
     alignItems: "center",
