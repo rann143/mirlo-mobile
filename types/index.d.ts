@@ -111,7 +111,7 @@ interface Artist {
   enabled: boolean;
   createdAt: string;
   artistLabels?: ArtistLabel[];
-  trackGroups: TrackGroup[];
+  trackGroups: AlbumProps[];
   links?: string[];
   linksJson?: Link[];
   properties?: {
@@ -128,4 +128,6 @@ interface Artist {
     sizes?: { [key: string]: string };
     updatedAt: string;
   };
+  location?: string;
+  bio: string;
 }
