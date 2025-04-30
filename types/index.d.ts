@@ -70,9 +70,21 @@ interface RNTrack {
   artwork: string;
   url: string;
   trackGroup: {
+    title: string;
     userTrackGroupPurchases?: { userId: number }[];
     artistId: number;
     urlSlug: string;
+    cover: {
+      sizes: {
+        60: string;
+        120: string;
+        300: string;
+        600: string;
+        960: string;
+        1200: string;
+        1500: string;
+      };
+    };
   };
   audio: {
     url: string;

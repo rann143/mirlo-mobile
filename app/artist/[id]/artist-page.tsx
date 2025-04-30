@@ -189,9 +189,11 @@ export default function ArtistPage() {
           >
             <Text style={{ fontWeight: "bold" }}>About</Text>
             <Text>
-              {artistInfo.bio
-                ? artistInfo.bio.replace(/([^\n])\n([^\n])/g, "$1 $2")
-                : artistInfo.name + " is an artist on Mirlo"}
+              <Markdown>
+                {artistInfo.bio
+                  ? artistInfo.bio.replace(/([^\n])\n([^\n])/g, "$1 $2")
+                  : artistInfo.name + " is an artist on Mirlo"}
+              </Markdown>
             </Text>
           </View>
         )}

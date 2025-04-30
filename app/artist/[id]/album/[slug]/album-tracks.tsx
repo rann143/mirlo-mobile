@@ -155,6 +155,8 @@ export default function AlbumTracks() {
             userTrackGroupPurchases: data.result.userTrackGroupPurchases,
             artistId: data.result.artistId,
             urlSlug: data.result.urlSlug,
+            cover: data.result.cover,
+            title: data.result.title,
           },
           audio: {
             url: track.audio.url,

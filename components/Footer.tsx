@@ -10,12 +10,15 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
 import { useEffect } from "react";
 import { Pressable } from "react-native";
-import { router, usePathname, useRootNavigationState } from "expo-router";
+import { Link, router, usePathname, useRootNavigationState } from "expo-router";
 
 export default function Footer() {
   const progress = useProgress();
   const { bottom } = useSafeAreaInsets();
-  const { playableTracks, activeTrack } = usePlayer();
+  const { playableTracks, activeTrack } = usePlayer() as {
+    activeTrack: RNTrack | undefined;
+    playableTracks: RNTrack[];
+  };
   const pathname = usePathname();
 
   return (
@@ -89,19 +92,28 @@ export default function Footer() {
             height: "100%",
             alignItems: "center",
             marginTop: -20,
-            // borderWidth: 1,
-            // borderColor: "black",
           }}
         >
-          <FooterPlayButton />
-          <Image
-            source={
-              activeTrack && activeTrack.artwork
-                ? { uri: activeTrack.artwork }
-                : require("@/assets/images/mirlo-logo-logoOnly-dark.png")
-            }
-            style={styles.image}
-          />
+          {activeTrack && <FooterPlayButton />}
+          <Link
+            href={{
+              pathname: "/now-playing",
+              params: {
+                id: activeTrack?.trackGroup.artistId,
+                slug: activeTrack?.trackGroup.urlSlug,
+              },
+            }}
+            disabled={activeTrack ? false : true}
+          >
+            <Image
+              source={
+                activeTrack && activeTrack.artwork
+                  ? { uri: activeTrack.artwork }
+                  : require("@/assets/images/mirlo-logo-logoOnly-dark.png")
+              }
+              style={styles.image}
+            />
+          </Link>
         </View>
       </View>
     </View>

@@ -21,21 +21,9 @@ type PlayButtonProps = {
   buttonColor?: string;
 };
 
-export default function Player({ bottomDistance }: PlayerStyleProps) {
-  const { activeTrack } = usePlayer();
-
-  const progress = useProgress();
-  const thisArtistId: string = String(activeTrack?.trackGroup.artistId);
-  const thisSlug: string = String(activeTrack?.trackGroup.urlSlug);
-
+export default function Player() {
   return (
-    <View
-      style={
-        activeTrack
-          ? [styles.container, { bottom: bottomDistance }]
-          : { width: 0, height: 0, opacity: 0 }
-      }
-    >
+    <View style={{ marginVertical: 30 }}>
       <View style={styles.buttonsContainer}>
         <ShuffleButton />
         <PrevButton />
@@ -43,25 +31,6 @@ export default function Player({ bottomDistance }: PlayerStyleProps) {
         <NextButton />
         <LoopButton />
       </View>
-      <Slider
-        style={styles.progressBar}
-        value={progress.position}
-        minimumValue={0}
-        maximumValue={progress.duration}
-        thumbTintColor="#BE3455"
-        minimumTrackTintColor="#BE3455"
-        maximumTrackTintColor="#FFF"
-        onSlidingComplete={async (value) => await TrackPlayer.seekTo(value)}
-      />
-
-      <Link
-        href={{
-          pathname: "/artist/[id]/album/[slug]/album-tracks",
-          params: { id: thisArtistId, slug: thisSlug },
-        }}
-      >
-        {activeTrack?.title} by {activeTrack?.artist}
-      </Link>
     </View>
   );
 }
@@ -78,10 +47,8 @@ function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
         playbackState.state === State.Ready
       ) {
         await TrackPlayer.play();
-        console.log("play: " + playbackState.state);
       } else if (playbackState.state === State.Playing) {
         await TrackPlayer.pause();
-        console.log("pause: " + playbackState.state);
       } else {
         console.log(playbackState.state);
       }
@@ -97,7 +64,9 @@ function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
     >
       <Ionicons
         name={
-          playbackState.state === State.Playing ? "pause-circle" : "play-circle"
+          playbackState.state === State.Playing
+            ? "pause-circle-outline"
+            : "play-circle-outline"
         }
         size={75}
       />

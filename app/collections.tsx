@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet, Image, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { useAuthContext } from "@/state/AuthContext";
 import { Link, router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
@@ -25,8 +32,12 @@ export default function Collections() {
 
   if (isPending) {
     return (
-      <View>
-        <Text>Loading...</Text>
+      <View style={{ flex: 1 }}>
+        <ActivityIndicator
+          size="large"
+          color="#BE3455"
+          style={styles.loadSpinner}
+        />
       </View>
     );
   }
@@ -119,5 +130,8 @@ const styles = StyleSheet.create({
   text: {
     padding: 10,
     fontWeight: "bold",
+  },
+  loadSpinner: {
+    flex: 1,
   },
 });

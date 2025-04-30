@@ -74,6 +74,15 @@ export default function RootLayout() {
                   animation: "flip",
                 }}
               />
+              <Stack.Screen
+                name="now-playing"
+                options={{
+                  presentation: "modal",
+                  animation: "slide_from_bottom",
+                  animationDuration: 100,
+                  headerShown: false,
+                }}
+              />
             </Stack>
             <Footer />
             <StatusBar style="dark" backgroundColor="white" />

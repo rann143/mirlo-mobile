@@ -7,19 +7,15 @@ import TrackPlayer, { State } from "react-native-track-player";
 import { useEffect, useState } from "react";
 
 export default function ShuffleButton() {
-  const { shuffled, setShuffled, album } = usePlayer();
-  const [q, setQ] = useState<RNTrack[]>([]);
+  const { shuffled, setShuffled } = usePlayer();
+  //const [q, setQ] = useState<RNTrack[]>([]);
   const shuffleIcon = (
     <Ionicons name="shuffle" size={30} color={shuffled ? "#BE3455" : "black"} />
   );
 
-  useEffect(() => {
-    setQ(album);
-  }, [album]);
-
   const onPress = async () => {
     if (!shuffled) {
-      const queue = [...album];
+      const queue = await TrackPlayer.getQueue();
       const activeTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
 
       // In order to prevent any hiccups in playing, we always want to keep the active track in the TrackPlayer's Queue
