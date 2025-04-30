@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryArtist } from "@/queries/queries";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Link, router, Stack, useLocalSearchParams } from "expo-router";
 import {
   View,
   Text,
@@ -11,12 +11,11 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  FlatList,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Markdown from "react-native-markdown-display";
-
-const { width } = Dimensions.get("window");
-const itemWidth = (width - 100) / 2;
+import React from "react";
 
 export default function ArtistPage() {
   const { id } = useLocalSearchParams();
@@ -46,6 +45,17 @@ export default function ArtistPage() {
 
   const artistInfo = data;
 
+  const getModifiedData = (data: any) => {
+    if (!data || data.length == 0) return [];
+
+    if (data.length % 2 !== 0) {
+      // add placeholder item for list
+      return [...data, { id: "placeholder", isPlaceholder: true }];
+    }
+
+    return data;
+  };
+
   const artistAlbums = artistInfo.trackGroups?.map((album) => {
     return (
       <View key={album.id} style={styles.albumItem}>
@@ -59,6 +69,10 @@ export default function ArtistPage() {
       </View>
     );
   });
+
+  const handleEmpty = () => {
+    return <Text>No Albums Present!</Text>;
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -81,55 +95,98 @@ export default function ArtistPage() {
           ></Ionicons>
         </Pressable>
       </View>
-      <View style={styles.container}>
-        {artistInfo.banner && (
-          <Image
-            style={styles.image}
-            source={{
-              uri: artistInfo?.banner?.sizes?.[625] || "",
-            }}
-            resizeMode="cover"
-          />
-        )}
+      <FlatList
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.listContainer}
+        horizontal={false}
+        columnWrapperStyle={{
+          justifyContent: "space-evenly",
+        }}
+        numColumns={2}
+        ListEmptyComponent={handleEmpty}
+        data={getModifiedData(artistInfo.trackGroups)}
+        renderItem={({ item }) => {
+          if (item.isPlaceholder) {
+            return <View style={[styles.albumItem, { opacity: 0 }]} />;
+          }
 
-        <View>
-          <View style={styles.introBanner}>
-            {artistInfo.avatar && (
-              <Image
-                style={styles.avatar}
-                source={{
-                  uri: artistInfo?.avatar?.sizes?.[600] || "",
+          return (
+            <View style={styles.albumItem}>
+              <Link
+                href={{
+                  pathname: "/artist/[id]/album/[slug]/album-tracks",
+                  params: { id: item.artistId, slug: item.urlSlug },
                 }}
-                resizeMode="cover"
+              >
+                <Image
+                  style={{ width: "100%", height: itemWidth }}
+                  source={{
+                    uri: item.cover.sizes[600],
+                  }}
+                />
+              </Link>
+              <Text style={styles.albumTitle}>{item.title}</Text>
+            </View>
+          );
+        }}
+        keyExtractor={(item) => String(item.id)}
+        ListHeaderComponentStyle={{ marginBottom: 20 }}
+        ListHeaderComponent={() => (
+          <View>
+            {artistInfo.banner && (
+              <Image
+                style={{ width: "100%", height: 150 }}
+                source={{
+                  uri: artistInfo?.banner?.sizes?.[625] || "",
+                }}
               />
             )}
-            <View style={{ marginHorizontal: 20, gap: 5 }}>
-              <Text style={{ color: "black", fontWeight: "bold" }}>
-                {data.name}
-              </Text>
-              {artistInfo.location && (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                    gap: 5,
+            <View style={styles.introBanner}>
+              {artistInfo.avatar && (
+                <Image
+                  style={styles.avatar}
+                  source={{
+                    uri: artistInfo?.avatar?.sizes?.[600] || "",
                   }}
-                >
-                  <Ionicons
-                    name="location-outline"
-                    size={20}
-                    color={"#b5b5b5"}
-                  ></Ionicons>
-                  <Text style={{ color: "#b5b5b5" }}>{data.location}</Text>
-                </View>
+                  resizeMode="cover"
+                />
               )}
+              <View style={{ marginHorizontal: 20, gap: 5 }}>
+                <Text style={{ color: "black", fontWeight: "bold" }}>
+                  {artistInfo.name}
+                </Text>
+                {artistInfo.location && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      gap: 5,
+                    }}
+                  >
+                    <Ionicons
+                      name="location-outline"
+                      size={20}
+                      color={"#b5b5b5"}
+                    ></Ionicons>
+                    <Text style={{ color: "#b5b5b5" }}>
+                      {artistInfo.location}
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
           </View>
-          <ScrollView>
-            <View style={styles.grid}>{artistAlbums}</View>
-          </ScrollView>
-          <View style={{ gap: 10, margin: 20 }}>
+        )}
+        ListFooterComponent={() => (
+          <View
+            style={{
+              gap: 10,
+              marginHorizontal: 20,
+              marginTop: 20,
+              marginBottom: 70,
+            }}
+          >
             <Text style={{ fontWeight: "bold" }}>About</Text>
             <Text>
               {artistInfo.bio
@@ -137,11 +194,14 @@ export default function ArtistPage() {
                 : artistInfo.name + " is an artist on Mirlo"}
             </Text>
           </View>
-        </View>
-      </View>
+        )}
+      ></FlatList>
     </SafeAreaView>
   );
 }
+
+const { width } = Dimensions.get("window");
+const itemWidth = (width - 100) / 2;
 
 const styles = StyleSheet.create({
   avatar: {
@@ -152,29 +212,20 @@ const styles = StyleSheet.create({
   introBanner: {
     flexDirection: "row",
     margin: 20,
-    backgroundColor: "white",
     alignItems: "center",
   },
   loadSpinner: {
     flex: 1,
   },
-  container: {
-    flex: 1,
+  listContainer: {
     backgroundColor: "white",
-    alignItems: "flex-start",
+    alignItems: "stretch",
     justifyContent: "flex-start",
+    minHeight: "100%",
   },
   image: {
     width: "100%",
-    height: "30%",
     backgroundColor: "#f0f0f0", // placeholder color while loading
-    alignSelf: "center",
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    paddingHorizontal: 30,
   },
   albumItem: {
     width: itemWidth,
@@ -185,5 +236,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 16,
     fontWeight: "300",
+    textAlign: "center",
   },
 });
