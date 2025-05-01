@@ -109,7 +109,7 @@ export default function Footer() {
               source={
                 activeTrack && activeTrack.artwork
                   ? { uri: activeTrack.artwork }
-                  : require("@/assets/images/mirlo-logo-logoOnly-dark.png")
+                  : require("@/assets/images/mirlo-logo-logoOnly-light.png")
               }
               style={styles.image}
             />
