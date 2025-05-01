@@ -22,7 +22,7 @@ import { API_KEY } from "@/constants/api-key";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TrackItem } from "@/components/TrackItem";
-import PlayPauseWrapper from "@/components/PlayButton";
+import PlayPauseWrapper from "@/components/PlayPauseWrapper";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 

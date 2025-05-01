@@ -1,6 +1,6 @@
 import { useAuthContext } from "@/state/AuthContext";
 import { View, StyleSheet, Text } from "react-native";
-import PlayButton from "./PlayButton";
+import PlayButton from "./PlayPauseWrapper";
 import { isTrackOwnedOrPreview } from "@/scripts/utils";
 
 function formatTime(seconds: number) {
@@ -29,22 +29,40 @@ export const TrackItem = ({
 
   const canPlayTrack = isTrackOwnedOrPreview(track, user, album);
 
-  if (!canPlayTrack) {
-    return (
-      <View style={[styles.listItem, { backgroundColor: "#BE3455" }]}>
-        <Text
-          style={{ color: "darkgrey", fontSize: 20, paddingRight: 10 }}
-          ellipsizeMode="tail"
-          numberOfLines={1}
-        >
-          {track.title}
-        </Text>
-        <Text style={{ color: "grey", fontSize: 15, marginRight: 20 }}>
-          {track.audio.duration ? formatTime(track.audio.duration) : 0}
-        </Text>
-      </View>
-    );
-  }
+  // if (!canPlayTrack) {
+  //   return (
+  //     <View style={[styles.listItem, { justifyContent: "flex-start" }]}>
+  //       <Text
+  //         style={{
+  //           color: "black",
+  //           fontSize: 20,
+  //           width: 50,
+  //           marginLeft: 5,
+  //           fontWeight: thisSongSelected ? "bold" : "normal",
+  //         }}
+  //       >
+  //         {track.order}.
+  //       </Text>
+  //       <Text
+  //         style={{
+  //           justifyContent: "flex-start",
+  //           color: "darkgrey",
+
+  //           backgroundColor: "grey",
+  //           fontSize: 20,
+  //           paddingRight: 10,
+  //         }}
+  //         ellipsizeMode="tail"
+  //         numberOfLines={1}
+  //       >
+  //         {track.title}
+  //       </Text>
+  //       <Text style={{ color: "grey", fontSize: 15, marginRight: 20 }}>
+  //         {track.audio.duration ? formatTime(track.audio.duration) : 0}
+  //       </Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.listItem}>
@@ -59,11 +77,15 @@ export const TrackItem = ({
         {album?.tracks && (
           <Text
             style={{
-              color: "black",
+              color: canPlayTrack ? "black" : "darkgrey",
               fontSize: 20,
-              marginRight: 30,
+              width: 50,
               marginLeft: 5,
-              fontWeight: thisSongSelected ? "bold" : "normal",
+              fontWeight: canPlayTrack
+                ? thisSongSelected
+                  ? "bold"
+                  : "normal"
+                : "normal",
             }}
           >
             {track.order}.
@@ -71,10 +93,14 @@ export const TrackItem = ({
         )}
         <Text
           style={{
-            color: "black",
+            color: canPlayTrack ? "black" : "darkgrey",
             fontSize: 18,
             marginRight: 5,
-            fontWeight: thisSongSelected ? "bold" : "normal",
+            fontWeight: canPlayTrack
+              ? thisSongSelected
+                ? "bold"
+                : "normal"
+              : "normal",
           }}
           ellipsizeMode="tail"
           numberOfLines={1}
@@ -85,10 +111,14 @@ export const TrackItem = ({
       <View>
         <Text
           style={{
-            color: "black",
+            color: canPlayTrack ? "black" : "darkgrey",
             fontSize: 15,
             marginRight: 10,
-            fontWeight: thisSongSelected ? "bold" : "normal",
+            fontWeight: canPlayTrack
+              ? thisSongSelected
+                ? "bold"
+                : "normal"
+              : "normal",
           }}
         >
           {track.audio.duration ? formatTime(track.audio.duration) : 0}

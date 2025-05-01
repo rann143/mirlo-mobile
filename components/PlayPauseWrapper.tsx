@@ -6,6 +6,8 @@ import { useCallback, useState, useEffect, PropsWithChildren } from "react";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import { isEqual } from "lodash";
 import { TrackItem } from "./TrackItem";
+import { isTrackOwnedOrPreview } from "@/scripts/utils";
+import { useAuthContext } from "@/state/AuthContext";
 
 type PlayPauseWrapper = PropsWithChildren<PlayPauseWrapperProps>;
 
@@ -19,6 +21,9 @@ export default function PlayPauseWrapper({
     usePlayer();
   const audioURL = trackObject?.url;
   const [thisSongSelected, setThisSongSelected] = useState<boolean>(false);
+  const { user } = useAuthContext();
+
+  const canPlayTrack = isTrackOwnedOrPreview(trackObject, user, selectedAlbum);
 
   useEffect(() => {
     if (activeTrack?.url == audioURL) {
@@ -86,7 +91,16 @@ export default function PlayPauseWrapper({
   };
 
   return (
-    <Pressable onPress={() => togglePlayBack(playbackState)} style={style}>
+    <Pressable
+      onPress={() => {
+        if (canPlayTrack) {
+          togglePlayBack(playbackState);
+        } else {
+          return;
+        }
+      }}
+      style={style}
+    >
       <TrackItem
         track={trackObject}
         album={selectedAlbum}
