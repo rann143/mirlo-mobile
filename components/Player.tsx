@@ -1,4 +1,13 @@
-import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  ViewStyle,
+  StyleProp,
+  ViewProps,
+} from "react-native";
 import { usePlayer } from "@/state/PlayerContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import NextButton from "./NextButton";
@@ -21,17 +30,17 @@ type PlayButtonProps = {
   buttonColor?: string;
 };
 
-export default function Player() {
+export default function Player({ style }: ViewProps) {
   return (
-    <View style={{ marginVertical: 30 }}>
-      <View style={styles.buttonsContainer}>
-        <ShuffleButton />
-        <PrevButton />
-        <PlayerPlayButton buttonColor="black" />
-        <NextButton />
-        <LoopButton />
-      </View>
+    //<View style={style}>
+    <View style={[styles.buttonsContainer, style]}>
+      <ShuffleButton />
+      <PrevButton />
+      <PlayerPlayButton buttonColor="black" />
+      <NextButton />
+      <LoopButton />
     </View>
+    //</View>
   );
 }
 
