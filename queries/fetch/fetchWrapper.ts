@@ -92,3 +92,29 @@ export function get<R>(endpoint: string, init: RequestInit): Promise<R> {
     ...init,
   });
 }
+
+export function getMany<R>(
+  endpoint: string,
+  init: RequestInit,
+  query?: { [key: string]: string }
+): Promise<{ results: R[]; total?: number }> {
+  const fullEndpoint = convertQueryToSeachParams(endpoint, query);
+
+  return fetchWrapper(fullEndpoint, {
+    method: "GET",
+    ...init,
+  });
+}
+function convertQueryToSeachParams(
+  endpoint: string,
+  query?: { [key: string]: string }
+) {
+  if (query) {
+    const searchParams = new URLSearchParams();
+    Object.keys(query).forEach((key) => {
+      searchParams.set(key, query[key]);
+    });
+    return endpoint + "?" + searchParams.toString();
+  }
+  return endpoint;
+}
