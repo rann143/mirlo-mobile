@@ -40,6 +40,7 @@ interface AlbumProps {
   artist: {
     name: string;
     id: number;
+    urlSlug: string;
   };
   artistId: number;
   urlSlug: string;
@@ -69,9 +70,12 @@ interface RNTrack {
   artist: string;
   artwork: string;
   url: string;
+  id: number;
+  trackGroupId: number;
   trackGroup: {
     title: string;
     userTrackGroupPurchases?: { userId: number }[];
+    artist: Artist;
     artistId: number;
     urlSlug: string;
     cover: {

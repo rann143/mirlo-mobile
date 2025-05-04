@@ -21,6 +21,8 @@ import Footer from "@/components/Footer";
 import { Pressable } from "react-native";
 import * as api from "../queries/fetch/fetchWrapper";
 import { Link } from "expo-router";
+import SearchBar from "@/components/searchBar";
+import Header from "@/components/Header";
 
 export default function Index() {
   const { setIsDataLoaded } = useAppIsReadyContext();
@@ -96,30 +98,7 @@ export default function Index() {
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
       <View style={styles.container}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingHorizontal: 10,
-            width: "100%",
-            height: 60,
-            borderBottomWidth: 3,
-            borderBottomColor: "#e8e9eb",
-            backgroundColor: "white",
-          }}
-        >
-          <Ionicons
-            name="search-outline"
-            size={30}
-            style={{ color: "#d6d6d6" }}
-          ></Ionicons>
-          <Ionicons
-            name="menu-outline"
-            size={30}
-            style={{ color: "#d6d6d6", marginRight: 15 }}
-          ></Ionicons>
-        </View>
+        <Header />
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
