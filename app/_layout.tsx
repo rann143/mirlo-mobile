@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { SearchContextProvider } from "@/state/SearchContext";
 import { PlayerContextProvider } from "@/state/PlayerContext";
 import { AuthContextProvider } from "@/state/AuthContext";
 import { QueryClientWrapper } from "@/queries/QueryClientWrapper";
@@ -53,39 +54,49 @@ export default function RootLayout() {
       <QueryClientWrapper>
         <AuthContextProvider>
           <PlayerContextProvider>
-            <Stack screenOptions={{ animation: "none" }}>
-              <Stack.Screen name="login" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="index"
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="collections"
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="artist/[id]"
-                options={{
-                  headerShown: false,
-                  animation: "flip",
-                }}
-              />
-              <Stack.Screen
-                name="now-playing"
-                options={{
-                  presentation: "modal",
-                  animation: "slide_from_bottom",
-                  animationDuration: 100,
-                  headerShown: false,
-                }}
-              />
-            </Stack>
-            <Footer />
-            <StatusBar style="dark" backgroundColor="white" />
+            <SearchContextProvider>
+              <Stack screenOptions={{ animation: "none" }}>
+                <Stack.Screen name="login" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="index"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="collections"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="artist/[id]"
+                  options={{
+                    headerShown: false,
+                    animation: "flip",
+                  }}
+                />
+                <Stack.Screen
+                  name="now-playing"
+                  options={{
+                    presentation: "modal",
+                    animation: "slide_from_bottom",
+                    animationDuration: 100,
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="search"
+                  options={{
+                    headerShown: false,
+                    animation: "fade",
+                    animationDuration: 300,
+                  }}
+                />
+              </Stack>
+              <Footer />
+              <StatusBar style="dark" backgroundColor="white" />
+            </SearchContextProvider>
           </PlayerContextProvider>
         </AuthContextProvider>
         {/* <DevToolsBubble onCopy={onCopy} /> */}

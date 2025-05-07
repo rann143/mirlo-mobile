@@ -1,3 +1,4 @@
+import { useSearch } from "@/state/SearchContext";
 import { Controller, useForm } from "react-hook-form";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -48,10 +49,7 @@ export default function AutoComplete({
   onSelect,
   optionDisplay,
 }: AutoCompleteProps) {
-  const [searchValue, setSearchValue] = useState<string>("");
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [searchResults, setSearchResults] = useState<Result[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const { searchValue, setSearchValue } = useSearch();
   const {
     control,
     formState: { errors },
@@ -61,27 +59,6 @@ export default function AutoComplete({
     setSearchValue(text);
   }, []);
 
-  const searchCallback = useCallback(
-    debounce(async (searchString: string) => {
-      if (searchString && searchString.length > 1) {
-        setShowSuggestions(true);
-        setIsSearching(true);
-        const results = await getOptions(searchString);
-
-        setSearchResults(results ?? []);
-        setIsSearching(false);
-      } else {
-        setSearchResults([]);
-        setShowSuggestions(false);
-      }
-    }, 500),
-    [getOptions]
-  );
-
-  useEffect(() => {
-    searchCallback(searchValue);
-  }, [searchCallback, searchValue]);
-
   return (
     <View style={{ flex: 1 }}>
       <Controller
@@ -90,43 +67,19 @@ export default function AutoComplete({
         render={() => (
           <TextInput
             style={{
-              backgroundColor: "lightblue",
+              backgroundColor: "lightgrey",
+              borderRadius: 10,
+              marginLeft: 10,
               flex: 1,
               height: "70%",
               paddingHorizontal: 20,
+              fontSize: 20,
             }}
             value={searchValue}
             onChangeText={onChangeValue}
           />
         )}
       />
-      {showSuggestions && (
-        <View
-          onResponderRelease={() => {
-            setShowSuggestions(false);
-            setSearchValue("");
-          }}
-          style={{
-            zIndex: 99,
-            // height: height,
-            // width: width,
-            backgroundColor: "offwhite",
-          }}
-        >
-          <FlatList
-            data={searchResults}
-            renderItem={({ item, index }) => optionDisplay(item, index)}
-            keyExtractor={(item, index) => `${index}-${item.id || item.name}`}
-          />
-          {/* {searchResults.map((r, index) => {
-              return optionDisplay ? (
-                optionDisplay(r, index)
-              ) : (
-                <Text>Hello</Text>
-              );
-            })} */}
-        </View>
-      )}
     </View>
   );
 }

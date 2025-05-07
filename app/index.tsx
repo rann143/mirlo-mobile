@@ -1,28 +1,15 @@
-import {
-  ActivityIndicator,
-  Text,
-  View,
-  FlatList,
-  SafeAreaView,
-  TouchableOpacity,
-} from "react-native";
+import { ActivityIndicator, Text, View, FlatList } from "react-native";
 import { StyleSheet } from "react-native";
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
-import { queryTrackGroups } from "@/queries/queries";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import TrackGroupItem from "@/components/TrackGroupItem";
 import { useEffect, useState } from "react";
 import { useAppIsReadyContext } from "@/state/AppReadyContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {
-  useSafeAreaFrame,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import Footer from "@/components/Footer";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Pressable } from "react-native";
 import * as api from "../queries/fetch/fetchWrapper";
 import { Link } from "expo-router";
-import SearchBar from "@/components/searchBar";
-import Header from "@/components/Header";
+import { useRouter } from "expo-router";
 
 export default function Index() {
   const { setIsDataLoaded } = useAppIsReadyContext();
@@ -50,6 +37,7 @@ export default function Index() {
     },
   });
   const { top } = useSafeAreaInsets();
+  const router = useRouter();
   const trackGroups = data?.pages.flatMap((page) => page.results) || [];
 
   useEffect(() => {
@@ -98,7 +86,32 @@ export default function Index() {
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
       <View style={styles.container}>
-        <Header />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 10,
+            width: "100%",
+            height: 60,
+            borderBottomWidth: 3,
+            borderBottomColor: "#e8e9eb",
+            backgroundColor: "white",
+          }}
+        >
+          <Pressable style={{ flex: 1 }} onPress={() => router.push("/search")}>
+            <Ionicons
+              name="search-outline"
+              size={30}
+              style={{ color: "#d6d6d6" }}
+            ></Ionicons>
+          </Pressable>
+          <Ionicons
+            name="menu-outline"
+            size={30}
+            style={{ color: "#d6d6d6", marginRight: 15 }}
+          ></Ionicons>
+        </View>
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
