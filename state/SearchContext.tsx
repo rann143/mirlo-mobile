@@ -1,6 +1,9 @@
 import { useState, createContext, useContext } from "react";
+import SearchItem from "@/components/SearchItem";
 import * as api from "../queries/fetch/fetchWrapper";
-import { Link } from "expo-router";
+import { ExternalPathString, Link } from "expo-router";
+import { View, Text, Pressable } from "react-native";
+import { useRouter } from "expo-router";
 
 type SearchContextType = {
   isSearching: boolean;
@@ -73,7 +76,7 @@ export const SearchContextProvider: React.FC<{
     const results = [
       ...artists.results.map((r, rid) => ({
         firstInCategory: rid === 0,
-        category: "artists",
+        category: "Artist",
         artistId: r.urlSlug ?? r.id,
         id: r.id,
         name: r.name,
@@ -81,7 +84,7 @@ export const SearchContextProvider: React.FC<{
       })),
       ...trackGroups.results.map((tr, trid) => ({
         firstInCategory: trid === 0,
-        category: "albums",
+        category: "Album",
         id: tr.urlSlug ?? tr.id,
         artistId: tr.artist?.urlSlug ?? tr.artistId,
         trackGroupId: tr.urlSlug ?? tr.id,
@@ -91,7 +94,7 @@ export const SearchContextProvider: React.FC<{
       ...tracks.results.map((tr, trid) => ({
         firstInCategory: trid === 0,
         id: tr.id,
-        category: "tracks",
+        category: "Track",
         trackGroupId: tr.trackGroup.urlSlug ?? tr.trackGroupId,
         artistId: tr.trackGroup.artist.urlSlug ?? tr.trackGroup.artistId,
         name: tr.title,
@@ -110,16 +113,13 @@ export const SearchContextProvider: React.FC<{
       result: {
         id: number | string;
         name: string;
+        category?: string;
         artistId?: number | string;
         trackGroupId?: number | string;
       },
       index: number
     ) => {
-      return (
-        <Link href="/" key={index}>
-          {result.name}
-        </Link>
-      );
+      return <SearchItem result={result} index={index} />;
     },
     searchResults: searchResults,
     setSearchResults: setSearchResults,

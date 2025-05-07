@@ -73,7 +73,8 @@ export default function RootLayout() {
                   name="artist/[id]"
                   options={{
                     headerShown: false,
-                    animation: "flip",
+                    presentation: "fullScreenModal",
+                    animation: "none",
                   }}
                 />
                 <Stack.Screen
@@ -91,6 +92,7 @@ export default function RootLayout() {
                     headerShown: false,
                     animation: "fade",
                     animationDuration: 300,
+                    presentation: "transparentModal",
                   }}
                 />
               </Stack>

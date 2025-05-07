@@ -37,11 +37,7 @@ interface AlbumProps {
     };
   };
   title: string;
-  artist: {
-    name: string;
-    id: number;
-    urlSlug: string;
-  };
+  artist: Artist;
   artistId: number;
   urlSlug: string;
   userTrackGroupPurchases?: { userId: number }[];
@@ -49,6 +45,7 @@ interface AlbumProps {
   tracks?: RNTrack[];
   about?: string;
   tags?: string[];
+  trackGroupId: number;
 }
 
 interface TrackProps {

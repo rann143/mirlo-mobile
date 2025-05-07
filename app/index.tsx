@@ -134,6 +134,7 @@ export default function Index() {
                 userTrackGroupPurchases={item.userTrackGroupPurchases}
                 releaseDate={item.releaseDate}
                 tracks={item.tracks}
+                trackGroupId={item.trackGroupId}
               ></TrackGroupItem>
             </Link>
           )}

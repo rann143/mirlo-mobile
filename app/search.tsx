@@ -1,9 +1,17 @@
 import { debounce } from "lodash";
 import SearchHeader from "@/components/SearchHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, FlatList } from "react-native";
+import {
+  View,
+  FlatList,
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+} from "react-native";
 import { useSearch } from "@/state/SearchContext";
 import { useCallback, useEffect, useRef } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BlurView } from "expo-blur";
 
 export default function SearchPage() {
   const {
@@ -16,7 +24,9 @@ export default function SearchPage() {
     getOptions,
     setSearchResults,
     searchValue,
+    isSearching,
   } = useSearch();
+  const { top, bottom } = useSafeAreaInsets();
 
   const searchCallbackRef = useRef(
     debounce(async (searchString) => {
@@ -39,22 +49,62 @@ export default function SearchPage() {
   }, [searchValue]);
 
   return (
-    <SafeAreaView
+    <View
       style={{
         flex: 1,
-        backgroundColor: "white",
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
+        paddingTop: top,
+        paddingBottom: bottom,
       }}
     >
       <SearchHeader style={{ borderBottomWidth: 0, marginBottom: 0 }} />
 
-      {showSuggestions && (
+      {isSearching && (
+        <View style={{ marginVertical: 30, flex: 1 }}>
+          <ActivityIndicator
+            size="large"
+            color="#BE3455"
+            style={styles.loadSpinner}
+          />
+        </View>
+      )}
+
+      {searchValue &&
+        showSuggestions &&
+        !isSearching &&
+        searchResults.length < 1 && (
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "white",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ margin: 20, fontSize: 20 }}>
+              Hmmm, couldn't find anything for that search... Try again!
+            </Text>
+          </View>
+        )}
+
+      {!isSearching && showSuggestions && searchResults.length > 0 && (
         <FlatList
-          style={{ backgroundColor: "coral", flex: 1 }}
+          style={{
+            backgroundColor: "white",
+            flex: 1,
+            width: "100%",
+          }}
           data={searchResults}
           renderItem={({ item, index }) => optionDisplay(item, index)}
           keyExtractor={(item, index) => `${index}-${item.id || item.name}`}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  loadSpinner: {
+    flex: 1,
+  },
+});

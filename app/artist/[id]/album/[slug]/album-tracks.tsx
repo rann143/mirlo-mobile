@@ -151,12 +151,15 @@ export default function AlbumTracks() {
           artist: data.result.artist.name,
           artwork: data.result.cover.sizes[600],
           url: `${API_ROOT}${track.audio.url}`,
+          id: data.result.id,
+          trackGroupId: data.result.trackGroupId,
           trackGroup: {
             userTrackGroupPurchases: data.result.userTrackGroupPurchases,
             artistId: data.result.artistId,
             urlSlug: data.result.urlSlug,
             cover: data.result.cover,
             title: data.result.title,
+            artist: data.result.artist,
           },
           audio: {
             url: track.audio.url,
@@ -247,6 +250,7 @@ export default function AlbumTracks() {
           style={{ width: "100%", marginTop: 10 }}
           contentContainerStyle={styles.listContainer}
           data={album}
+          keyExtractor={(item, index) => `${index}-${item.id || item.title}`}
           renderItem={({ item }) =>
             selectedAlbum ? (
               <PlayPauseWrapper

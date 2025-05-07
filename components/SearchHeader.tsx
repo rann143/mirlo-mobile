@@ -2,9 +2,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Pressable, Text, View, ViewProps } from "react-native";
 import SearchBar from "./searchBar";
 import { useRouter } from "expo-router";
+import { useSearch } from "@/state/SearchContext";
 
 export default function SearchHeader({ style }: ViewProps) {
   const router = useRouter();
+  const { setSearchValue, setSearchResults } = useSearch();
   return (
     <View>
       <View
@@ -29,7 +31,13 @@ export default function SearchHeader({ style }: ViewProps) {
           style={{ color: "#d6d6d6" }}
         ></Ionicons>
         <SearchBar />
-        <Pressable onPress={() => router.dismiss(1)}>
+        <Pressable
+          onPress={() => {
+            setSearchValue("");
+            setSearchResults([]);
+            router.dismiss(1);
+          }}
+        >
           <Ionicons
             name="close-outline"
             size={30}
