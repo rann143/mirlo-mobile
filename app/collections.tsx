@@ -2,7 +2,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
+  Pressable,
   FlatList,
   ActivityIndicator,
 } from "react-native";
@@ -70,11 +70,13 @@ export default function Collections() {
             backgroundColor: "white",
           }}
         >
-          <Ionicons
-            name="search-outline"
-            size={30}
-            style={{ color: "#d6d6d6" }}
-          ></Ionicons>
+          <Pressable style={{ flex: 1 }} onPress={() => router.push("/search")}>
+            <Ionicons
+              name="search-outline"
+              size={30}
+              style={{ color: "#d6d6d6" }}
+            ></Ionicons>
+          </Pressable>
           <Ionicons
             name="menu-outline"
             size={30}
@@ -108,6 +110,7 @@ export default function Collections() {
                 }
                 releaseDate={item.trackGroup.releaseDate}
                 tracks={item.trackGroup.tracks}
+                trackGroupId={item.trackGroupId}
               ></TrackGroupItem>
             </Link>
           )}
