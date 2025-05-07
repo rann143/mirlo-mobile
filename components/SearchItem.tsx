@@ -1,5 +1,6 @@
 import { View, Pressable, Text } from "react-native";
 import { useRouter } from "expo-router";
+import { useSearch } from "@/state/SearchContext";
 
 type Result = {
   result: {
@@ -14,10 +15,14 @@ type Result = {
 
 export default function SearchItem({ result, index }: Result) {
   const router = useRouter();
+  const { setSearchResults, setShowSuggestions } = useSearch();
   return (
     <View style={{ margin: 10 }}>
       <Pressable
         onPress={() => {
+          setSearchResults([]);
+          setShowSuggestions(false);
+          router.back();
           router.navigate(constructUrl(result));
         }}
       >

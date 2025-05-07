@@ -73,7 +73,6 @@ export default function RootLayout() {
                   name="artist/[id]"
                   options={{
                     headerShown: false,
-                    presentation: "fullScreenModal",
                     animation: "none",
                   }}
                 />

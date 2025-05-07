@@ -12,6 +12,7 @@ import { useSearch } from "@/state/SearchContext";
 import { useCallback, useEffect, useRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
+import Footer from "@/components/Footer";
 
 export default function SearchPage() {
   const {
@@ -55,6 +56,7 @@ export default function SearchPage() {
         backgroundColor: "rgba(255, 255, 255, 0.8)",
         paddingTop: top,
         paddingBottom: bottom,
+        justifyContent: "space-between",
       }}
     >
       <SearchHeader style={{ borderBottomWidth: 0, marginBottom: 0 }} />

@@ -1,4 +1,10 @@
-import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ViewProps,
+} from "react-native";
 import Slider from "@react-native-community/slider";
 import TrackPlayer, {
   PlaybackState,
@@ -12,7 +18,7 @@ import { useEffect } from "react";
 import { Pressable } from "react-native";
 import { Link, router, usePathname, useRootNavigationState } from "expo-router";
 
-export default function Footer() {
+export default function Footer({ style }: ViewProps) {
   const progress = useProgress();
   const { bottom } = useSafeAreaInsets();
   const { playableTracks, activeTrack } = usePlayer() as {
@@ -26,6 +32,7 @@ export default function Footer() {
       style={[
         styles.footer,
         { marginBottom: bottom, height: 80, position: "relative" },
+        style,
       ]}
     >
       <Slider
