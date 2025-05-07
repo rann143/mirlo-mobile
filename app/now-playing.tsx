@@ -1,7 +1,6 @@
 import {
   Text,
   View,
-  TouchableOpacity,
   Image,
   StyleSheet,
   Pressable,
@@ -9,20 +8,10 @@ import {
 } from "react-native";
 import { usePlayer } from "@/state/PlayerContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import NextButton from "@/components/NextButton";
-import PrevButton from "@/components/PrevButton";
-import LoopButton from "@/components/LoopButton";
-import ShuffleButton from "@/components/ShuffleButton";
 import Player from "@/components/Player";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
-import TrackPlayer, {
-  State,
-  PlaybackState,
-  useProgress,
-} from "react-native-track-player";
+import { Link, useRouter } from "expo-router";
+import TrackPlayer, { useProgress } from "react-native-track-player";
 import Slider from "@react-native-community/slider";
-import { useQuery } from "@tanstack/react-query";
-import { queryAlbum } from "@/queries/queries";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NowPlaying() {
