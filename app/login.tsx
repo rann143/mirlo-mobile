@@ -23,18 +23,13 @@ export default function Login() {
             backgroundColor: "white",
           }}
         >
-          <Pressable onPress={() => router.dismiss(2)}>
+          <Pressable onPress={() => router.dismissTo("/")}>
             <Ionicons
               name="chevron-back-outline"
               size={40}
               style={{ color: "#b8b8b8" }}
             ></Ionicons>
           </Pressable>
-          <Ionicons
-            name="menu-outline"
-            size={40}
-            style={{ color: "#b8b8b8", marginRight: 15 }}
-          ></Ionicons>
         </View>
         <LoginForm />
       </View>
