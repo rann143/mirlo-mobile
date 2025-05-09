@@ -12,10 +12,16 @@ This is the mobile app for [mirlo](https://mirlo.space) allowing users to listen
    npm install
    ```
 
-2. Start the app
+2. Build native iOS app
 
    ```bash
-    npx expo start
+   npx expo run:ios
+   ```
+   
+3. Start the app
+
+   ```bash
+   npx expo start
    ```
 
 In the output, you'll find options to open the app in a
