@@ -135,7 +135,6 @@ export const SearchContextProvider: React.FC<{
 };
 
 export function useSearch(): SearchContextType {
-  console.log("useSearch called");
   const context = useContext(SearchContext);
 
   if (!context) {
