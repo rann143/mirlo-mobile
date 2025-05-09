@@ -94,6 +94,14 @@ export default function RootLayout() {
                     presentation: "transparentModal",
                   }}
                 />
+                <Stack.Screen
+                  name="menu"
+                  options={{
+                    headerShown: false,
+                    presentation: "modal",
+                    animation: "slide_from_right",
+                  }}
+                />
               </Stack>
               <Footer />
               <StatusBar style="dark" backgroundColor="white" />
