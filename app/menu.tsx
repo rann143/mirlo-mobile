@@ -23,64 +23,87 @@ export default function Menu() {
         flex: 1,
         justifyContent: "flex-start",
         alignItems: "center",
-        padding: 30,
         width: "100%",
         backgroundColor: "white",
       }}
     >
-      {user ? (
-        <View>
-          <Text style={{ margin: 20, fontSize: 25, fontWeight: "bold" }}>
-            Hi, {user.name}!
-          </Text>
-          <View style={styles.separator} />
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: 10,
+          width: "100%",
+          height: 60,
+          backgroundColor: "#fafafa",
+        }}
+      >
+        <Pressable onPress={() => router.dismiss()}>
+          <Ionicons
+            name="chevron-down-outline"
+            size={40}
+            style={{ color: "#696969" }}
+          ></Ionicons>
+        </Pressable>
+      </View>
+      <View style={{ width: "100%", padding: 30 }}>
+        {user ? (
+          <View>
+            <Text style={{ margin: 20, fontSize: 25, fontWeight: "bold" }}>
+              Hi, {user.name}!
+            </Text>
+            <View style={styles.separator} />
+          </View>
+        ) : (
+          <></>
+        )}
+        <View style={{ gap: 20, alignItems: "center", width: "100%" }}>
+          <Pressable
+            onPress={() => {
+              router.back();
+              router.navigate("/");
+            }}
+            style={styles.link}
+          >
+            <Ionicons name="home-outline" size={25} />
+            <Text style={{ fontSize: 20 }}>Recent Releases</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              router.back();
+              router.navigate("/collections");
+            }}
+            style={styles.link}
+          >
+            <Ionicons name="heart-outline" size={25} />
+            <Text style={{ fontSize: 20 }}>Your Collection</Text>
+          </Pressable>
+          <Pressable
+            style={[
+              styles.link,
+              {
+                borderColor: "#e0e0e0",
+                borderWidth: StyleSheet.hairlineWidth,
+                backgroundColor: "white",
+                marginTop: 20,
+              },
+            ]}
+            onPress={() => {
+              if (user) {
+                onLogOut();
+                return;
+              } else {
+                router.dismissTo("/login");
+              }
+            }}
+          >
+            <Ionicons
+              name={user ? "log-in-outline" : "log-out-outline"}
+              size={25}
+            />
+            <Text style={{ fontSize: 20 }}>{user ? "Logout" : "Login"}</Text>
+          </Pressable>
         </View>
-      ) : (
-        <></>
-      )}
-      <View style={{ gap: 20, alignItems: "center", width: "100%" }}>
-        <Pressable
-          onPress={() => {
-            router.back();
-            router.navigate("/");
-          }}
-          style={styles.link}
-        >
-          <Ionicons name="home-outline" size={25} />
-          <Text style={{ fontSize: 20 }}>Recent Releases</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => {
-            router.back();
-            router.navigate("/collections");
-          }}
-          style={styles.link}
-        >
-          <Ionicons name="heart-outline" size={25} />
-          <Text style={{ fontSize: 20 }}>Your Collection</Text>
-        </Pressable>
-        <Pressable
-          style={[
-            styles.link,
-            {
-              borderColor: "#e0e0e0",
-              borderWidth: StyleSheet.hairlineWidth,
-              backgroundColor: "white",
-              marginTop: 20,
-            },
-          ]}
-          onPress={() => {
-            if (user) {
-              onLogOut();
-              return;
-            } else {
-              router.dismissTo("/login");
-            }
-          }}
-        >
-          <Ionicons name="exit-outline" size={25} />
-          <Text style={{ fontSize: 20 }}>{user ? "Logout" : "Login"}</Text>
-        </Pressable>
       </View>
     </View>
   );
