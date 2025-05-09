@@ -1,4 +1,6 @@
 import { ActivityIndicator, Text, View, FlatList } from "react-native";
+import MenuButton from "@/components/MenuButton";
+import SearchButton from "@/components/SearchButton";
 import { StyleSheet } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TrackGroupItem from "@/components/TrackGroupItem";
@@ -99,18 +101,8 @@ export default function Index() {
             backgroundColor: "white",
           }}
         >
-          <Pressable style={{ flex: 1 }} onPress={() => router.push("/search")}>
-            <Ionicons
-              name="search-outline"
-              size={30}
-              style={{ color: "#d6d6d6" }}
-            ></Ionicons>
-          </Pressable>
-          <Ionicons
-            name="menu-outline"
-            size={30}
-            style={{ color: "#d6d6d6", marginRight: 15 }}
-          ></Ionicons>
+          <SearchButton />
+          <MenuButton />
         </View>
         <FlatList
           style={{ width: "100%" }}

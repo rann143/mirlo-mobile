@@ -14,6 +14,8 @@ import { useEffect } from "react";
 import TrackGroupItem from "@/components/TrackGroupItem";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import MenuButton from "@/components/MenuButton";
+import SearchButton from "@/components/SearchButton";
 
 export default function Collections() {
   const { user } = useAuthContext();
@@ -70,18 +72,8 @@ export default function Collections() {
             backgroundColor: "white",
           }}
         >
-          <Pressable style={{ flex: 1 }} onPress={() => router.push("/search")}>
-            <Ionicons
-              name="search-outline"
-              size={30}
-              style={{ color: "#d6d6d6" }}
-            ></Ionicons>
-          </Pressable>
-          <Ionicons
-            name="menu-outline"
-            size={30}
-            style={{ color: "#d6d6d6", marginRight: 15 }}
-          ></Ionicons>
+          <SearchButton />
+          <MenuButton />
         </View>
         <FlatList
           style={{ width: "100%" }}
