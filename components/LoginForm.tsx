@@ -12,6 +12,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useLoginMutation } from "@/queries/authQueries";
 import { useRouter } from "expo-router";
 import * as Linking from "expo-linking";
+import { useState } from "react";
 
 type LoginInputs = {
   email: string;
@@ -30,6 +31,7 @@ export default function LoginForm() {
     },
   });
   const router = useRouter();
+  const [loginError, setLoginError] = useState<string>("");
 
   const { mutate: login } = useLoginMutation();
 
@@ -37,11 +39,12 @@ export default function LoginForm() {
     login(data, {
       onSuccess() {
         console.log("logged in successfully");
-        router.dismissTo("/collections");
+        router.dismissTo("/");
       },
       onError(e) {
         console.error("e", e.message);
         console.error(e);
+        setLoginError(e.message);
       },
     });
   };
@@ -92,7 +95,12 @@ export default function LoginForm() {
           )}
           name="password"
         />
-        {errors.password && <Text>This is required.</Text>}
+        {errors.password && (
+          <Text style={{ color: "white" }}>This is required.</Text>
+        )}
+        {loginError && (
+          <Text style={{ color: "white", marginTop: 10 }}>{loginError}</Text>
+        )}
 
         <TouchableOpacity
           style={styles.button}
