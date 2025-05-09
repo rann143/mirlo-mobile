@@ -70,6 +70,9 @@ export default function Footer({ style }: ViewProps) {
           >
             <Ionicons
               name="home-outline"
+              accessibilityLabel="Recent Releases"
+              accessibilityRole="button"
+              accessibilityHint="Navigates to recent releases"
               size={40}
               style={{ color: "#d6d6d6", marginRight: 15 }}
             ></Ionicons>
@@ -85,6 +88,9 @@ export default function Footer({ style }: ViewProps) {
                 router.dismissTo("/collections");
               }
             }}
+            accessibilityLabel="Your Collection"
+            accessibilityRole="button"
+            accessibilityHint="Navigates to your collection page"
           >
             <Ionicons
               name="heart-outline"
