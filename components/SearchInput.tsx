@@ -22,7 +22,7 @@ export default function SearchInput() {
         render={() => (
           <TextInput
             style={{
-              backgroundColor: "lightgrey",
+              backgroundColor: "#edebeb",
               borderRadius: 10,
               marginLeft: 10,
               flex: 1,
