@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import { SearchContextProvider } from "@/state/SearchContext";
 import { PlayerContextProvider } from "@/state/PlayerContext";
 import { AuthContextProvider } from "@/state/AuthContext";
@@ -46,7 +46,6 @@ export default function RootLayout() {
       SplashScreen.hide();
     }
   }, [isDataLoaded]);
-
   return (
     <AppReadyContextProvider
       value={{ isDataLoaded: isDataLoaded, setIsDataLoaded: setIsDataLoaded }}

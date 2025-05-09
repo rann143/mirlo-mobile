@@ -22,3 +22,22 @@ export const isTrackOwnedOrPreview = (
   );
   return ownsTrack || boughtTrack;
 };
+
+export const isTrackOwned = (
+  track: RNTrack,
+  trackGroup?: AlbumProps,
+  user?: LoggedInUser | null
+) => {
+  if (!user) {
+    return false;
+  }
+  if (!track) {
+    return false;
+  }
+  const lookInTrackGroup = trackGroup ?? track.trackGroup;
+  const ownsTrack = lookInTrackGroup.artistId === user.id;
+  const boughtTrack = !!lookInTrackGroup.userTrackGroupPurchases?.find(
+    (utgp) => utgp.userId === user.id
+  );
+  return ownsTrack || boughtTrack;
+};

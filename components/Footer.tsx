@@ -16,7 +16,15 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
 import { useEffect } from "react";
 import { Pressable } from "react-native";
-import { Link, router, usePathname, useRootNavigationState } from "expo-router";
+import {
+  Link,
+  router,
+  usePathname,
+  useSegments,
+  useRootNavigationState,
+} from "expo-router";
+import { isTrackOwned } from "@/scripts/utils";
+import { useAuthContext } from "@/state/AuthContext";
 
 export default function Footer({ style }: ViewProps) {
   const progress = useProgress();
@@ -26,7 +34,9 @@ export default function Footer({ style }: ViewProps) {
     playableTracks: RNTrack[];
   };
   const pathname = usePathname();
-
+  const segments = useSegments();
+  const { user } = useAuthContext();
+  const inCollection = isTrackOwned(playableTracks[0], undefined, user);
   return (
     <View
       style={[
@@ -70,11 +80,28 @@ export default function Footer({ style }: ViewProps) {
           >
             <Ionicons
               name="home-outline"
+              // ATTEMPT AT DYNAMIC BUTTON STYLING (same done to collection btn below) (issue when navigating to collections, then artist, then album you don't own,
+              // then navigating back via back arrow to the album you do own -> The home stays filled/red
+              // and the heart doesn't change back to filled/red to show you own it)
+
+              // name={
+              //   pathname !== "/collections" &&
+              //   (pathname === "/" || !inCollection)
+              //     ? "home"
+              //     : "home-outline"
+              // }
               accessibilityLabel="Recent Releases"
               accessibilityRole="button"
               accessibilityHint="Navigates to recent releases"
               size={40}
-              style={{ color: "#d6d6d6", marginRight: 15 }}
+              color="#d6d6d6"
+              // color={
+              //   pathname !== "/collections" &&
+              //   (pathname === "/" || !inCollection)
+              //     ? "#BE3455"
+              //     : "#d6d6d6"
+              // }
+              style={{ marginRight: 15 }}
             ></Ionicons>
           </Pressable>
 
@@ -94,8 +121,22 @@ export default function Footer({ style }: ViewProps) {
           >
             <Ionicons
               name="heart-outline"
+              // name={
+              //   pathname !== "/" &&
+              //   (pathname === "/collections" || inCollection)
+              //     ? "heart"
+              //     : "heart-outline"
+              // }
               size={40}
-              style={{ color: "#d6d6d6", marginLeft: 15 }}
+              color="#d6d6d6"
+              // color={
+              //   pathname !== "/" &&
+              //   (pathname === "/collections" || inCollection)
+              //     ? "#BE3455"
+              //     : "#d6d6d6"
+              // }
+              style={{ marginLeft: 15 }}
+              // #BE3455
             ></Ionicons>
           </Pressable>
         </View>
