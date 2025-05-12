@@ -11,7 +11,7 @@ The current focus is developing for iOS. Development for Android is on the roadm
 ## App Preview
 This gif displays the most recent versions of the artist, album, and now-playing views:
 
-![mirlo app preview](https://github.com/rann143/mirlo-mobile/blob/main/assets/images/mirlo-app-preview.gif)
+<img src="https://github.com/rann143/mirlo-mobile/blob/main/assets/images/mirlo-app-preview.gif" alt="mirlo app preview" width="300" height="600"/>
 
 ## Get started
 
