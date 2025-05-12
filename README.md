@@ -41,7 +41,7 @@ This gif displays the most recent versions of the artist, album, and now-playing
    npx expo start
    ```
 
-Follow Expo's guides to set up a build for the iOS simulator:
+Follow Expo's guides to set up a development build for your iOS simulator:
 
 - [Setting up the iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
