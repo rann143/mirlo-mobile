@@ -16,7 +16,7 @@ This gif displays the most recent versions of the artist, album, and now-playing
 ## Get started
 
 ### Prerequisites
-- Node.js 18+
+- Node.js v18+
 - Xcode (for iOS)
 - [Cocoapods](https://guides.cocoapods.org/using/getting-started.html) - For building native app
 - npm
