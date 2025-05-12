@@ -9,7 +9,7 @@ This is the iOS mobile app for [mirlo](https://mirlo.space) allowing users to li
 The current focus is developing for iOS. Development for Android is on the roadmap.
 
 ## App Preview
-This gif displays exploring the artist page, album, and now-playing views:
+This gif displays the most recent versions of the artist, album, and now-playing views:
 
 ![mirlo app preview](https://github.com/rann143/mirlo-mobile/blob/main/assets/images/mirlo-app-preview.gif)
 
