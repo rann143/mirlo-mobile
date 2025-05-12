@@ -74,6 +74,10 @@ export default function PlayPauseWrapper({
         setActiveTrack(trackObject);
         await TrackPlayer.skip(trackObject.order - 1);
         await TrackPlayer.play();
+        const q = TrackPlayer.getQueue();
+        const ind = TrackPlayer.getActiveTrackIndex();
+        console.log(q);
+        console.log(ind);
         return;
       } else {
         if (
@@ -86,7 +90,11 @@ export default function PlayPauseWrapper({
         }
       }
     } catch (err) {
-      console.error("issue with playback", err);
+      const q = TrackPlayer.getQueue();
+      const ind = TrackPlayer.getActiveTrackIndex();
+      console.log(q);
+      console.log(ind);
+      console.error("issue with playback:", err);
     }
   };
 
