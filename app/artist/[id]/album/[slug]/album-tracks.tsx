@@ -104,7 +104,7 @@ function AlbumPlayButton() {
               : "play-circle-outline"
             : "play-circle-outline"
         }
-        size={60}
+        size={70}
         style={{ marginHorizontal: 5 }}
         color={playableTracks.length ? "black" : "lightgrey"}
       />
@@ -274,7 +274,7 @@ export default function AlbumTracks() {
                   marginVertical: 10,
                 }}
               >
-                <View>
+                <View style={{ maxWidth: "75%" }}>
                   <Text
                     style={{
                       color: "black",

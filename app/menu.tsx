@@ -49,7 +49,9 @@ export default function Menu() {
       <View style={{ width: "100%", padding: 30 }}>
         {user ? (
           <View>
-            <Text style={{ margin: 20, fontSize: 25, fontWeight: "bold" }}>
+            <Text
+              style={{ marginVertical: 20, fontSize: 25, fontWeight: "bold" }}
+            >
               Hi, {user.name}!
             </Text>
             <View style={styles.separator} />

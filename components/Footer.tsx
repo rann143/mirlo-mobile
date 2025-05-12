@@ -79,28 +79,12 @@ export default function Footer({ style }: ViewProps) {
             }}
           >
             <Ionicons
-              name="home-outline"
-              // ATTEMPT AT DYNAMIC BUTTON STYLING (same done to collection btn below) (issue when navigating to collections, then artist, then album you don't own,
-              // then navigating back via back arrow to the album you do own -> The home stays filled/red
-              // and the heart doesn't change back to filled/red to show you own it)
-
-              // name={
-              //   pathname !== "/collections" &&
-              //   (pathname === "/" || !inCollection)
-              //     ? "home"
-              //     : "home-outline"
-              // }
+              name={pathname === "/" ? "home" : "home-outline"}
               accessibilityLabel="Recent Releases"
               accessibilityRole="button"
               accessibilityHint="Navigates to recent releases"
               size={40}
-              color="#d6d6d6"
-              // color={
-              //   pathname !== "/collections" &&
-              //   (pathname === "/" || !inCollection)
-              //     ? "#BE3455"
-              //     : "#d6d6d6"
-              // }
+              color={pathname === "/" ? "#BE3455" : "#d6d6d6"}
               style={{ marginRight: 15 }}
             ></Ionicons>
           </Pressable>
@@ -120,21 +104,10 @@ export default function Footer({ style }: ViewProps) {
             accessibilityHint="Navigates to your collection page"
           >
             <Ionicons
-              name="heart-outline"
-              // name={
-              //   pathname !== "/" &&
-              //   (pathname === "/collections" || inCollection)
-              //     ? "heart"
-              //     : "heart-outline"
-              // }
+              //name="heart-outline"
+              name={pathname === "/collections" ? "heart" : "heart-outline"}
               size={40}
-              color="#d6d6d6"
-              // color={
-              //   pathname !== "/" &&
-              //   (pathname === "/collections" || inCollection)
-              //     ? "#BE3455"
-              //     : "#d6d6d6"
-              // }
+              color={pathname === "/collections" ? "#BE3455" : "#d6d6d6"}
               style={{ marginLeft: 15 }}
               // #BE3455
             ></Ionicons>
@@ -201,12 +174,8 @@ function FooterPlayButton() {
       onPress={() => onPress(playbackState)}
     >
       <Ionicons
-        name={
-          playbackState.state === State.Playing
-            ? "pause-circle-outline"
-            : "play-circle-outline"
-        }
-        size={60}
+        name={playbackState.state === State.Playing ? "pause-outline" : "play"}
+        size={40}
       />
     </TouchableOpacity>
   );
