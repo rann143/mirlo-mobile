@@ -1,10 +1,27 @@
 # Mirlo Mobile App
 
-**Currently Under Development**
+**Built with React Native & TypeScript**
 
-This is the mobile app for [mirlo](https://mirlo.space) allowing users to listen to recent releases and their purchased songs
+***Currently Under Development**
+
+This is the iOS mobile app for [mirlo](https://mirlo.space) allowing users to listen to recent releases and their purchased songs. 
+
+The current focus is developing for iOS. Development for Android is on the roadmap.
+
+## App Preview
+This gif displays exploring the artist page, album, and now-playing views:
+
+![mirlo app preview](https://github.com/rann143/mirlo-mobile/blob/main/assets/images/mirlo-app-preview.gif)
 
 ## Get started
+
+### Prerequisites
+- Node.js 18+
+- Xcode (for iOS)
+- [Cocoapods](https://guides.cocoapods.org/using/getting-started.html) - For building native app
+- npm
+
+### Setup
 
 1. Install dependencies
 
@@ -24,11 +41,12 @@ This is the mobile app for [mirlo](https://mirlo.space) allowing users to listen
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+Follow Expo's guides to set up a build for the iOS simulator:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [Setting up the iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Create build for iOS Simulator](https://docs.expo.dev/build-reference/simulators/)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+**Note:** This project contains native dependencies, so it cannot be run in Expo Go. You must build the native app first using the commands above.
+
+This project uses [file-based routing](https://docs.expo.dev/router/introduction).
