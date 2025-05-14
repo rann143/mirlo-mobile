@@ -72,12 +72,8 @@ export default function PlayPauseWrapper({
       // Song Change within same album
       if (currentTrack?.url !== audioURL) {
         setActiveTrack(trackObject);
-        await TrackPlayer.skip(trackObject.order - 1);
+        await TrackPlayer.skip(trackObject.queueIndex);
         await TrackPlayer.play();
-        const q = TrackPlayer.getQueue();
-        const ind = TrackPlayer.getActiveTrackIndex();
-        console.log(q);
-        console.log(ind);
         return;
       } else {
         if (
@@ -90,10 +86,6 @@ export default function PlayPauseWrapper({
         }
       }
     } catch (err) {
-      const q = TrackPlayer.getQueue();
-      const ind = TrackPlayer.getActiveTrackIndex();
-      console.log(q);
-      console.log(ind);
       console.error("issue with playback:", err);
     }
   };

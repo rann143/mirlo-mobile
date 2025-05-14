@@ -68,6 +68,7 @@ interface RNTrack {
   artwork: string;
   url: string;
   id: number;
+  queueIndex: number;
   trackGroupId: number;
   trackGroup: {
     title: string;

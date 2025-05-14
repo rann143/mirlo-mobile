@@ -144,6 +144,9 @@ export default function AlbumTracks() {
   useEffect(() => {
     const tracksToPlay: RNTrack[] = [];
     const allTracks: RNTrack[] = [];
+    // Playable Index (track's queueIndex gets set to this) needed because
+    // track order doesn't aligned with proper index if there are tracks that aren't previews/purchased
+    let playableIndex = 0;
     if (data && data.result.tracks) {
       data.result.tracks.forEach((track) => {
         const newTrack: RNTrack = {
@@ -152,6 +155,7 @@ export default function AlbumTracks() {
           artwork: data.result.cover.sizes[600],
           url: `${API_ROOT}${track.audio.url}`,
           id: data.result.id,
+          queueIndex: track.order,
           trackGroupId: data.result.trackGroupId,
           trackGroup: {
             userTrackGroupPurchases: data.result.userTrackGroupPurchases,
@@ -174,6 +178,8 @@ export default function AlbumTracks() {
         allTracks.push(newTrack);
 
         if (isTrackOwnedOrPreview(newTrack, user, data.result)) {
+          newTrack.queueIndex = playableIndex;
+          playableIndex++;
           tracksToPlay.push(newTrack);
         }
       });
