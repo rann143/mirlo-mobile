@@ -210,10 +210,14 @@ export default function AlbumTracks() {
 
   const selectedAlbum = data.result;
 
-  const tagPills = selectedAlbum.tags?.map((tag, index) => {
+  const tagPills = selectedAlbum.tags?.map((tagName, index) => {
     return (
-      <View
+      <Link
         key={index}
+        href={{
+          pathname: "/tags/[tag]",
+          params: { tag: tagName },
+        }}
         style={{
           backgroundColor: "#f0f0f0",
           borderWidth: 1,
@@ -225,8 +229,8 @@ export default function AlbumTracks() {
           marginVertical: 5,
         }}
       >
-        <Text>{tag}</Text>
-      </View>
+        {tagName}
+      </Link>
     );
   });
 
