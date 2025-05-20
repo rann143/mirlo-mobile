@@ -4,7 +4,7 @@
 
 ***Currently Under Development**
 
-This is the official iOS mobile app for [Mirlo](https://mirlo.space) developed in collaboration with the Mirlo team. This app will allow users to listen to recent releases and their purchased songs. Check out [Mirlo's GitHub](https://github.com/funmusicplace/mirlo)!
+This is the official mobile app for [Mirlo](https://mirlo.space) developed in collaboration with the Mirlo team. This app will allow users to listen to recent releases and their purchased songs. Check out [Mirlo's GitHub](https://github.com/funmusicplace/mirlo)!
 
 The current focus is developing for iOS. Development for Android is on the roadmap.
 
