@@ -101,6 +101,12 @@ export default function RootLayout() {
                     animation: "slide_from_right",
                   }}
                 />
+                <Stack.Screen
+                  name="tags/[tag]"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
               </Stack>
               <Footer />
               <StatusBar style="dark" backgroundColor="white" />
