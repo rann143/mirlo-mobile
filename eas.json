@@ -1,7 +1,8 @@
 {
   "cli": {
     "version": ">= 15.0.10",
-    "appVersionSource": "remote"
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "development-simulator": {

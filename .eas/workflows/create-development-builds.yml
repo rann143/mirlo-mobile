@@ -1,0 +1,19 @@
+name: Create development builds
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  ios_device_development_build:
+    name: Build iOS Device
+    type: build
+    params:
+      platform: ios
+      profile: preview
+  # ios_simulator_development_build:
+  #   name: Build iOS simulator
+  #   type: build
+  #   params:
+  #     platform: ios
+  #     profile: development-simulator
