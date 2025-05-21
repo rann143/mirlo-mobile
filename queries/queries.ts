@@ -114,3 +114,33 @@ export function queryArtist(opts: { artistSlug: string }) {
     enabled: !!opts.artistSlug,
   });
 }
+const fetchTags: QueryFunction<
+  { results: Tag[]; total?: number },
+  [
+    "fetchTags",
+    {
+      skip?: number;
+      take?: number;
+      orderBy?: "asc" | "count";
+    },
+    ...any
+  ]
+> = ({ queryKey: [_, { skip, take, orderBy }], signal }) => {
+  const params = new URLSearchParams();
+  if (skip) params.append("skip", String(skip));
+  if (take) params.append("take", String(take));
+  if (orderBy) params.append("orderBy", orderBy);
+
+  return api.get(`/v1/tags?${params}`, { signal });
+};
+
+export function queryTags(opts: {
+  skip?: number;
+  take?: number;
+  orderBy?: "asc" | "count";
+}) {
+  return queryOptions({
+    queryKey: ["fetchTags", opts, "tags"],
+    queryFn: fetchTags,
+  });
+}
