@@ -145,3 +145,7 @@ interface Artist {
   location?: string;
   bio: string;
 }
+
+interface Tag {
+  tag: string;
+}

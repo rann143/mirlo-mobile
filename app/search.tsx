@@ -1,6 +1,5 @@
 import { debounce } from "lodash";
 import SearchHeader from "@/components/SearchHeader";
-import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   FlatList,
@@ -9,10 +8,11 @@ import {
   Text,
 } from "react-native";
 import { useSearch } from "@/state/SearchContext";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BlurView } from "expo-blur";
-import Footer from "@/components/Footer";
+import { useQuery } from "@tanstack/react-query";
+import { queryTags, queryUserPurchases } from "@/queries/queries";
+import TagPill from "@/components/TagPill";
 
 export default function SearchPage() {
   const {
@@ -27,8 +27,17 @@ export default function SearchPage() {
     searchValue,
     isSearching,
   } = useSearch();
+  const { data: tags, isPending } = useQuery(
+    queryTags({ orderBy: "count", take: 15 })
+  );
   const { top, bottom } = useSafeAreaInsets();
 
+  const tagPills = useMemo(() => {
+    const group = tags?.results.map((tag, index) => {
+      return <TagPill key={index} tagName={tag.tag} />;
+    });
+    return group;
+  }, [tags]);
   const searchCallbackRef = useRef(
     debounce(async (searchString) => {
       if (searchString && searchString.length > 1) {
@@ -49,17 +58,50 @@ export default function SearchPage() {
     searchCallbackRef(searchValue);
   }, [searchValue]);
 
+  if (isPending) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "white",
+          paddingTop: top,
+          paddingBottom: bottom,
+          justifyContent: "space-between",
+        }}
+      >
+        <SearchHeader style={{ borderBottomWidth: 1, marginBottom: 1 }} />
+        <ActivityIndicator
+          size="large"
+          color="#BE3455"
+          style={styles.loadSpinner}
+        />
+      </View>
+    );
+  }
+
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
+        backgroundColor: "white",
         paddingTop: top,
         paddingBottom: bottom,
-        justifyContent: "space-between",
+        // justifyContent: "space-between",
       }}
     >
-      <SearchHeader style={{ borderBottomWidth: 0, marginBottom: 0 }} />
+      <SearchHeader style={{ borderBottomWidth: 1, marginBottom: 1 }} />
+
+      {!isSearching &&
+        !showSuggestions &&
+        !searchValue &&
+        !searchResults.length && (
+          <View style={{ marginTop: 30, marginHorizontal: 20, gap: 20 }}>
+            <Text>Or Search By Popular Tags:</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5 }}>
+              {tagPills}
+            </View>
+          </View>
+        )}
 
       {isSearching && (
         <View style={{ marginVertical: 30, flex: 1 }}>
