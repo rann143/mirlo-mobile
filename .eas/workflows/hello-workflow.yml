@@ -1,0 +1,10 @@
+name: Hello Workflow
+
+on:
+  push:
+    branches: ["*"]
+
+jobs:
+  Hello WorkFlow:
+    steps:
+      - run: echo "Hello WorkFlow!"
