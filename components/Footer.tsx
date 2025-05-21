@@ -14,15 +14,8 @@ import TrackPlayer, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
-import { useEffect } from "react";
 import { Pressable } from "react-native";
-import {
-  Link,
-  router,
-  usePathname,
-  useSegments,
-  useRootNavigationState,
-} from "expo-router";
+import { Link, router, usePathname } from "expo-router";
 import { isTrackOwned } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 
@@ -34,14 +27,13 @@ export default function Footer({ style }: ViewProps) {
     playableTracks: RNTrack[];
   };
   const pathname = usePathname();
-  const segments = useSegments();
   const { user } = useAuthContext();
   const inCollection = isTrackOwned(playableTracks[0], undefined, user);
   return (
     <View
       style={[
         styles.footer,
-        { marginBottom: bottom, height: 80, position: "relative" },
+        { paddingBottom: bottom, height: 80 + bottom, position: "relative" },
         style,
       ]}
     >
