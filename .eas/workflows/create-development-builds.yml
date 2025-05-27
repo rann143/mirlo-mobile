@@ -5,15 +5,21 @@ on:
     branches: ["main"]
 
 jobs:
-  ios_device_development_build:
+  ios_device_preview_build:
     name: Build iOS Device
     type: build
     params:
       platform: ios
       profile: preview
-  # ios_simulator_development_build:
-  #   name: Build iOS simulator
-  #   type: build
-  #   params:
-  #     platform: ios
-  #     profile: development-simulator
+  ios_device_development_build:
+    name: Build iOS Dev Device
+    type: build
+    params:
+      platform: ios
+      profile: development
+  ios_simulator_development_build:
+    name: Build iOS simulator
+    type: build
+    params:
+      platform: ios
+      profile: development-simulator

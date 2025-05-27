@@ -10,6 +10,10 @@ export default function Layout() {
           name="album-tracks"
           options={{ headerShown: false, animation: "none" }}
         />
+        <Stack.Screen
+          name="tracks/[trackId]"
+          options={{ headerShown: false, animation: "none" }}
+        />
       </Stack>
     </>
   );

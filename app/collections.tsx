@@ -55,7 +55,6 @@ export default function Collections() {
   if (!purchases) {
     return <Text>No purchases found</Text>;
   }
-  console.log(purchases);
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
       <View style={styles.container}>
@@ -83,10 +82,13 @@ export default function Collections() {
           renderItem={({ item }) => (
             <Link
               href={{
-                pathname: "/artist/[id]/album/[slug]/album-tracks",
+                pathname: isTrackPurchase(item)
+                  ? "/artist/[id]/album/[slug]/tracks/[trackId]"
+                  : "/artist/[id]/album/[slug]/album-tracks",
                 params: {
                   id: item.trackGroup.artistId,
                   slug: item.trackGroup.urlSlug,
+                  trackId: isTrackPurchase(item) ? item.trackId : "",
                 },
               }}
             >
