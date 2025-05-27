@@ -155,6 +155,7 @@ export default function AlbumTracks() {
           artwork: data.result.cover.sizes[600],
           url: `${API_ROOT}${track.audio.url}`,
           id: data.result.id,
+          trackArtists: track.trackArtists,
           queueIndex: track.order,
           trackGroupId: data.result.trackGroupId,
           trackGroup: {

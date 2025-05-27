@@ -29,40 +29,17 @@ export const TrackItem = ({
 
   const canPlayTrack = isTrackOwnedOrPreview(track, user, album);
 
-  // if (!canPlayTrack) {
-  //   return (
-  //     <View style={[styles.listItem, { justifyContent: "flex-start" }]}>
-  //       <Text
-  //         style={{
-  //           color: "black",
-  //           fontSize: 20,
-  //           width: 50,
-  //           marginLeft: 5,
-  //           fontWeight: thisSongSelected ? "bold" : "normal",
-  //         }}
-  //       >
-  //         {track.order}.
-  //       </Text>
-  //       <Text
-  //         style={{
-  //           justifyContent: "flex-start",
-  //           color: "darkgrey",
+  let contributors = "";
 
-  //           backgroundColor: "grey",
-  //           fontSize: 20,
-  //           paddingRight: 10,
-  //         }}
-  //         ellipsizeMode="tail"
-  //         numberOfLines={1}
-  //       >
-  //         {track.title}
-  //       </Text>
-  //       <Text style={{ color: "grey", fontSize: 15, marginRight: 20 }}>
-  //         {track.audio.duration ? formatTime(track.audio.duration) : 0}
-  //       </Text>
-  //     </View>
-  //   );
-  // }
+  if (track.trackArtists) {
+    for (let i = 0; i < track.trackArtists.length; i++) {
+      if (i === track.trackArtists.length - 1) {
+        contributors += track.trackArtists[i].artistName;
+      } else {
+        contributors += track.trackArtists[i].artistName + ", ";
+      }
+    }
+  }
 
   return (
     <View style={styles.listItem}>
@@ -91,22 +68,35 @@ export const TrackItem = ({
             {track.order}.
           </Text>
         )}
-        <Text
-          style={{
-            color: canPlayTrack ? "black" : "darkgrey",
-            fontSize: 18,
-            marginRight: 5,
-            fontWeight: canPlayTrack
-              ? thisSongSelected
-                ? "bold"
-                : "normal"
-              : "normal",
-          }}
-          ellipsizeMode="tail"
-          numberOfLines={1}
-        >
-          {track.title}
-        </Text>
+        <View>
+          <Text
+            style={{
+              color: canPlayTrack ? "black" : "darkgrey",
+              fontSize: 18,
+              marginRight: 5,
+              fontWeight: canPlayTrack
+                ? thisSongSelected
+                  ? "bold"
+                  : "normal"
+                : "normal",
+            }}
+            ellipsizeMode="tail"
+            numberOfLines={1}
+          >
+            {track.title}
+          </Text>
+          {track.trackArtists &&
+          track.trackArtists.length &&
+          track.trackArtists[0].artistName !== album.artist.name ? (
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{ color: "grey" }}
+            >
+              {contributors}
+            </Text>
+          ) : null}
+        </View>
       </View>
       <View>
         <Text
