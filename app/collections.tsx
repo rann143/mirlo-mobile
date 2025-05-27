@@ -2,7 +2,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
   FlatList,
   ActivityIndicator,
 } from "react-native";
@@ -12,10 +11,11 @@ import { useQuery } from "@tanstack/react-query";
 import { queryUserPurchases } from "@/queries/queries";
 import { useEffect } from "react";
 import TrackGroupItem from "@/components/TrackGroupItem";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MenuButton from "@/components/MenuButton";
 import SearchButton from "@/components/SearchButton";
+import CollectionPurchase from "@/components/CollectionPurchase";
+import { isTrackGroupPurchase, isTrackPurchase } from "@/types/typeguards";
 
 export default function Collections() {
   const { user } = useAuthContext();
@@ -55,7 +55,7 @@ export default function Collections() {
   if (!purchases) {
     return <Text>No purchases found</Text>;
   }
-
+  console.log(purchases);
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
       <View style={styles.container}>
@@ -90,7 +90,15 @@ export default function Collections() {
                 },
               }}
             >
-              <TrackGroupItem
+              {isTrackGroupPurchase(item) && item.trackGroup ? (
+                <CollectionPurchase trackGroup={item.trackGroup} />
+              ) : isTrackPurchase(item) ? (
+                <CollectionPurchase
+                  trackGroup={item.trackGroup}
+                  track={item.track}
+                />
+              ) : null}
+              {/* <TrackGroupItem
                 id={item.trackGroup.id}
                 cover={item.trackGroup.cover}
                 title={item.trackGroup.title}
@@ -103,7 +111,7 @@ export default function Collections() {
                 releaseDate={item.trackGroup.releaseDate}
                 tracks={item.trackGroup.tracks}
                 trackGroupId={item.trackGroupId}
-              ></TrackGroupItem>
+              ></TrackGroupItem> */}
             </Link>
           )}
         ></FlatList>

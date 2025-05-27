@@ -23,6 +23,16 @@ interface UserTrackGroupPurchase {
   singleDownloadToken?: string;
 }
 
+interface UserTrackPurchase {
+  userId: number;
+  user?: User;
+  trackId: number;
+  track?: Track;
+  pricePaid: number;
+  currencyPaid: string;
+  datePurchased: string;
+}
+
 interface AlbumProps {
   id: number;
   cover: {
@@ -66,6 +76,13 @@ interface RNTrack {
   title: string;
   artist: string;
   artwork: string;
+  trackArtists?: {
+    role?: string;
+    artistId?: number;
+    artistName?: string;
+    isCoAuthor?: boolean;
+    trackId?: number;
+  }[];
   url: string;
   id: number;
   queueIndex: number;
