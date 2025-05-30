@@ -61,7 +61,7 @@ export default function SearchItem({ result, index }: Result) {
               numberOfLines={1}
               style={{ fontSize: 18 }}
             >
-              {result.name}
+              {result.name.trim()}
             </Text>
             {result.artistName && (
               <Text
@@ -69,7 +69,7 @@ export default function SearchItem({ result, index }: Result) {
                 numberOfLines={1}
                 style={{ fontSize: 15, color: "grey" }}
               >
-                By {result.artistName}
+                By {result.artistName.trim()}
               </Text>
             )}
             <Text style={{ fontSize: 12, color: "grey" }}>
