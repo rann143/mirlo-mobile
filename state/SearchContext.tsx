@@ -24,10 +24,26 @@ type SearchContextType = {
     result: {
       id: number | string;
       name: string;
-      artistId?: string | number;
-      trackGroupId?: string | number;
-      firstInCategory?: boolean;
       category?: string;
+      artistId?: number | string;
+      trackGroupId?: number | string;
+      artistName?: string;
+      avatar?: {
+        url: string;
+        sizes?: { [key: string]: string };
+        updatedAt: string;
+      };
+      trackGroupCover?: {
+        sizes: {
+          60: string;
+          120: string;
+          300: string;
+          600: string;
+          960: string;
+          1200: string;
+          1500: string;
+        };
+      };
     },
     index: number
   ) => React.ReactElement;
@@ -42,9 +58,26 @@ type SearchContextType = {
 type Result = {
   id: number | string;
   name: string;
-  isNew?: boolean;
-  firstInCategory?: boolean;
   category?: string;
+  artistId?: number | string;
+  trackGroupId?: number | string;
+  artistName?: string;
+  avatar?: {
+    url: string;
+    sizes?: { [key: string]: string };
+    updatedAt: string;
+  };
+  trackGroupCover?: {
+    sizes: {
+      60: string;
+      120: string;
+      300: string;
+      600: string;
+      960: string;
+      1200: string;
+      1500: string;
+    };
+  };
 };
 
 export const SearchContext = createContext<SearchContextType | null>(null);
@@ -79,6 +112,7 @@ export const SearchContextProvider: React.FC<{
         category: "Artist",
         artistId: r.urlSlug ?? r.id,
         id: r.id,
+        avatar: r.avatar,
         name: r.name,
         isArtist: true,
       })),
@@ -87,7 +121,9 @@ export const SearchContextProvider: React.FC<{
         category: "Album",
         id: tr.urlSlug ?? tr.id,
         artistId: tr.artist?.urlSlug ?? tr.artistId,
+        artistName: tr.artist.name,
         trackGroupId: tr.urlSlug ?? tr.id,
+        trackGroupCover: tr.cover,
         name: tr.title,
         isTrackGroup: true,
       })),
@@ -97,6 +133,8 @@ export const SearchContextProvider: React.FC<{
         category: "Track",
         trackGroupId: tr.trackGroup.urlSlug ?? tr.trackGroupId,
         artistId: tr.trackGroup.artist.urlSlug ?? tr.trackGroup.artistId,
+        artistName: tr.trackGroup.artist.name,
+        trackGroupCover: tr.trackGroup.cover,
         name: tr.title,
         isTrack: true,
       })),
@@ -116,6 +154,23 @@ export const SearchContextProvider: React.FC<{
         category?: string;
         artistId?: number | string;
         trackGroupId?: number | string;
+        artistName?: string;
+        avatar?: {
+          url: string;
+          sizes?: { [key: string]: string };
+          updatedAt: string;
+        };
+        trackGroupCover?: {
+          sizes: {
+            60: string;
+            120: string;
+            300: string;
+            600: string;
+            960: string;
+            1200: string;
+            1500: string;
+          };
+        };
       },
       index: number
     ) => {
