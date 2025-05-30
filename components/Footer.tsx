@@ -83,12 +83,16 @@ export default function Footer({ style }: ViewProps) {
 
           <Pressable
             onPress={() => {
-              if (pathname === "/") {
-                router.navigate("/collections");
-              } else if (pathname === "/collections") {
-                return;
+              if (!user) {
+                router.navigate("/login");
               } else {
-                router.dismissTo("/collections");
+                if (pathname === "/") {
+                  router.navigate("/collections");
+                } else if (pathname === "/collections") {
+                  return;
+                } else {
+                  router.dismissTo("/collections");
+                }
               }
             }}
             accessibilityLabel="Your Collection"
