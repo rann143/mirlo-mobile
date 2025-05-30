@@ -86,7 +86,9 @@ const constructUrl = (r: any) => {
     return "/";
   }
 
-  if (r.trackGroupId) {
+  if (r.isTrack) {
+    return `/artist/${r.artistId}/album/${r.trackGroupId}/tracks/${r.id}` as const;
+  } else if (r.isTrackGroup) {
     return `/artist/${r.artistId}/album/${r.trackGroupId}/album-tracks` as const; // as const tells typescript this is a literal string pattern
   } else {
     return `/artist/${r.artistId}/artist-page` as const;
