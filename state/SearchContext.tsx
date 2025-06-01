@@ -1,9 +1,6 @@
 import { useState, createContext, useContext } from "react";
 import SearchItem from "@/components/SearchItem";
 import * as api from "../queries/fetch/fetchWrapper";
-import { ExternalPathString, Link } from "expo-router";
-import { View, Text, Pressable } from "react-native";
-import { useRouter } from "expo-router";
 
 type SearchContextType = {
   isSearching: boolean;
@@ -20,33 +17,6 @@ type SearchContextType = {
           isNew?: boolean;
         }
   ) => void;
-  optionDisplay: (
-    result: {
-      id: number | string;
-      name: string;
-      category?: string;
-      artistId?: number | string;
-      trackGroupId?: number | string;
-      artistName?: string;
-      avatar?: {
-        url: string;
-        sizes?: { [key: string]: string };
-        updatedAt: string;
-      };
-      trackGroupCover?: {
-        sizes: {
-          60: string;
-          120: string;
-          300: string;
-          600: string;
-          960: string;
-          1200: string;
-          1500: string;
-        };
-      };
-    },
-    index: number
-  ) => React.ReactElement;
   searchResults: Result[];
   setSearchResults: (results: Result[]) => void;
   showSuggestions: boolean;
@@ -55,7 +25,7 @@ type SearchContextType = {
   setSearchValue: (val: string) => void;
 };
 
-type Result = {
+export type Result = {
   id: number | string;
   name: string;
   category?: string;
@@ -147,35 +117,6 @@ export const SearchContextProvider: React.FC<{
     isSearching: isSearching,
     setIsSearching: setIsSearching,
     getOptions: getOptions,
-    optionDisplay: (
-      result: {
-        id: number | string;
-        name: string;
-        category?: string;
-        artistId?: number | string;
-        trackGroupId?: number | string;
-        artistName?: string;
-        avatar?: {
-          url: string;
-          sizes?: { [key: string]: string };
-          updatedAt: string;
-        };
-        trackGroupCover?: {
-          sizes: {
-            60: string;
-            120: string;
-            300: string;
-            600: string;
-            960: string;
-            1200: string;
-            1500: string;
-          };
-        };
-      },
-      index: number
-    ) => {
-      return <SearchItem result={result} index={index} />;
-    },
     searchResults: searchResults,
     setSearchResults: setSearchResults,
     showSuggestions: showSuggestions,

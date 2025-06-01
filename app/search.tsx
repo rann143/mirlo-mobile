@@ -13,12 +13,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { queryTags, queryUserPurchases } from "@/queries/queries";
 import TagPill from "@/components/TagPill";
+import { optionDisplay } from "@/components/SearchOptionRenderer";
 
 export default function SearchPage() {
   const {
     showSuggestions,
     setShowSuggestions,
-    optionDisplay,
     searchResults,
     setSearchValue,
     setIsSearching,
