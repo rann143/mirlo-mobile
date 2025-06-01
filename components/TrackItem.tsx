@@ -16,7 +16,7 @@ function formatTime(seconds: number) {
 
 type TrackItemComponentProps = {
   track: RNTrack;
-  album: AlbumProps;
+  album?: AlbumProps;
   thisSongSelected: boolean;
 };
 
@@ -51,7 +51,7 @@ export const TrackItem = ({
           width: "70%",
         }}
       >
-        {album?.tracks && (
+        {track && (
           <Text
             style={{
               color: canPlayTrack ? "black" : "darkgrey",
@@ -87,7 +87,7 @@ export const TrackItem = ({
           </Text>
           {track.trackArtists &&
           track.trackArtists.length &&
-          track.trackArtists[0].artistName !== album.artist.name ? (
+          track.trackArtists[0].artistName !== track.artist ? (
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"

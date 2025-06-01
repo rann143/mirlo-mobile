@@ -2,7 +2,13 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { API_ROOT } from "@/constants/api-root";
 import { usePlayer } from "@/state/PlayerContext";
 import { TouchableOpacity, Text, StyleSheet, Pressable } from "react-native";
-import { useCallback, useState, useEffect, PropsWithChildren } from "react";
+import {
+  useCallback,
+  useState,
+  useEffect,
+  PropsWithChildren,
+  useRef,
+} from "react";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import { isEqual } from "lodash";
 import { TrackItem } from "./TrackItem";
@@ -22,16 +28,37 @@ export default function PlayPauseWrapper({
   const audioURL = trackObject?.url;
   const [thisSongSelected, setThisSongSelected] = useState<boolean>(false);
   const { user } = useAuthContext();
+  const trackPlayerInfo = useRef(null);
 
   const canPlayTrack = isTrackOwnedOrPreview(trackObject, user, selectedAlbum);
 
+  async function getTrackPlayerInfo() {
+    const queue = (await TrackPlayer.getQueue()) as RNTrack[];
+    const currentTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
+  }
+
   useEffect(() => {
-    if (activeTrack?.url == audioURL) {
-      setThisSongSelected(true);
-    } else {
-      setThisSongSelected(false);
-    }
-  }, [activeTrack]);
+    const checkTrack = async () => {
+      try {
+        const queue = await TrackPlayer.getQueue();
+        const currentTrack = await TrackPlayer.getActiveTrack();
+
+        const isSameAlbum =
+          currentTrack?.trackGroup.urlSlug === trackObject.trackGroup.urlSlug &&
+          playableTracks.length === queue?.length;
+
+        if (activeTrack?.url === audioURL && isSameAlbum) {
+          setThisSongSelected(true);
+        } else {
+          setThisSongSelected(false);
+        }
+      } catch (error) {
+        console.error("Error checking track:", error);
+      }
+    };
+
+    checkTrack();
+  }, [activeTrack, playableTracks]);
 
   const togglePlayBack = async (
     playBackState: PlaybackState | { state: undefined }
@@ -51,7 +78,8 @@ export default function PlayPauseWrapper({
       const currentTrack = await TrackPlayer.getActiveTrack();
 
       const isSameAlbum =
-        currentTrack?.trackGroup.urlSlug === trackObject.trackGroup.urlSlug
+        currentTrack?.trackGroup.urlSlug === trackObject.trackGroup.urlSlug &&
+        playableTracks.length === queue.length
           ? true
           : false;
 
@@ -103,7 +131,7 @@ export default function PlayPauseWrapper({
     >
       <TrackItem
         track={trackObject}
-        album={selectedAlbum}
+        album={selectedAlbum ? selectedAlbum : undefined}
         thisSongSelected={thisSongSelected}
       ></TrackItem>
     </Pressable>

@@ -10,19 +10,26 @@ import {
   TouchableOpacity,
   Pressable,
 } from "react-native";
-import { useLocalSearchParams, Stack, useRouter, Link } from "expo-router";
+import {
+  useLocalSearchParams,
+  Stack,
+  useRouter,
+  Link,
+  useFocusEffect,
+} from "expo-router";
 import { usePlayer } from "@/state/PlayerContext";
 import { isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryAlbum } from "@/queries/queries";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { API_ROOT } from "@/constants/api-root";
 import { API_KEY } from "@/constants/api-key";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TrackItem } from "@/components/TrackItem";
 import PlayPauseWrapper from "@/components/PlayPauseWrapper";
+import uuid from "react-native-uuid";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -33,65 +40,76 @@ type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 function AlbumPlayButton() {
   const { playbackState, activeTrack, playableTracks, setActiveTrack } =
     usePlayer();
+  const [q, setQ] = useState<RNTrack[] | null>(null);
 
-  const togglePlayBack = async (
-    playBackState: PlaybackState | { state: undefined }
-  ) => {
-    try {
-      const queue = await TrackPlayer.getQueue();
-      // Set queue if no queue currently set
-      if (!queue) {
-        console.log("no curr track: setting track");
-        await TrackPlayer.setQueue(playableTracks);
-        await TrackPlayer.play();
-        const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
-        setActiveTrack(current);
-        return;
-      }
+  useEffect(() => {
+    async function getQ() {
+      const queue = (await TrackPlayer.getQueue()) as RNTrack[];
+      setQ(queue);
+    }
+    getQ();
+    console.log("effect run");
+  }, [playableTracks]);
 
-      const currentTrack = await TrackPlayer.getActiveTrack();
-
-      const isSameAlbum =
-        currentTrack?.trackGroup.urlSlug ===
-        playableTracks[0].trackGroup.urlSlug
-          ? true
-          : false;
-
-      // Song Change to different album
-      if (!isSameAlbum) {
-        try {
+  const togglePlayBack = async () =>
+    // playBackState: PlaybackState | { state: undefined }
+    {
+      try {
+        const queue = await TrackPlayer.getQueue();
+        // Set queue if no queue currently set
+        if (!queue) {
+          console.log("no curr track: setting track");
           await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.play();
           const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
           setActiveTrack(current);
           return;
-        } catch (err) {
-          console.error("issue changing albums", err);
+        }
+
+        const currentTrack = await TrackPlayer.getActiveTrack();
+
+        const isSameAlbum =
+          currentTrack?.trackGroup.urlSlug ===
+            playableTracks[0].trackGroup.urlSlug &&
+          playableTracks.length === queue.length
+            ? true
+            : false;
+
+        // Song Change to different album
+        if (!isSameAlbum) {
+          try {
+            await TrackPlayer.setQueue(playableTracks);
+            await TrackPlayer.play();
+            const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
+            setActiveTrack(current);
+            return;
+          } catch (err) {
+            console.error("issue changing albums", err);
+            return;
+          }
+        }
+
+        if (
+          playbackState.state === State.Paused ||
+          playbackState.state === State.Ready
+        ) {
+          await TrackPlayer.play();
+          return;
+        } else if (playbackState.state === State.Playing) {
+          await TrackPlayer.pause();
+          return;
+        } else {
+          console.log(playbackState.state);
           return;
         }
+      } catch (err) {
+        console.error("issue with playback", err);
       }
-
-      if (
-        playbackState.state === State.Paused ||
-        playbackState.state === State.Ready
-      ) {
-        await TrackPlayer.play();
-        return;
-      } else if (playbackState.state === State.Playing) {
-        await TrackPlayer.pause();
-        return;
-      } else {
-        console.log(playbackState.state);
-        return;
-      }
-    } catch (err) {
-      console.error("issue with playback", err);
-    }
-  };
+    };
 
   return (
     <TouchableOpacity
-      onPress={() => togglePlayBack(playbackState)}
+      onPress={() => togglePlayBack()}
       disabled={playableTracks.length ? false : true}
     >
       <Ionicons
@@ -99,7 +117,8 @@ function AlbumPlayButton() {
           playableTracks.length
             ? playbackState.state === State.Playing &&
               activeTrack?.trackGroup?.urlSlug ===
-                playableTracks[0].trackGroup?.urlSlug
+                playableTracks[0].trackGroup?.urlSlug &&
+              playableTracks.length === q?.length
               ? "pause-circle-outline"
               : "play-circle-outline"
             : "play-circle-outline"
@@ -141,53 +160,56 @@ export default function AlbumTracks() {
   const [album, setAlbum] = useState<RNTrack[]>();
   const { user } = useAuthContext();
 
-  useEffect(() => {
-    const tracksToPlay: RNTrack[] = [];
-    const allTracks: RNTrack[] = [];
-    // Playable Index (track's queueIndex gets set to this) needed because
-    // track order doesn't aligned with proper index if there are tracks that aren't previews/purchased
-    let playableIndex = 0;
-    if (data && data.result.tracks) {
-      data.result.tracks.forEach((track) => {
-        const newTrack: RNTrack = {
-          title: track.title,
-          artist: data.result.artist.name,
-          artwork: data.result.cover.sizes[600],
-          url: `${API_ROOT}${track.audio.url}`,
-          id: data.result.id,
-          trackArtists: track.trackArtists,
-          queueIndex: track.order,
-          trackGroupId: data.result.trackGroupId,
-          trackGroup: {
-            userTrackGroupPurchases: data.result.userTrackGroupPurchases,
-            artistId: data.result.artistId,
-            urlSlug: data.result.urlSlug,
-            cover: data.result.cover,
-            title: data.result.title,
-            artist: data.result.artist,
-          },
-          audio: {
-            url: track.audio.url,
-            duration: track.audio.duration,
-          },
-          isPreview: track.isPreview,
-          order: track.order,
-          headers: {
-            "mirlo-api-key": API_KEY,
-          },
-        };
-        allTracks.push(newTrack);
+  useFocusEffect(
+    useCallback(() => {
+      const tracksToPlay: RNTrack[] = [];
+      const allTracks: RNTrack[] = [];
+      let playableIndex = 0;
 
-        if (isTrackOwnedOrPreview(newTrack, user, data.result)) {
-          newTrack.queueIndex = playableIndex;
-          playableIndex++;
-          tracksToPlay.push(newTrack);
-        }
-      });
-    }
-    setAlbum(allTracks);
-    setPlayableTracks(tracksToPlay);
-  }, [data]);
+      if (data && data.result.tracks) {
+        data.result.tracks.forEach((track) => {
+          const newTrack: RNTrack = {
+            title: track.title,
+            artist: data.result.artist.name,
+            artwork: data.result.cover.sizes[600],
+            url: `${API_ROOT}${track.audio.url}`,
+            id: data.result.id,
+            trackArtists: track.trackArtists,
+            queueIndex: track.order,
+            trackGroupId: data.result.trackGroupId,
+            trackGroup: {
+              userTrackGroupPurchases: data.result.userTrackGroupPurchases,
+              artistId: data.result.artistId,
+              urlSlug: data.result.urlSlug,
+              cover: data.result.cover,
+              title: data.result.title,
+              artist: data.result.artist,
+            },
+            audio: {
+              url: track.audio.url,
+              duration: track.audio.duration,
+            },
+            isPreview: track.isPreview,
+            order: track.order,
+            headers: {
+              "mirlo-api-key": API_KEY,
+            },
+          };
+
+          allTracks.push(newTrack);
+
+          if (isTrackOwnedOrPreview(newTrack, user, data.result)) {
+            newTrack.queueIndex = playableIndex;
+            playableIndex++;
+            tracksToPlay.push(newTrack);
+          }
+        });
+      }
+
+      setAlbum(allTracks);
+      setPlayableTracks(tracksToPlay);
+    }, [data])
+  );
 
   if (isPending) {
     return (

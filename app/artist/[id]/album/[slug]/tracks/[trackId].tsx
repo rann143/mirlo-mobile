@@ -21,7 +21,9 @@ import { API_KEY } from "@/constants/api-key";
 import { API_ROOT } from "@/constants/api-root";
 import { isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import uuid from "react-native-uuid";
+import { useFocusEffect } from "expo-router";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -36,44 +38,41 @@ export default function TrackView() {
   const [album, setAlbum] = useState<RNTrack[]>();
   const { user } = useAuthContext();
 
-  useEffect(() => {
-    if (data) {
-      const filteredTrack = data.result.tracks?.find(
-        (track) => track.id === Number(trackId)
-      );
+  useFocusEffect(
+    useCallback(() => {
+      if (data) {
+        const filteredTrack = data.result.tracks?.find(
+          (track) => track.id === Number(trackId)
+        );
 
-      if (filteredTrack) {
-        filteredTrack.trackGroup = data.result;
-        filteredTrack.title = filteredTrack.title;
-        filteredTrack.artist = data.result.artist.name;
-        filteredTrack.artwork = data.result.cover.sizes[600];
-        filteredTrack.url = `${API_ROOT}${filteredTrack.audio.url}`;
-        filteredTrack.id = filteredTrack.id;
-        filteredTrack.trackArtists = filteredTrack.trackArtists;
-        filteredTrack.queueIndex = filteredTrack.order;
-        filteredTrack.trackGroupId = data.result.trackGroupId;
-        filteredTrack.trackGroup = {
-          userTrackGroupPurchases: data.result.userTrackGroupPurchases,
-          artistId: data.result.artistId,
-          urlSlug: data.result.urlSlug,
-          cover: data.result.cover,
-          title: data.result.title,
-          artist: data.result.artist,
-        };
-        filteredTrack.audio = {
-          url: filteredTrack.audio.url,
-          duration: filteredTrack.audio.duration,
-        };
-        filteredTrack.isPreview = filteredTrack.isPreview;
-        filteredTrack.order = filteredTrack.order;
-        filteredTrack.headers = {
-          "mirlo-api-key": API_KEY,
-        };
-        setPlayableTracks([filteredTrack]);
-        setAlbum([filteredTrack]);
+        if (filteredTrack) {
+          filteredTrack.trackGroup = {
+            userTrackGroupPurchases: data.result.userTrackGroupPurchases,
+            artistId: data.result.artistId,
+            urlSlug: data.result.urlSlug,
+            cover: data.result.cover,
+            title: data.result.title,
+            artist: data.result.artist,
+          };
+          filteredTrack.artist = data.result.artist.name;
+          filteredTrack.artwork = data.result.cover.sizes[600];
+          filteredTrack.url = `${API_ROOT}${filteredTrack.audio.url}`;
+          filteredTrack.queueIndex = filteredTrack.order;
+          filteredTrack.trackGroupId = data.result.trackGroupId;
+          filteredTrack.audio = {
+            url: filteredTrack.audio.url,
+            duration: filteredTrack.audio.duration,
+          };
+          filteredTrack.headers = {
+            "mirlo-api-key": API_KEY,
+          };
+
+          setPlayableTracks([filteredTrack]);
+          setAlbum([filteredTrack]);
+        }
       }
-    }
-  }, [data]);
+    }, [data])
+  );
 
   if (isPending) {
     return (
@@ -132,10 +131,7 @@ export default function TrackView() {
           keyExtractor={(item, index) => `${index}-${item.id || item.title}`}
           renderItem={({ item }) =>
             data.result ? (
-              <PlayPauseWrapper
-                trackObject={item}
-                selectedAlbum={data.result}
-              ></PlayPauseWrapper>
+              <PlayPauseWrapper trackObject={item}></PlayPauseWrapper>
             ) : null
           }
           ListHeaderComponent={() => (
@@ -177,7 +173,7 @@ export default function TrackView() {
                   </Text>
                 </View>
                 <View>
-                  <AlbumPlayButton />
+                  <TrackPlayButton />
                 </View>
               </View>
             </View>
@@ -205,68 +201,79 @@ export default function TrackView() {
   );
 }
 
-function AlbumPlayButton() {
+function TrackPlayButton() {
   const { playbackState, activeTrack, playableTracks, setActiveTrack } =
     usePlayer();
+  const [q, setQ] = useState<RNTrack[] | null>(null);
 
-  const togglePlayBack = async (
-    playBackState: PlaybackState | { state: undefined }
-  ) => {
-    try {
-      const queue = await TrackPlayer.getQueue();
-      // Set queue if no queue currently set
-      if (!queue) {
-        console.log("no curr track: setting track");
-        await TrackPlayer.setQueue(playableTracks);
-        await TrackPlayer.play();
-        const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
-        setActiveTrack(current);
-        return;
-      }
+  async function getQ() {
+    const queue = (await TrackPlayer.getQueue()) as RNTrack[];
+    setQ(queue);
+  }
 
-      const currentTrack = await TrackPlayer.getActiveTrack();
+  useEffect(() => {
+    getQ();
+  }, [playableTracks]);
 
-      const isSameAlbum =
-        currentTrack?.trackGroup.urlSlug ===
-        playableTracks[0].trackGroup.urlSlug
-          ? true
-          : false;
-
-      // Song Change to different album
-      if (!isSameAlbum) {
-        try {
+  const togglePlayBack = async () =>
+    // playBackState: PlaybackState | { state: undefined }
+    {
+      try {
+        const queue = await TrackPlayer.getQueue();
+        // Set queue if no queue currently set
+        if (!queue) {
+          console.log("no curr track: setting track");
           await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.play();
           const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
           setActiveTrack(current);
           return;
-        } catch (err) {
-          console.error("issue changing albums", err);
+        }
+
+        const currentTrack = await TrackPlayer.getActiveTrack();
+
+        const isSameAlbum =
+          currentTrack?.trackGroup.urlSlug ===
+            playableTracks[0].trackGroup.urlSlug &&
+          playableTracks.length === queue.length
+            ? true
+            : false;
+
+        // Song Change to different album
+        if (!isSameAlbum) {
+          try {
+            await TrackPlayer.setQueue(playableTracks);
+            await TrackPlayer.play();
+            const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
+            setActiveTrack(current);
+            return;
+          } catch (err) {
+            console.error("issue changing albums", err);
+            return;
+          }
+        }
+
+        if (
+          playbackState.state === State.Paused ||
+          playbackState.state === State.Ready
+        ) {
+          await TrackPlayer.play();
+          return;
+        } else if (playbackState.state === State.Playing) {
+          await TrackPlayer.pause();
+          return;
+        } else {
+          console.log(playbackState.state);
           return;
         }
+      } catch (err) {
+        console.error("issue with playback", err);
       }
-
-      if (
-        playbackState.state === State.Paused ||
-        playbackState.state === State.Ready
-      ) {
-        await TrackPlayer.play();
-        return;
-      } else if (playbackState.state === State.Playing) {
-        await TrackPlayer.pause();
-        return;
-      } else {
-        console.log(playbackState.state);
-        return;
-      }
-    } catch (err) {
-      console.error("issue with playback", err);
-    }
-  };
+    };
 
   return (
     <TouchableOpacity
-      onPress={() => togglePlayBack(playbackState)}
+      onPress={() => togglePlayBack()}
       disabled={playableTracks.length ? false : true}
     >
       <Ionicons
@@ -274,7 +281,8 @@ function AlbumPlayButton() {
           playableTracks.length
             ? playbackState.state === State.Playing &&
               activeTrack?.trackGroup?.urlSlug ===
-                playableTracks[0].trackGroup?.urlSlug
+                playableTracks[0].trackGroup?.urlSlug &&
+              playableTracks.length === q?.length
               ? "pause-circle-outline"
               : "play-circle-outline"
             : "play-circle-outline"
