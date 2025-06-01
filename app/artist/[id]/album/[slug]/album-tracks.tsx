@@ -22,14 +22,15 @@ import { isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryAlbum } from "@/queries/queries";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { API_ROOT } from "@/constants/api-root";
 import { API_KEY } from "@/constants/api-key";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { TrackItem } from "@/components/TrackItem";
 import PlayPauseWrapper from "@/components/PlayPauseWrapper";
-import uuid from "react-native-uuid";
+import { useTrackPlayerEvents, Event } from "react-native-track-player";
+import { isEqual } from "lodash";
+import { useProcessedAlbumTracks } from "@/scripts/useProcessedAlbumTracks";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -40,7 +41,7 @@ type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 function AlbumPlayButton() {
   const { playbackState, activeTrack, playableTracks, setActiveTrack } =
     usePlayer();
-  const [q, setQ] = useState<RNTrack[] | null>(null);
+  const [q, setQ] = useState<RNTrack[]>([]);
 
   useEffect(() => {
     async function getQ() {
@@ -156,60 +157,16 @@ export default function AlbumTracks() {
     queryAlbum({ slug: slug, id: id })
   );
   const router = useRouter();
-  const { playableTracks, setPlayableTracks } = usePlayer();
-  const [album, setAlbum] = useState<RNTrack[]>();
+  const { setPlayableTracks } = usePlayer();
   const { user } = useAuthContext();
+  const { allTracks, playableTracks } = useProcessedAlbumTracks(data);
 
-  useFocusEffect(
-    useCallback(() => {
-      const tracksToPlay: RNTrack[] = [];
-      const allTracks: RNTrack[] = [];
-      let playableIndex = 0;
+  console.log("album track rerendered");
 
-      if (data && data.result.tracks) {
-        data.result.tracks.forEach((track) => {
-          const newTrack: RNTrack = {
-            title: track.title,
-            artist: data.result.artist.name,
-            artwork: data.result.cover.sizes[600],
-            url: `${API_ROOT}${track.audio.url}`,
-            id: data.result.id,
-            trackArtists: track.trackArtists,
-            queueIndex: track.order,
-            trackGroupId: data.result.trackGroupId,
-            trackGroup: {
-              userTrackGroupPurchases: data.result.userTrackGroupPurchases,
-              artistId: data.result.artistId,
-              urlSlug: data.result.urlSlug,
-              cover: data.result.cover,
-              title: data.result.title,
-              artist: data.result.artist,
-            },
-            audio: {
-              url: track.audio.url,
-              duration: track.audio.duration,
-            },
-            isPreview: track.isPreview,
-            order: track.order,
-            headers: {
-              "mirlo-api-key": API_KEY,
-            },
-          };
-
-          allTracks.push(newTrack);
-
-          if (isTrackOwnedOrPreview(newTrack, user, data.result)) {
-            newTrack.queueIndex = playableIndex;
-            playableIndex++;
-            tracksToPlay.push(newTrack);
-          }
-        });
-      }
-
-      setAlbum(allTracks);
-      setPlayableTracks(tracksToPlay);
-    }, [data])
-  );
+  useEffect(() => {
+    setPlayableTracks(playableTracks);
+    console.log("set playable effect");
+  }, [playableTracks]);
 
   if (isPending) {
     return (
@@ -282,7 +239,7 @@ export default function AlbumTracks() {
         <FlatList
           style={{ width: "100%", marginTop: 10 }}
           contentContainerStyle={styles.listContainer}
-          data={album}
+          data={allTracks}
           keyExtractor={(item, index) => `${index}-${item.id || item.title}`}
           renderItem={({ item }) =>
             selectedAlbum ? (

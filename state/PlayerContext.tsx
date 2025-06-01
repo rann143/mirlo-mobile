@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect, useMemo } from "react";
 import TrackPlayer, {
   Capability,
   Event,
@@ -15,7 +15,7 @@ interface PlayerContextType {
   progress: Progress;
   playableTracks: Array<RNTrack>;
   setPlayableTracks: (tracks: RNTrack[]) => void;
-  activeTrack: Track | undefined;
+  activeTrack: RNTrack | undefined;
   setActiveTrack: (track: RNTrack) => void;
   shuffled: boolean;
   setShuffled: (shuffled: boolean) => void;
@@ -66,11 +66,15 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Issue setting up Track Player", err);
     }
   }
+  const memoizedPlayableTracks = useMemo(
+    () => playableTracks,
+    [playableTracks]
+  );
 
   const value: PlayerContextType = {
     playbackState: playBackState,
     progress: progress,
-    playableTracks: playableTracks,
+    playableTracks: memoizedPlayableTracks,
     setPlayableTracks: setPlayableTracks,
     activeTrack: activeTrack,
     setActiveTrack: setActiveTrack,
