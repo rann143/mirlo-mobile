@@ -4,7 +4,6 @@ import {
   SafeAreaView,
   StyleSheet,
   FlatList,
-  Button,
   Image,
   ActivityIndicator,
   TouchableOpacity,
@@ -12,7 +11,6 @@ import {
 } from "react-native";
 import {
   useLocalSearchParams,
-  Stack,
   useRouter,
   Link,
   useFocusEffect,
@@ -22,101 +20,92 @@ import { isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryAlbum } from "@/queries/queries";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { API_ROOT } from "@/constants/api-root";
 import { API_KEY } from "@/constants/api-key";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import PlayPauseWrapper from "@/components/PlayPauseWrapper";
-import { useTrackPlayerEvents, Event } from "react-native-track-player";
-import { isEqual } from "lodash";
-import { useProcessedAlbumTracks } from "@/scripts/useProcessedAlbumTracks";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
-// Currently the difference between album-track.tsx and collections-tracks.tsx
-// is that the back button navigates to different tabs depending on if this album
-// is from recent releases (index page) or collections
-
 function AlbumPlayButton() {
-  const { playbackState, activeTrack, playableTracks, setActiveTrack } =
+  const { isPlaying, activeTrack, playableTracks, setActiveTrack } =
     usePlayer();
   const [q, setQ] = useState<RNTrack[]>([]);
 
   useEffect(() => {
     async function getQ() {
-      const queue = (await TrackPlayer.getQueue()) as RNTrack[];
-      setQ(queue);
+      try {
+        const queue = (await TrackPlayer.getQueue()) as RNTrack[];
+        setQ(queue);
+      } catch (error) {
+        console.error("Error getting queue:", error);
+      }
     }
     getQ();
     console.log("effect run");
-  }, [playableTracks]);
+  }, []);
 
-  const togglePlayBack = async () =>
-    // playBackState: PlaybackState | { state: undefined }
-    {
-      try {
-        const queue = await TrackPlayer.getQueue();
-        // Set queue if no queue currently set
-        if (!queue) {
-          console.log("no curr track: setting track");
+  const togglePlayBack = useCallback(async () => {
+    try {
+      const queue = await TrackPlayer.getQueue();
+
+      // Set queue if no queue currently set or if the queue is empty
+      if (!queue || queue.length === 0) {
+        console.log("no curr track or empty queue: setting track");
+        await TrackPlayer.setQueue(playableTracks);
+        await TrackPlayer.play();
+        const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
+        setActiveTrack(current);
+        return;
+      }
+
+      const currentTrack = await TrackPlayer.getActiveTrack();
+
+      // Check if the current album in the player is the same as the album for playableTracks
+      const isSameAlbum =
+        currentTrack?.trackGroup?.urlSlug ===
+          playableTracks[0]?.trackGroup?.urlSlug &&
+        playableTracks.length === queue.length; // More robust check
+
+      // Song Change to different album
+      if (!isSameAlbum) {
+        console.log("changing to different album");
+        try {
           await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.play();
           const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
           setActiveTrack(current);
           return;
-        }
-
-        const currentTrack = await TrackPlayer.getActiveTrack();
-
-        const isSameAlbum =
-          currentTrack?.trackGroup.urlSlug ===
-            playableTracks[0].trackGroup.urlSlug &&
-          playableTracks.length === queue.length
-            ? true
-            : false;
-
-        // Song Change to different album
-        if (!isSameAlbum) {
-          try {
-            await TrackPlayer.setQueue(playableTracks);
-            await TrackPlayer.play();
-            const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
-            setActiveTrack(current);
-            return;
-          } catch (err) {
-            console.error("issue changing albums", err);
-            return;
-          }
-        }
-
-        if (
-          playbackState.state === State.Paused ||
-          playbackState.state === State.Ready
-        ) {
-          await TrackPlayer.play();
-          return;
-        } else if (playbackState.state === State.Playing) {
-          await TrackPlayer.pause();
-          return;
-        } else {
-          console.log(playbackState.state);
+        } catch (err) {
+          console.error("issue changing albums", err);
           return;
         }
-      } catch (err) {
-        console.error("issue with playback", err);
       }
-    };
+
+      // If it's the same album, toggle play/pause
+      if (!isPlaying) {
+        await TrackPlayer.play();
+        return;
+      } else {
+        await TrackPlayer.pause();
+        return;
+      }
+    } catch (err) {
+      console.error("issue with playback", err);
+    }
+  }, [isPlaying, playableTracks, setActiveTrack]);
 
   return (
     <TouchableOpacity
-      onPress={() => togglePlayBack()}
+      onPress={togglePlayBack}
       disabled={playableTracks.length ? false : true}
     >
       <Ionicons
         name={
           playableTracks.length
-            ? playbackState.state === State.Playing &&
+            ? isPlaying &&
               activeTrack?.trackGroup?.urlSlug ===
                 playableTracks[0].trackGroup?.urlSlug &&
               playableTracks.length === q?.length
@@ -131,6 +120,8 @@ function AlbumPlayButton() {
     </TouchableOpacity>
   );
 }
+
+const MemoizedAlbumPlayButton = React.memo(AlbumPlayButton);
 
 function formatUTCDate(utcDate: string | undefined) {
   if (!utcDate) return undefined;
@@ -159,14 +150,58 @@ export default function AlbumTracks() {
   const router = useRouter();
   const { setPlayableTracks } = usePlayer();
   const { user } = useAuthContext();
-  const { allTracks, playableTracks } = useProcessedAlbumTracks(data);
+  const [album, setAlbum] = useState<RNTrack[]>();
 
-  console.log("album track rerendered");
+  useFocusEffect(
+    useCallback(() => {
+      const tracksToPlay: RNTrack[] = [];
+      const allTracks: RNTrack[] = [];
+      let playableIndex = 0;
 
-  useEffect(() => {
-    setPlayableTracks(playableTracks);
-    console.log("set playable effect");
-  }, [playableTracks]);
+      if (data && data.result.tracks) {
+        data.result.tracks.forEach((track) => {
+          const newTrack: RNTrack = {
+            title: track.title,
+            artist: data.result.artist.name,
+            artwork: data.result.cover.sizes[600],
+            url: `${API_ROOT}${track.audio.url}`,
+            id: data.result.id,
+            trackArtists: track.trackArtists,
+            queueIndex: track.order,
+            trackGroupId: data.result.trackGroupId,
+            trackGroup: {
+              userTrackGroupPurchases: data.result.userTrackGroupPurchases,
+              artistId: data.result.artistId,
+              urlSlug: data.result.urlSlug,
+              cover: data.result.cover,
+              title: data.result.title,
+              artist: data.result.artist,
+            },
+            audio: {
+              url: track.audio.url,
+              duration: track.audio.duration,
+            },
+            isPreview: track.isPreview,
+            order: track.order,
+            headers: {
+              "mirlo-api-key": API_KEY,
+            },
+          };
+
+          allTracks.push(newTrack);
+
+          if (isTrackOwnedOrPreview(newTrack, user, data.result)) {
+            newTrack.queueIndex = playableIndex;
+            playableIndex++;
+            tracksToPlay.push(newTrack);
+          }
+        });
+      }
+
+      setAlbum(allTracks);
+      setPlayableTracks(tracksToPlay);
+    }, [data])
+  );
 
   if (isPending) {
     return (
@@ -239,7 +274,7 @@ export default function AlbumTracks() {
         <FlatList
           style={{ width: "100%", marginTop: 10 }}
           contentContainerStyle={styles.listContainer}
-          data={allTracks}
+          data={album}
           keyExtractor={(item, index) => `${index}-${item.id || item.title}`}
           renderItem={({ item }) =>
             selectedAlbum ? (
@@ -288,7 +323,7 @@ export default function AlbumTracks() {
                   </Text>
                 </View>
                 <View>
-                  <AlbumPlayButton />
+                  <MemoizedAlbumPlayButton />
                 </View>
               </View>
             </View>
