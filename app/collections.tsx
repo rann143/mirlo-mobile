@@ -100,20 +100,6 @@ export default function Collections() {
                   track={item.track}
                 />
               ) : null}
-              {/* <TrackGroupItem
-                id={item.trackGroup.id}
-                cover={item.trackGroup.cover}
-                title={item.trackGroup.title}
-                artist={item.trackGroup.artist}
-                artistId={item.trackGroup.artistId}
-                urlSlug={item.trackGroup.urlSlug}
-                userTrackGroupPurchases={
-                  item.trackGroup.userTrackGroupPurchases
-                }
-                releaseDate={item.trackGroup.releaseDate}
-                tracks={item.trackGroup.tracks}
-                trackGroupId={item.trackGroupId}
-              ></TrackGroupItem> */}
             </Link>
           )}
         ></FlatList>
