@@ -30,8 +30,13 @@ import PlayPauseWrapper from "@/components/PlayPauseWrapper";
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
 function AlbumPlayButton() {
-  const { isPlaying, activeTrack, playableTracks, setActiveTrack } =
-    usePlayer();
+  const {
+    playbackState,
+    isPlaying,
+    activeTrack,
+    playableTracks,
+    setActiveTrack,
+  } = usePlayer();
   const [q, setQ] = useState<RNTrack[]>([]);
 
   useEffect(() => {
@@ -44,7 +49,6 @@ function AlbumPlayButton() {
       }
     }
     getQ();
-    console.log("effect run");
   }, []);
 
   const togglePlayBack = useCallback(async () => {
@@ -53,7 +57,6 @@ function AlbumPlayButton() {
 
       // Set queue if no queue currently set or if the queue is empty
       if (!queue || queue.length === 0) {
-        console.log("no curr track or empty queue: setting track");
         await TrackPlayer.setQueue(playableTracks);
         await TrackPlayer.play();
         const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
@@ -71,7 +74,6 @@ function AlbumPlayButton() {
 
       // Song Change to different album
       if (!isSameAlbum) {
-        console.log("changing to different album");
         try {
           await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.play();
@@ -85,12 +87,20 @@ function AlbumPlayButton() {
       }
 
       // If it's the same album, toggle play/pause
-      if (!isPlaying) {
+      if (
+        playbackState.state === State.Paused ||
+        playbackState.state === State.Ready
+      ) {
         await TrackPlayer.play();
         return;
-      } else {
+      } else if (
+        playbackState.state === State.Playing ||
+        playbackState.state === State.Buffering
+      ) {
         await TrackPlayer.pause();
         return;
+      } else {
+        console.error(`playback state: ${playbackState.state} not expected`);
       }
     } catch (err) {
       console.error("issue with playback", err);
@@ -105,7 +115,7 @@ function AlbumPlayButton() {
       <Ionicons
         name={
           playableTracks.length
-            ? isPlaying &&
+            ? (isPlaying || playbackState.state == State.Buffering) &&
               activeTrack?.trackGroup?.urlSlug ===
                 playableTracks[0].trackGroup?.urlSlug &&
               playableTracks.length === q?.length

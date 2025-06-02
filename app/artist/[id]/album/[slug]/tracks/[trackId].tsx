@@ -202,8 +202,13 @@ export default function TrackView() {
 }
 
 function TrackPlayButton() {
-  const { playbackState, activeTrack, playableTracks, setActiveTrack } =
-    usePlayer();
+  const {
+    isPlaying,
+    playbackState,
+    activeTrack,
+    playableTracks,
+    setActiveTrack,
+  } = usePlayer();
   const [q, setQ] = useState<RNTrack[] | null>(null);
 
   async function getQ() {
@@ -259,12 +264,14 @@ function TrackPlayButton() {
         ) {
           await TrackPlayer.play();
           return;
-        } else if (playbackState.state === State.Playing) {
+        } else if (
+          playbackState.state === State.Playing ||
+          playbackState.state === State.Buffering
+        ) {
           await TrackPlayer.pause();
           return;
         } else {
-          console.log(playbackState.state);
-          return;
+          console.error(`playback state: ${playbackState.state} not expected`);
         }
       } catch (err) {
         console.error("issue with playback", err);
@@ -279,7 +286,7 @@ function TrackPlayButton() {
       <Ionicons
         name={
           playableTracks.length
-            ? playbackState.state === State.Playing &&
+            ? (isPlaying || playbackState.state === State.Buffering) &&
               activeTrack?.trackGroup?.urlSlug ===
                 playableTracks[0].trackGroup?.urlSlug &&
               playableTracks.length === q?.length

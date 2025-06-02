@@ -45,7 +45,7 @@ export default function Player({ style }: ViewProps) {
 }
 
 function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
-  const { playbackState } = usePlayer();
+  const { playbackState, isPlaying } = usePlayer();
   const playIcon = <Ionicons name="play" size={40} />;
   const pauseIcon = <Ionicons name="pause" size={40} />;
 
@@ -56,7 +56,10 @@ function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
         playbackState.state === State.Ready
       ) {
         await TrackPlayer.play();
-      } else if (playbackState.state === State.Playing) {
+      } else if (
+        playbackState.state === State.Playing ||
+        playbackState.state === State.Buffering
+      ) {
         await TrackPlayer.pause();
       } else {
         console.log(playbackState.state);
@@ -73,7 +76,7 @@ function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
     >
       <Ionicons
         name={
-          playbackState.state === State.Playing
+          playbackState.state === State.Buffering || isPlaying
             ? "pause-circle-outline"
             : "play-circle-outline"
         }

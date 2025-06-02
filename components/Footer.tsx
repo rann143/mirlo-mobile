@@ -144,7 +144,7 @@ export default function Footer({ style }: ViewProps) {
 }
 
 function FooterPlayButton() {
-  const { playbackState } = usePlayer();
+  const { playbackState, isPlaying } = usePlayer();
   const playIcon = <Ionicons name="play" size={40} />;
   const pauseIcon = <Ionicons name="pause" size={40} />;
 
@@ -155,9 +155,15 @@ function FooterPlayButton() {
         playbackState.state === State.Ready
       ) {
         await TrackPlayer.play();
-      } else if (playbackState.state === State.Playing) {
+        return;
+      } else if (
+        playbackState.state === State.Playing ||
+        playbackState.state === State.Buffering
+      ) {
         await TrackPlayer.pause();
+        return;
       } else {
+        console.error(`playback state: ${playbackState.state} not expected`);
       }
     } catch (error) {
       console.error("issue with player toggle playback botton", error);
@@ -170,7 +176,11 @@ function FooterPlayButton() {
       onPress={() => onPress(playbackState)}
     >
       <Ionicons
-        name={playbackState.state === State.Playing ? "pause-outline" : "play"}
+        name={
+          playbackState.state === State.Buffering || isPlaying
+            ? "pause-outline"
+            : "play"
+        }
         size={40}
       />
     </TouchableOpacity>
