@@ -11,7 +11,14 @@ export default function TrackGroupItem({
 }: AlbumProps) {
   return (
     <View style={styles.listItem}>
-      <Image source={{ uri: cover?.sizes[120] }} style={styles.image} />
+      <Image
+        source={
+          cover?.sizes
+            ? { uri: cover?.sizes[120] }
+            : { uri: require("@/assets/images/mirlo-logo-logoOnly-light.png") }
+        }
+        style={styles.image}
+      />
       <View style={{ marginLeft: 15, width: 300 }}>
         <Text
           style={{ color: "black", fontSize: 15, fontWeight: "bold" }}

@@ -12,7 +12,11 @@ export default function CollectionPurchase({
   return (
     <View style={styles.listItem}>
       <Image
-        source={{ uri: trackGroup.cover?.sizes[120] }}
+        source={
+          trackGroup.cover?.sizes
+            ? { uri: trackGroup.cover?.sizes[120] }
+            : { uri: require("@/assets/images/mirlo-logo-logoOnly-light.png") }
+        }
         style={styles.image}
       />
       <View style={{ marginLeft: 15, width: 300 }}>
