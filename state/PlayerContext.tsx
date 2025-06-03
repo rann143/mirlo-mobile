@@ -37,12 +37,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     setUpTrackPlayer();
   }, []);
 
-  // Causing shuffled to be set false when it's not desired (ie. just changing screens). Playable tracks gets changed everytime in album-tracks view because
-  // we're using useFocusEffect
-  // useEffect(() => {
-  //   setShuffled(false);
-  // }, [playableTracks]);
-
   useTrackPlayerEvents(
     [
       Event.RemoteNext,
