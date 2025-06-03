@@ -8,10 +8,6 @@ import { useEffect, useState } from "react";
 
 export default function ShuffleButton() {
   const { shuffled, setShuffled } = usePlayer();
-  //const [q, setQ] = useState<RNTrack[]>([]);
-  const shuffleIcon = (
-    <Ionicons name="shuffle" size={30} color={shuffled ? "#BE3455" : "black"} />
-  );
 
   const onPress = async () => {
     if (!shuffled) {
@@ -106,7 +102,13 @@ export default function ShuffleButton() {
   return (
     <View>
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text>{shuffleIcon}</Text>
+        <Text>
+          <Ionicons
+            name="shuffle"
+            size={30}
+            color={shuffled ? "#BE3455" : "black"}
+          />
+        </Text>
       </TouchableOpacity>
     </View>
   );

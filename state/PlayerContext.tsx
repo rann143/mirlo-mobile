@@ -37,9 +37,11 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     setUpTrackPlayer();
   }, []);
 
-  useEffect(() => {
-    setShuffled(false);
-  }, [playableTracks]);
+  // Causing shuffled to be set false when it's not desired (ie. just changing screens). Playable tracks gets changed everytime in album-tracks view because
+  // we're using useFocusEffect
+  // useEffect(() => {
+  //   setShuffled(false);
+  // }, [playableTracks]);
 
   useTrackPlayerEvents(
     [
@@ -77,15 +79,11 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const isPlaying = playerState === State.Playing;
-  const memoizedPlayableTracks = useMemo(
-    () => playableTracks,
-    [playableTracks]
-  );
 
   const value: PlayerContextType = useMemo(
     () => ({
       playbackState: playBackState,
-      playableTracks: memoizedPlayableTracks, // This was already memoized indirectly by the array reference, but explicit useMemo is fine
+      playableTracks: playableTracks, // This was already memoized indirectly by the array reference, but explicit useMemo is fine
       setPlayableTracks: setPlayableTracks,
       activeTrack: activeTrack,
       setActiveTrack: setActiveTrack,

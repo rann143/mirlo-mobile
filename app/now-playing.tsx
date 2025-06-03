@@ -15,10 +15,14 @@ import Slider from "@react-native-community/slider";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NowPlaying() {
-  const { activeTrack } = usePlayer() as { activeTrack: RNTrack | undefined };
+  const { activeTrack, shuffled } = usePlayer() as {
+    activeTrack: RNTrack | undefined;
+    shuffled: boolean;
+  };
   const progress = useProgress();
   const router = useRouter();
   const { width } = useWindowDimensions();
+
   return (
     <SafeAreaView style={styles.container}>
       <View

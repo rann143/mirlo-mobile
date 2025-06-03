@@ -23,8 +23,13 @@ export default function PlayPauseWrapper({
   style,
   selectedAlbum,
 }: PlayPauseWrapper) {
-  const { playbackState, playableTracks, activeTrack, setActiveTrack } =
-    usePlayer();
+  const {
+    playbackState,
+    playableTracks,
+    activeTrack,
+    setActiveTrack,
+    setShuffled,
+  } = usePlayer();
   const audioURL = trackObject?.url;
   const [thisSongSelected, setThisSongSelected] = useState<boolean>(false);
   const { user } = useAuthContext();
@@ -47,6 +52,7 @@ export default function PlayPauseWrapper({
           currentTrack?.trackGroup.urlSlug === trackObject.trackGroup.urlSlug &&
           playableTracks.length === queue?.length;
 
+        // Need to check isSameAlbum because track could be located on it's respective album view or in individual track view
         if (activeTrack?.url === audioURL && isSameAlbum) {
           setThisSongSelected(true);
         } else {
@@ -86,6 +92,7 @@ export default function PlayPauseWrapper({
       // Song Change to different album
       if (!isSameAlbum) {
         try {
+          setShuffled(false);
           await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.load(trackObject);
           await TrackPlayer.play();

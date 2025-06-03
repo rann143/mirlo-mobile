@@ -36,6 +36,7 @@ function AlbumPlayButton() {
     activeTrack,
     playableTracks,
     setActiveTrack,
+    setShuffled,
   } = usePlayer();
   const [q, setQ] = useState<RNTrack[]>([]);
 
@@ -75,6 +76,7 @@ function AlbumPlayButton() {
       // Song Change to different album
       if (!isSameAlbum) {
         try {
+          setShuffled(false);
           await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.play();
           const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
