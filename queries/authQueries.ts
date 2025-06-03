@@ -80,7 +80,7 @@ export function useLogoutMutation() {
 export async function authRefresh() {
   try {
     await CookieManager.clearAll();
-    const res: Response = await api.post("/auth/refresh", {});
+    await api.post("/auth/refresh", {});
     await SecureStore.deleteItemAsync("jwt");
     await SecureStore.deleteItemAsync("refresh");
     await storeTokens();
