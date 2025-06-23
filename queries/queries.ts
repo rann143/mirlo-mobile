@@ -70,6 +70,26 @@ export function queryTopSold(opts: { take?: number }) {
   });
 }
 
+const fetchMostPlayed: QueryFunction<
+  { results: AlbumProps[] },
+  [
+    "fetchMostPlayed",
+    {
+      take?: number;
+    }
+  ]
+> = ({ queryKey: [_, { take }], signal }) => {
+  const params = new URLSearchParams();
+  if (take) params.append("take", String(take));
+  return api.get(`/v1/trackGroups/mostPlayed?${params}`, { signal });
+};
+
+export function queryMostPlayed(opts: { take?: number }) {
+  return queryOptions({
+    queryKey: ["fetchMostPlayed", opts],
+    queryFn: fetchMostPlayed,
+  });
+}
 const fetchUserPurchases: QueryFunction<
   { results: UserTrackGroupPurchase[] },
   ["fetchUserPurchases", { userId: number | undefined }, ...any]
