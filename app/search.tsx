@@ -11,9 +11,11 @@ import { useSearch } from "@/state/SearchContext";
 import { useEffect, useMemo, useRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
-import { queryTags, queryUserPurchases } from "@/queries/queries";
+import { queryTags } from "@/queries/queries";
 import TagPill from "@/components/TagPill";
 import { optionDisplay } from "@/components/SearchOptionRenderer";
+import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function SearchPage() {
   const {
@@ -31,6 +33,7 @@ export default function SearchPage() {
     queryTags({ orderBy: "count", take: 15 })
   );
   const { top, bottom } = useSafeAreaInsets();
+  const router = useRouter();
 
   const tagPills = useMemo(() => {
     const group = tags?.results.map((tag, index) => {
@@ -86,7 +89,6 @@ export default function SearchPage() {
         backgroundColor: "white",
         paddingTop: top,
         paddingBottom: bottom,
-        // justifyContent: "space-between",
       }}
     >
       <SearchHeader style={{ borderBottomWidth: 1, marginBottom: 1 }} />
@@ -95,7 +97,7 @@ export default function SearchPage() {
         !showSuggestions &&
         !searchValue &&
         !searchResults.length && (
-          <View style={{ marginTop: 30, marginHorizontal: 20, gap: 20 }}>
+          <View style={{ marginTop: 20, marginHorizontal: 20, gap: 20 }}>
             <Text>Or Search By Popular Tags:</Text>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5 }}>
               {tagPills}
@@ -143,6 +145,20 @@ export default function SearchPage() {
           keyExtractor={(item, index) => `${index}-${item.id || item.name}`}
         />
       )}
+      <View
+        style={{
+          marginHorizontal: 20,
+          gap: 20,
+          marginTop: 15,
+        }}
+      >
+        <Link href={{ pathname: "/topSold" }} onPress={() => router.back()}>
+          Best Selling{" >"}
+        </Link>
+        <Link href={{ pathname: "/mostPlayed" }} onPress={() => router.back()}>
+          Most Listened To{" >"}
+        </Link>
+      </View>
     </View>
   );
 }
