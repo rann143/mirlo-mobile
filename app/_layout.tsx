@@ -107,6 +107,18 @@ export default function RootLayout() {
                     headerShown: false,
                   }}
                 />
+                <Stack.Screen
+                  name="mostPlayed"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="topSold"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
               </Stack>
               <Footer />
               <StatusBar style="dark" backgroundColor="white" />
