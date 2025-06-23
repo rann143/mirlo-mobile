@@ -49,6 +49,27 @@ export function queryTrackGroups(opts: {
   });
 }
 
+const fetchTopSold: QueryFunction<
+  { results: AlbumProps[] },
+  [
+    "fetchTopSold",
+    {
+      take?: number;
+    }
+  ]
+> = ({ queryKey: [_, { take }], signal }) => {
+  const params = new URLSearchParams();
+  if (take) params.append("take", String(take));
+  return api.get(`/v1/trackGroups/topSold?${params}`, { signal });
+};
+
+export function queryTopSold(opts: { take?: number }) {
+  return queryOptions({
+    queryKey: ["fetchTopSold", opts],
+    queryFn: fetchTopSold,
+  });
+}
+
 const fetchUserPurchases: QueryFunction<
   { results: UserTrackGroupPurchase[] },
   ["fetchUserPurchases", { userId: number | undefined }, ...any]
