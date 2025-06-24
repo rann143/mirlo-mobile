@@ -3,11 +3,8 @@ import TrackPlayer, {
   Capability,
   Event,
   usePlaybackState,
-  useProgress,
   useTrackPlayerEvents,
   PlaybackState,
-  Progress,
-  Track,
   State,
 } from "react-native-track-player";
 
