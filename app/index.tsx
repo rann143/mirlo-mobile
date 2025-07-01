@@ -28,6 +28,7 @@ export default function Index() {
       params.append("skip", String(pageParam));
       params.append("take", String(20));
       params.append("distinctArtists", "true");
+      params.append("isReleased", String("released"));
 
       return api.get(`/v1/trackGroups?${params}`, {});
     },
