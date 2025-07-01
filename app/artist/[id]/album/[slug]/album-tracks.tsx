@@ -26,6 +26,7 @@ import { API_KEY } from "@/constants/api-key";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import PlayPauseWrapper from "@/components/PlayPauseWrapper";
+import { useTranslation } from "react-i18next";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -136,6 +137,7 @@ function AlbumPlayButton() {
 const MemoizedAlbumPlayButton = React.memo(AlbumPlayButton);
 
 function formatUTCDate(utcDate: string | undefined) {
+  const { t } = useTranslation("translation");
   if (!utcDate) return undefined;
   const date = new Date(utcDate);
 
@@ -150,8 +152,11 @@ function formatUTCDate(utcDate: string | undefined) {
   const result = localDate.toLocaleDateString("en-US", options);
 
   return date.getTime() > Date.now()
-    ? `Will be released on ${result}`
-    : `Released ${result}`;
+    ? `${t("trackGroupCard.releaseDate")} ${result}`
+    : t("trackGroupCard.released").substring(
+        0,
+        t("trackGroupCard.released").indexOf(":") + 1
+      ) + ` ${result}`;
 }
 
 export default function AlbumTracks() {
@@ -163,6 +168,7 @@ export default function AlbumTracks() {
   const { setPlayableTracks } = usePlayer();
   const { user } = useAuthContext();
   const [album, setAlbum] = useState<RNTrack[]>();
+  const { t } = useTranslation("translation");
 
   useFocusEffect(
     useCallback(() => {
@@ -349,7 +355,7 @@ export default function AlbumTracks() {
                   marginBottom: 15,
                 }}
               >
-                About
+                {t("trackGroupDetails.about")}
               </Text>
               <Text style={{ fontStyle: "italic", marginBottom: 20 }}>
                 {formatUTCDate(selectedAlbum?.releaseDate)}

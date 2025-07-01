@@ -65,7 +65,8 @@
           "configureAndroidBackup": true,
           "faceIDPermission": "Allow Mirlo-Mobile to access your Face ID biometric data."
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

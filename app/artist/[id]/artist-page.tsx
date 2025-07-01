@@ -16,12 +16,14 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Markdown from "react-native-markdown-display";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function ArtistPage() {
   const { id } = useLocalSearchParams();
   const { data, isError, isPending, error } = useQuery(
     queryArtist({ artistSlug: String(id) ?? "" })
   );
+  const { t } = useTranslation("translation");
 
   if (isPending) {
     return (
@@ -187,7 +189,9 @@ export default function ArtistPage() {
               marginBottom: 70,
             }}
           >
-            <Text style={{ fontWeight: "bold" }}>About</Text>
+            <Text style={{ fontWeight: "bold" }}>
+              {t("trackGroupDetails.about")}
+            </Text>
             <Text>
               <Markdown>
                 {artistInfo.bio

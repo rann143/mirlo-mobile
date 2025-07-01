@@ -13,6 +13,7 @@ import { useLoginMutation } from "@/queries/authQueries";
 import { useRouter } from "expo-router";
 import * as Linking from "expo-linking";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type LoginInputs = {
   email: string;
@@ -32,6 +33,7 @@ export default function LoginForm() {
   });
   const router = useRouter();
   const [loginError, setLoginError] = useState<string>("");
+  const { t } = useTranslation("translation", { keyPrefix: "logIn" });
 
   const { mutate: login } = useLoginMutation();
 
@@ -59,10 +61,10 @@ export default function LoginForm() {
           marginTop: 20,
         }}
       >
-        Log In
+        {t("logIn")}
       </Text>
       <View>
-        <Text style={styles.formLabel}>Email:</Text>
+        <Text style={styles.formLabel}>{t("email")}</Text>
         <Controller
           control={control}
           rules={{ required: true }}
@@ -77,9 +79,9 @@ export default function LoginForm() {
           )}
           name="email"
         />
-        {errors.email && <Text>This is required.</Text>}
+        {errors.email && <Text>Email is required</Text>}
 
-        <Text style={styles.formLabel}>Password:</Text>
+        <Text style={styles.formLabel}>{t("password")}</Text>
         <Controller
           control={control}
           rules={{ required: true }}
@@ -96,7 +98,7 @@ export default function LoginForm() {
           name="password"
         />
         {errors.password && (
-          <Text style={{ color: "white" }}>This is required.</Text>
+          <Text style={{ color: "white" }}>Password is required.</Text>
         )}
         {loginError && (
           <Text style={{ color: "white", marginTop: 10 }}>{loginError}</Text>
@@ -106,7 +108,7 @@ export default function LoginForm() {
           style={styles.button}
           onPress={handleSubmit(onSubmit)}
         >
-          <Text style={styles.text}>Submit</Text>
+          <Text style={styles.text}>{t("logIn")}</Text>
         </TouchableOpacity>
 
         <View
@@ -117,12 +119,11 @@ export default function LoginForm() {
             marginTop: 30,
           }}
         >
-          <Text style={{ color: "white" }}>Don't have an account? </Text>
           <Pressable
             onPress={() => Linking.openURL("https://mirlo.space/signup")}
           >
             <Text style={{ color: "white", textDecorationLine: "underline" }}>
-              Sign Up
+              {t("signUp")}
             </Text>
           </Pressable>
         </View>

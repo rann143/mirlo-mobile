@@ -3,10 +3,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { useAuthContext } from "@/state/AuthContext";
 import { useLogoutMutation } from "@/queries/authQueries";
+import { useTranslation } from "react-i18next";
 
 export default function Menu() {
   const router = useRouter();
   const { user } = useAuthContext();
+  const { t } = useTranslation("translation");
 
   const { mutate: logout } = useLogoutMutation();
   const onLogOut = () => {
@@ -17,6 +19,7 @@ export default function Menu() {
       },
     });
   };
+
   return (
     <View
       style={{
@@ -52,7 +55,7 @@ export default function Menu() {
             <Text
               style={{ marginVertical: 20, fontSize: 25, fontWeight: "bold" }}
             >
-              Hi, {user.name}!
+              {user.name}
             </Text>
             <View style={styles.separator} />
           </View>
@@ -68,7 +71,7 @@ export default function Menu() {
             style={styles.link}
           >
             <Ionicons name="home-outline" size={25} />
-            <Text style={{ fontSize: 20 }}>Recent Releases</Text>
+            <Text style={{ fontSize: 20 }}>{t("releases.recentReleases")}</Text>
           </Pressable>
           <Pressable
             onPress={() => {
@@ -78,7 +81,7 @@ export default function Menu() {
             style={styles.link}
           >
             <Ionicons name="heart-outline" size={25} />
-            <Text style={{ fontSize: 20 }}>Your Collection</Text>
+            <Text style={{ fontSize: 20 }}>{t("profile.yourCollection")}</Text>
           </Pressable>
           <Pressable
             style={[
@@ -103,7 +106,9 @@ export default function Menu() {
               name={user ? "log-in-outline" : "log-out-outline"}
               size={25}
             />
-            <Text style={{ fontSize: 20 }}>{user ? "Logout" : "Login"}</Text>
+            <Text style={{ fontSize: 20 }}>
+              {user ? t("headerMenu.logOut") : t("headerMenu.logIn")}
+            </Text>
           </Pressable>
         </View>
       </View>

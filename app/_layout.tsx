@@ -5,14 +5,13 @@ import { AuthContextProvider } from "@/state/AuthContext";
 import { QueryClientWrapper } from "@/queries/QueryClientWrapper";
 import { DevToolsBubble } from "react-native-react-query-devtools";
 import * as Clipboard from "expo-clipboard";
-import Player from "@/components/Player";
 import { StatusBar } from "expo-status-bar";
 import TrackPlayer from "react-native-track-player";
 import * as SplashScreen from "expo-splash-screen";
 import { AppReadyContextProvider } from "@/state/AppReadyContext";
 import { useCallback, useEffect, useState } from "react";
-import ProfileLink from "@/components/ProfileLink";
 import Footer from "@/components/Footer";
+import "../i18n";
 
 SplashScreen.preventAutoHideAsync();
 
