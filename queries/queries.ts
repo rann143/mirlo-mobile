@@ -55,15 +55,17 @@ const fetchTopSold: QueryFunction<
     "fetchTopSold",
     {
       take?: number;
+      datePurchased?: string;
     }
   ]
-> = ({ queryKey: [_, { take }], signal }) => {
+> = ({ queryKey: [_, { take, datePurchased }], signal }) => {
   const params = new URLSearchParams();
   if (take) params.append("take", String(take));
+  if (datePurchased) params.append("datePurchased", String(datePurchased));
   return api.get(`/v1/trackGroups/topSold?${params}`, { signal });
 };
 
-export function queryTopSold(opts: { take?: number }) {
+export function queryTopSold(opts: { take?: number; datePurchased?: string }) {
   return queryOptions({
     queryKey: ["fetchTopSold", opts],
     queryFn: fetchTopSold,
