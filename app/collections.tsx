@@ -79,29 +79,42 @@ export default function Collections() {
           contentContainerStyle={styles.listContainer}
           data={purchases}
           keyExtractor={(item, index) => `${item.trackGroup.id}-${index}`}
-          renderItem={({ item }) => (
-            <Link
-              href={{
-                pathname: isTrackPurchase(item)
-                  ? "/artist/[id]/album/[slug]/tracks/[trackId]"
-                  : "/artist/[id]/album/[slug]/album-tracks",
-                params: {
-                  id: item.trackGroup.artistId,
-                  slug: item.trackGroup.urlSlug,
-                  trackId: isTrackPurchase(item) ? item.trackId : "",
-                },
-              }}
-            >
-              {isTrackGroupPurchase(item) && item.trackGroup ? (
-                <CollectionPurchase trackGroup={item.trackGroup} />
-              ) : isTrackPurchase(item) ? (
-                <CollectionPurchase
-                  trackGroup={item.trackGroup}
-                  track={item.track}
-                />
-              ) : null}
-            </Link>
-          )}
+          renderItem={({ item }) => {
+            if (isTrackGroupPurchase(item) && item.trackGroup) {
+              return (
+                <Link
+                  href={{
+                    pathname: "/artist/[id]/album/[slug]/album-tracks",
+                    params: {
+                      id: item.trackGroup.artistId,
+                      slug: item.trackGroup.urlSlug,
+                    },
+                  }}
+                >
+                  <CollectionPurchase trackGroup={item.trackGroup} />
+                </Link>
+              );
+            } else if (isTrackPurchase(item)) {
+              return (
+                <Link
+                  href={{
+                    pathname: "/artist/[id]/album/[slug]/tracks/[trackId]",
+                    params: {
+                      id: item.trackGroup.artistId,
+                      slug: item.trackGroup.urlSlug,
+                      trackId: item.trackId,
+                    },
+                  }}
+                >
+                  <CollectionPurchase
+                    trackGroup={item.trackGroup}
+                    track={item.track}
+                  />
+                </Link>
+              );
+            }
+            return null;
+          }}
         ></FlatList>
       </View>
     </View>
