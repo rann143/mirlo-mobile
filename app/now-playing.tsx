@@ -30,7 +30,6 @@ export default function NowPlaying() {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingHorizontal: 10,
           width: "100%",
           height: 60,
           backgroundColor: "#fafafa",
@@ -47,8 +46,8 @@ export default function NowPlaying() {
 
       <Image
         source={{ uri: activeTrack?.trackGroup.cover.sizes[600] }}
-        style={styles.image}
-        resizeMode="contain"
+        style={[styles.image, { width: width }]}
+        resizeMode="cover"
       />
       <View
         style={{
@@ -79,7 +78,7 @@ export default function NowPlaying() {
           <Text>{formatTime(progress.duration)}</Text>
         </View>
       </View>
-      <View style={{ alignSelf: "flex-start", marginLeft: 20, gap: 10 }}>
+      <View style={{ alignSelf: "flex-start", margin: 20, gap: 10 }}>
         <Text style={{ fontWeight: "bold" }}>{activeTrack?.title}</Text>
         <View
           style={{
@@ -153,12 +152,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
   },
   image: {
-    width: 380,
     height: 380,
-    marginVertical: 10,
     backgroundColor: "#f0f0f0", // placeholder color while loading
     alignSelf: "center",
   },
