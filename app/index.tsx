@@ -20,6 +20,7 @@ export default function Index() {
     error,
     fetchNextPage,
     hasNextPage,
+    isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery<{ results: AlbumProps[] }>({
     queryKey: ["infiniteTrackGroups"],
@@ -28,13 +29,13 @@ export default function Index() {
       params.append("skip", String(pageParam));
       params.append("take", String(20));
       params.append("distinctArtists", "true");
-      params.append("isReleased", String("released"));
+      params.append("isReleased", "released");
 
       return api.get(`/v1/trackGroups?${params}`, {});
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.results.length === 20 ? allPages.length * 10 : null;
+      return lastPage.results.length === 20 ? allPages.length * 20 : null;
     },
   });
   const { top } = useSafeAreaInsets();
@@ -71,7 +72,7 @@ export default function Index() {
   }
 
   const renderLoadingFooter = () => {
-    if (!isFetchingNextPage) return null;
+    if (!isFetching && !isFetchingNextPage) return null;
 
     return (
       <View style={{ marginVertical: 30 }}>
@@ -129,7 +130,12 @@ export default function Index() {
               ></TrackGroupItem>
             </Link>
           )}
-          onEndReached={() => !isFetchingNextPage && fetchNextPage()}
+          onEndReached={() => {
+            if (!hasNextPage || isFetchingNextPage) {
+              return;
+            }
+            fetchNextPage();
+          }}
           onEndReachedThreshold={0.0}
           ListFooterComponent={renderLoadingFooter}
         ></FlatList>
