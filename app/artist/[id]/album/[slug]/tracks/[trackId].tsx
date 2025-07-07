@@ -24,6 +24,7 @@ import { useAuthContext } from "@/state/AuthContext";
 import { useState, useEffect, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import TextTicker from "react-native-text-ticker";
+import MarqueeText from "react-native-marquee";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -167,9 +168,11 @@ export default function TrackView() {
                         marginBottom: 5,
                         fontWeight: "bold",
                       }}
-                      scrollSpeed={50}
+                      duration={4000}
                       loop
-                      bounce
+                      bounce={false}
+                      repeatSpacer={50}
+                      marqueeDelay={1000}
                       numberOfLines={1}
                     >
                       {data.result?.title}
