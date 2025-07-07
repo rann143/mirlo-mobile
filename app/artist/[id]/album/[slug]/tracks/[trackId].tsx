@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   FlatList,
+  useWindowDimensions,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link, useRouter } from "expo-router";
@@ -36,6 +37,7 @@ export default function TrackView() {
   const { playableTracks, setPlayableTracks } = usePlayer();
   const [album, setAlbum] = useState<RNTrack[]>();
   const { user } = useAuthContext();
+  const { width } = useWindowDimensions();
 
   useFocusEffect(
     useCallback(() => {
@@ -107,7 +109,7 @@ export default function TrackView() {
         style={{
           flexDirection: "row",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "flex-start",
           paddingHorizontal: 10,
           width: "100%",
           height: 60,
@@ -124,7 +126,7 @@ export default function TrackView() {
       </View>
       <View style={styles.container}>
         <FlatList
-          style={{ width: "100%", marginTop: 10 }}
+          style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
           data={album}
           keyExtractor={(item, index) => `${index}-${item.id || item.title}`}
@@ -137,8 +139,8 @@ export default function TrackView() {
             <View style={{ marginBottom: 10 }}>
               <Image
                 source={{ uri: data.result?.cover?.sizes[600] }}
-                style={styles.image}
-                resizeMode="contain"
+                style={[styles.image, { width: width }]}
+                resizeMode="cover"
               />
               <View
                 style={{
@@ -363,9 +365,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   image: {
-    width: 380,
     height: 380,
-    marginVertical: 10,
     backgroundColor: "#f0f0f0", // placeholder color while loading
     alignSelf: "center",
   },
