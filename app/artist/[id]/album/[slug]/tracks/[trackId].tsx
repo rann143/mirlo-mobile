@@ -150,15 +150,23 @@ export default function TrackView() {
                 }}
               >
                 <View style={{ maxWidth: "75%" }}>
-                  <Text
+                  <Text>A Track On </Text>
+                  <Link
+                    href={{
+                      pathname: "/artist/[id]/album/[slug]/album-tracks",
+                      params: {
+                        id: data.result?.artistId,
+                        slug: data.result?.urlSlug,
+                      },
+                    }}
                     style={{
-                      color: "black",
+                      color: "#BE3455",
                       marginBottom: 5,
                       fontWeight: "bold",
                     }}
                   >
                     {data.result?.title}
-                  </Text>
+                  </Link>
                   <Text>
                     By{" "}
                     <Link
