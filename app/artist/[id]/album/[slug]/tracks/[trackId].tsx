@@ -19,11 +19,10 @@ import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import { usePlayer } from "@/state/PlayerContext";
 import { API_KEY } from "@/constants/api-key";
 import { API_ROOT } from "@/constants/api-root";
-import { isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { useState, useEffect, useCallback } from "react";
-import uuid from "react-native-uuid";
 import { useFocusEffect } from "expo-router";
+import TextTicker from "react-native-text-ticker";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -159,13 +158,20 @@ export default function TrackView() {
                         slug: data.result?.urlSlug,
                       },
                     }}
-                    style={{
-                      color: "#BE3455",
-                      marginBottom: 5,
-                      fontWeight: "bold",
-                    }}
                   >
-                    {data.result?.title}
+                    <TextTicker
+                      style={{
+                        color: "#BE3455",
+                        marginBottom: 5,
+                        fontWeight: "bold",
+                      }}
+                      scrollSpeed={50}
+                      loop
+                      bounce
+                      numberOfLines={1}
+                    >
+                      {data.result?.title}
+                    </TextTicker>
                   </Link>
                   <Text>
                     By{" "}

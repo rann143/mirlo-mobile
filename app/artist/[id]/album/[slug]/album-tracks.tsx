@@ -28,6 +28,7 @@ import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import PlayPauseWrapper from "@/components/PlayPauseWrapper";
 import { useTranslation } from "react-i18next";
+import TextTicker from "react-native-text-ticker";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -320,7 +321,12 @@ export default function AlbumTracks() {
                 }}
               >
                 <View style={{ maxWidth: "75%" }}>
-                  <Text
+                  <TextTicker
+                    duration={3000}
+                    loop
+                    bounce
+                    repeatSpacer={50}
+                    marqueeDelay={1000}
                     style={{
                       color: "black",
                       marginBottom: 5,
@@ -328,7 +334,7 @@ export default function AlbumTracks() {
                     }}
                   >
                     {selectedAlbum?.title}
-                  </Text>
+                  </TextTicker>
                   <Text>
                     By{" "}
                     <Link
