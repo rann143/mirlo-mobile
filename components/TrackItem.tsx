@@ -55,8 +55,8 @@ export const TrackItem = ({
           <Text
             style={{
               color: canPlayTrack ? "black" : "darkgrey",
-              fontSize: 20,
-              width: 50,
+              fontSize: 16,
+              width: 30,
               marginLeft: 5,
               fontWeight: canPlayTrack
                 ? thisSongSelected
@@ -72,8 +72,8 @@ export const TrackItem = ({
           <Text
             style={{
               color: canPlayTrack ? "black" : "darkgrey",
-              fontSize: 18,
-              marginRight: 5,
+              fontSize: 16,
+              paddingRight: 5,
               fontWeight: canPlayTrack
                 ? thisSongSelected
                   ? "bold"
@@ -86,6 +86,7 @@ export const TrackItem = ({
             {track.title}
           </Text>
           {track.trackArtists &&
+          contributors &&
           track.trackArtists.length &&
           track.trackArtists[0].artistName !== track.artist ? (
             <Text

@@ -385,6 +385,7 @@ const styles = StyleSheet.create({
   listContainer: {
     backgroundColor: "white",
     paddingHorizontal: "5%",
+    gap: 3,
   },
   listItem: {
     flexDirection: "row",
