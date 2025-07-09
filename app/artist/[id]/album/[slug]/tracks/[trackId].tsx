@@ -152,7 +152,6 @@ export default function TrackView() {
                 }}
               >
                 <View style={{ maxWidth: "75%" }}>
-                  <Text>A Track On </Text>
                   <Link
                     href={{
                       pathname: "/artist/[id]/album/[slug]/album-tracks",
