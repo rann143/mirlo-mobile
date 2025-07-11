@@ -115,7 +115,7 @@ export default function NowPlaying() {
                   ellipsizeMode="tail"
                   numberOfLines={1}
                 >
-                  {activeTrack?.trackGroup.title} wowowowowowowo
+                  {activeTrack?.trackGroup.title}
                 </Text>
               </Pressable>
             </Link>
