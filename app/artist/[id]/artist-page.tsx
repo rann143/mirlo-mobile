@@ -9,7 +9,6 @@ import {
   SafeAreaView,
   Pressable,
   Image,
-  ScrollView,
   Dimensions,
   FlatList,
 } from "react-native";
@@ -17,6 +16,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Markdown from "react-native-markdown-display";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { linkifyUrls } from "@/scripts/utils";
 
 export default function ArtistPage() {
   const { id } = useLocalSearchParams();
@@ -192,13 +192,16 @@ export default function ArtistPage() {
             <Text style={{ fontWeight: "bold" }}>
               {t("trackGroupDetails.about")}
             </Text>
-            <Text>
+
+            {artistInfo.bio ? (
               <Markdown>
-                {artistInfo.bio
-                  ? artistInfo.bio.replace(/([^\n])\n([^\n])/g, "$1 $2")
-                  : artistInfo.name + " is an artist on Mirlo"}
+                {linkifyUrls(
+                  artistInfo.bio.replace(/([^\n])\n([^\n])/g, "$1 $2")
+                )}
               </Markdown>
-            </Text>
+            ) : (
+              <Text>{artistInfo.name + " is an artist on Mirlo"}</Text>
+            )}
           </View>
         )}
       ></FlatList>

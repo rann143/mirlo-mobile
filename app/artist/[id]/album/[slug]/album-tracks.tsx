@@ -28,6 +28,8 @@ import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import PlayPauseWrapper from "@/components/PlayPauseWrapper";
 import { useTranslation } from "react-i18next";
+import Markdown from "react-native-markdown-display";
+import { linkifyUrls } from "@/scripts/utils";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -364,7 +366,14 @@ export default function AlbumTracks() {
               <Text style={{ fontStyle: "italic", marginBottom: 20 }}>
                 {formatUTCDate(selectedAlbum?.releaseDate)}
               </Text>
-              <Text style={{ marginBottom: 20 }}>{selectedAlbum?.about}</Text>
+
+              {selectedAlbum?.about ? (
+                <Markdown>
+                  {linkifyUrls(
+                    selectedAlbum.about.replace(/([^\n])\n([^\n])/g, "$1 $2")
+                  )}
+                </Markdown>
+              ) : null}
 
               <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                 {selectedAlbum.tags && tagPills}

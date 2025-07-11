@@ -41,3 +41,13 @@ export const isTrackOwned = (
   );
   return ownsTrack || boughtTrack;
 };
+
+export const linkifyUrls = (text: string) => {
+  // Simple regex to find URLs that aren't already in markdown format
+  const urlRegex = /(?<!\]\()https?:\/\/[^\s\)]+(?!\))/g;
+
+  return text.replace(urlRegex, (url) => {
+    // Convert plain URLs to markdown format
+    return `[${url}](${url})`;
+  });
+};
