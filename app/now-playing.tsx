@@ -78,51 +78,73 @@ export default function NowPlaying() {
           <Text>{formatTime(progress.duration)}</Text>
         </View>
       </View>
-      <View style={{ alignSelf: "flex-start", margin: 20, gap: 10 }}>
+      <View
+        style={{
+          alignSelf: "flex-start",
+          margin: 20,
+          gap: 10,
+          maxWidth: width - 50,
+        }}
+      >
         <Text style={{ fontWeight: "bold" }}>{activeTrack?.title}</Text>
         <View
           style={{
             display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            flexWrap: "wrap",
           }}
         >
-          <Text>From </Text>
-          <Link
-            href={{
-              pathname: "/artist/[id]/album/[slug]/album-tracks",
-              params: {
-                id: String(activeTrack?.trackGroup.artistId),
-                slug: String(activeTrack?.trackGroup.urlSlug),
-              },
-            }}
-            asChild
-          >
-            <Pressable
-              onPress={() => {
-                router.dismiss(1);
+          <View style={{ flexDirection: "row" }}>
+            <Text>From </Text>
+            <Link
+              href={{
+                pathname: "/artist/[id]/album/[slug]/album-tracks",
+                params: {
+                  id: String(activeTrack?.trackGroup.artistId),
+                  slug: String(activeTrack?.trackGroup.urlSlug),
+                },
               }}
+              asChild
             >
-              <Text style={styles.link}>{activeTrack?.trackGroup.title}</Text>
-            </Pressable>
-          </Link>
-          <Text> by </Text>
-          <Link
-            href={{
-              pathname: "/artist/[id]/artist-page",
-              params: { id: String(activeTrack?.trackGroup.artistId) },
-            }}
-            asChild
-          >
-            <Pressable
-              onPress={() => {
-                router.dismiss(1);
+              <Pressable
+                style={{ flexShrink: 1 }}
+                onPress={() => {
+                  router.dismiss(1);
+                }}
+              >
+                <Text
+                  style={[styles.link, { maxWidth: "100%" }]}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}
+                >
+                  {activeTrack?.trackGroup.title} wowowowowowowo
+                </Text>
+              </Pressable>
+            </Link>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <Text>by </Text>
+            <Link
+              href={{
+                pathname: "/artist/[id]/artist-page",
+                params: { id: String(activeTrack?.trackGroup.artistId) },
               }}
+              asChild
             >
-              <Text style={styles.link}>{activeTrack?.artist}</Text>
-            </Pressable>
-          </Link>
+              <Pressable
+                style={{ flexShrink: 1 }}
+                onPress={() => {
+                  router.dismiss(1);
+                }}
+              >
+                <Text
+                  style={styles.link}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}
+                >
+                  {activeTrack?.artist}
+                </Text>
+              </Pressable>
+            </Link>
+          </View>
         </View>
       </View>
       <Player

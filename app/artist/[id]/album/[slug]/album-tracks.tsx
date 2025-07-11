@@ -326,6 +326,8 @@ export default function AlbumTracks() {
                       marginBottom: 5,
                       fontWeight: "bold",
                     }}
+                    ellipsizeMode="tail"
+                    numberOfLines={1}
                   >
                     {selectedAlbum?.title}
                   </Text>
