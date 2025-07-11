@@ -368,11 +368,13 @@ export default function AlbumTracks() {
               </Text>
 
               {selectedAlbum?.about ? (
-                <Markdown>
-                  {linkifyUrls(
-                    selectedAlbum.about.replace(/([^\n])\n([^\n])/g, "$1 $2")
-                  )}
-                </Markdown>
+                <View style={{ marginBottom: 20 }}>
+                  <Markdown>
+                    {linkifyUrls(
+                      selectedAlbum.about.replace(/([^\n])\n([^\n])/g, "$1 $2")
+                    )}
+                  </Markdown>
+                </View>
               ) : null}
 
               <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
