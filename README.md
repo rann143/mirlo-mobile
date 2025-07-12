@@ -9,9 +9,9 @@ This is the official mobile app for [Mirlo](https://mirlo.space) developed in co
 The current focus is developing for iOS. Development for Android is on the roadmap.
 
 ## App Preview
-This gif displays the most recent versions of the artist, album, and now-playing views:
+This gif displays the most recent versions of the home, search, menu, album, and artist views:
 
-<img src="https://github.com/rann143/mirlo-mobile/blob/main/assets/images/mirlo-app-preview.gif" alt="mirlo app preview" width="300" height="600"/>
+<img src="https://github.com/rann143/mirlo-mobile/blob/main/assets/images/mirlo-app-preview-2.gif" alt="mirlo app preview" width="300" height="600"/>
 
 ## Get started
 
