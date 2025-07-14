@@ -1,6 +1,7 @@
 import { useState, createContext, useContext } from "react";
 import SearchItem from "@/components/SearchItem";
 import * as api from "../queries/fetch/fetchWrapper";
+import { useTranslation } from "react-i18next";
 
 type SearchContextType = {
   isSearching: boolean;
@@ -59,6 +60,7 @@ export const SearchContextProvider: React.FC<{
   const [searchResults, setSearchResults] = useState<Result[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const [searchValue, setSeachValue] = useState<string>("");
+  const { t } = useTranslation();
 
   async function getOptions(searchString: string) {
     const artists = await api.getMany<Artist>(
@@ -79,7 +81,7 @@ export const SearchContextProvider: React.FC<{
     const results = [
       ...artists.results.map((r, rid) => ({
         firstInCategory: rid === 0,
-        category: "Artist",
+        category: t("label.artist"),
         artistId: r.urlSlug ?? r.id,
         id: r.id,
         avatar: r.avatar,
@@ -88,7 +90,7 @@ export const SearchContextProvider: React.FC<{
       })),
       ...trackGroups.results.map((tr, trid) => ({
         firstInCategory: trid === 0,
-        category: "Album",
+        category: t("manageArtistTools.album"),
         id: tr.urlSlug ?? tr.id,
         artistId: tr.artist?.urlSlug ?? tr.artistId,
         artistName: tr.artist.name,
@@ -100,7 +102,7 @@ export const SearchContextProvider: React.FC<{
       ...tracks.results.map((tr, trid) => ({
         firstInCategory: trid === 0,
         id: tr.id,
-        category: "Track",
+        category: t("trackDetails.track").replace(":", ""),
         trackGroupId: tr.trackGroup.urlSlug ?? tr.trackGroupId,
         artistId: tr.trackGroup.artist.urlSlug ?? tr.trackGroup.artistId,
         artistName: tr.trackGroup.artist.name,

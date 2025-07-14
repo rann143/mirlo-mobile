@@ -2,6 +2,7 @@ import { View, Pressable, Text, Image, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useSearch } from "@/state/SearchContext";
 import { toUpper } from "lodash";
+import { useTranslation } from "react-i18next";
 
 type Result = {
   result: {
@@ -32,6 +33,7 @@ type Result = {
 };
 
 export default function SearchItem({ result, index }: Result) {
+  const { t } = useTranslation();
   const router = useRouter();
   const { setSearchResults, setShowSuggestions } = useSearch();
   return (
@@ -69,7 +71,10 @@ export default function SearchItem({ result, index }: Result) {
                 numberOfLines={1}
                 style={{ fontSize: 15, color: "grey" }}
               >
-                By {result.artistName.trim()}
+                {t("profile.albumLink")
+                  .replace(/<[^>]*>.*?<\/[^>]*>/g, "")
+                  .trim()}{" "}
+                {result.artistName.trim()}
               </Text>
             )}
             <Text style={{ fontSize: 12, color: "grey" }}>

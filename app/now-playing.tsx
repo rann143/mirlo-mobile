@@ -13,6 +13,7 @@ import { Link, useRouter } from "expo-router";
 import TrackPlayer, { useProgress } from "react-native-track-player";
 import Slider from "@react-native-community/slider";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 export default function NowPlaying() {
   const { activeTrack, shuffled } = usePlayer() as {
@@ -21,6 +22,7 @@ export default function NowPlaying() {
   };
   const progress = useProgress();
   const router = useRouter();
+  const { t } = useTranslation();
   const { width } = useWindowDimensions();
 
   return (
@@ -93,7 +95,11 @@ export default function NowPlaying() {
           }}
         >
           <View style={{ flexDirection: "row" }}>
-            <Text>From </Text>
+            <Text>
+              {t("trackGroupDetails.fromAlbum")
+                .replace(/<[^>]*>.*?<\/[^>]*>/g, "")
+                .trim() + " "}
+            </Text>
             <Link
               href={{
                 pathname: "/artist/[id]/album/[slug]/album-tracks",
@@ -121,7 +127,11 @@ export default function NowPlaying() {
             </Link>
           </View>
           <View style={{ flexDirection: "row" }}>
-            <Text>by </Text>
+            <Text>
+              {t("trackGroupDetails.byArtist")
+                .replace(/<[^>]*>.*?<\/[^>]*>/g, "")
+                .trim() + " "}
+            </Text>
             <Link
               href={{
                 pathname: "/artist/[id]/artist-page",

@@ -334,7 +334,10 @@ export default function AlbumTracks() {
                     {selectedAlbum?.title}
                   </Text>
                   <Text>
-                    By{" "}
+                    {/* const result = str.replace(/<[^>]*>/g, '').trim(); */}
+                    {t("trackGroupDetails.byArtist")
+                      .replace(/<[^>]*>.*?<\/[^>]*>/g, "")
+                      .trim() + " "}
                     <Link
                       href={{
                         pathname: "/artist/[id]/artist-page",

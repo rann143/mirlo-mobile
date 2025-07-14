@@ -25,6 +25,7 @@ import { useAuthContext } from "@/state/AuthContext";
 import { useState, useEffect, useCallback } from "react";
 import uuid from "react-native-uuid";
 import { useFocusEffect } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -37,7 +38,7 @@ export default function TrackView() {
   const router = useRouter();
   const { playableTracks, setPlayableTracks } = usePlayer();
   const [album, setAlbum] = useState<RNTrack[]>();
-  const { user } = useAuthContext();
+  const { t } = useTranslation();
   const { width } = useWindowDimensions();
 
   useFocusEffect(
@@ -171,7 +172,9 @@ export default function TrackView() {
                     {data.result?.title}
                   </Link>
                   <Text>
-                    By{" "}
+                    {t("profile.albumLink")
+                      .replace(/<[^>]*>.*?<\/[^>]*>/g, "")
+                      .trim() + " "}
                     <Link
                       href={{
                         pathname: "/artist/[id]/artist-page",
@@ -198,7 +201,7 @@ export default function TrackView() {
                   marginBottom: 15,
                 }}
               >
-                About
+                {t("trackGroupDetails.about")}
               </Text>
               <Text style={{ fontStyle: "italic", marginBottom: 20 }}>
                 {formatUTCDate(data.result?.releaseDate)}
@@ -316,6 +319,7 @@ function TrackPlayButton() {
 }
 
 function formatUTCDate(utcDate: string | undefined) {
+  const { t } = useTranslation();
   if (!utcDate) return undefined;
   const date = new Date(utcDate);
 
@@ -330,8 +334,11 @@ function formatUTCDate(utcDate: string | undefined) {
   const result = localDate.toLocaleDateString("en-US", options);
 
   return date.getTime() > Date.now()
-    ? `Will be released on ${result}`
-    : `Released ${result}`;
+    ? `${t("trackGroupCard.releaseDate").trim()} ${result}`
+    : t("trackGroupCard.released").substring(
+        0,
+        t("trackGroupCard.released").indexOf(":") + 1
+      ) + ` ${result}`;
 }
 
 const styles = StyleSheet.create({
