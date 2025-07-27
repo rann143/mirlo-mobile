@@ -118,6 +118,12 @@ export default function RootLayout() {
                     headerShown: false,
                   }}
                 />
+                <Stack.Screen
+                  name="wishlist"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
               </Stack>
               <Footer />
               <StatusBar style="dark" backgroundColor="white" />

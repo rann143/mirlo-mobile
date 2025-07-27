@@ -10,7 +10,6 @@ import { Link, router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { queryUserPurchases } from "@/queries/queries";
 import { useEffect } from "react";
-import TrackGroupItem from "@/components/TrackGroupItem";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MenuButton from "@/components/MenuButton";
 import SearchButton from "@/components/SearchButton";

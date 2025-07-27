@@ -101,9 +101,37 @@ export default function Footer({ style }: ViewProps) {
           >
             <Ionicons
               //name="heart-outline"
-              name={pathname === "/collections" ? "heart" : "heart-outline"}
+              name={pathname === "/collections" ? "library" : "library-outline"}
               size={40}
               color={pathname === "/collections" ? "#BE3455" : "#d6d6d6"}
+              style={{ marginHorizontal: 15 }}
+              // #BE3455
+            ></Ionicons>
+          </Pressable>
+
+          <Pressable
+            onPress={() => {
+              if (!user) {
+                router.navigate("/login");
+              } else {
+                if (pathname === "/") {
+                  router.navigate("/wishlist");
+                } else if (pathname === "/wishlist") {
+                  return;
+                } else {
+                  router.dismissTo("/wishlist");
+                }
+              }
+            }}
+            accessibilityLabel="Your Wishlist"
+            accessibilityRole="button"
+            accessibilityHint="Navigates to your wishlist page"
+          >
+            <Ionicons
+              //name="heart-outline"
+              name={pathname === "/wishlist" ? "heart" : "heart-outline"}
+              size={40}
+              color={pathname === "/wishlist" ? "#BE3455" : "#d6d6d6"}
               style={{ marginLeft: 15 }}
               // #BE3455
             ></Ionicons>

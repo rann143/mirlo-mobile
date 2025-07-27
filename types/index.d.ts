@@ -9,6 +9,11 @@ interface LoggedInUser {
     userId: number;
     trackGroupId: number;
   }[];
+  trackFavorites?: {
+    userId: number;
+    trackId: number;
+    track: RNTrack;
+  }[];
   language?: string;
 }
 
@@ -88,6 +93,9 @@ interface RNTrack {
   queueIndex: number;
   trackGroupId: number;
   trackGroup: {
+    id: number;
+    releaseDate: string;
+    trackGroupId: number;
     title: string;
     userTrackGroupPurchases?: { userId: number }[];
     artist: Artist;

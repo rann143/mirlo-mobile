@@ -187,3 +187,25 @@ export function queryTags(opts: {
     queryFn: fetchTags,
   });
 }
+
+const fetchWishlist: QueryFunction<
+  {
+    results: {
+      userId: number;
+      trackGroupId: number;
+      trackGroup: AlbumProps;
+      createdAt: Date;
+    }[];
+  },
+  ["fetchWishlist", { userId: number | undefined }, ...any]
+> = ({ queryKey: [_, { userId }], signal }) => {
+  return api.get(`/v1/users/${userId}/wishlist`, {});
+};
+
+export function queryWishlist(userId: number | undefined) {
+  return queryOptions({
+    queryKey: ["fetchWishlist", { userId }],
+    queryFn: fetchWishlist,
+    enabled: !!userId,
+  });
+}
