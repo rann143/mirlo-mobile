@@ -21,12 +21,14 @@ import {
   isWishlisted,
 } from "@/types/typeguards";
 import TrackGroupItem from "@/components/TrackGroupItem";
+import { useTranslation } from "react-i18next";
 
 export default function Collections() {
   const { user } = useAuthContext();
   const userId = user?.id;
   const { top } = useSafeAreaInsets();
   const { isPending, isError, data, error } = useQuery(queryWishlist(userId));
+  const { t } = useTranslation();
   const [list, setList] = useState<
     (
       | {
@@ -50,9 +52,9 @@ export default function Collections() {
 
   useEffect(() => {
     setList([
-      "Your Wishlist",
+      t("profile.yourWishlist"),
       ...(wishlist ?? []),
-      "Favorited Tracks",
+      t("profile.favoritedTracks"),
       ...(trackFavorites ?? []),
     ]);
   }, [wishlist, trackFavorites]);
