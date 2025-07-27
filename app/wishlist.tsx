@@ -36,6 +36,7 @@ export default function Collections() {
           createdAt: Date;
         }
       | { userId: number; trackId: number; track: RNTrack }
+      | string
     )[]
   >([]);
   const wishlist = data?.results;
@@ -48,7 +49,12 @@ export default function Collections() {
   }, [user]);
 
   useEffect(() => {
-    setList([...(wishlist ?? []), ...(trackFavorites ?? [])]);
+    setList([
+      "Your Wishlist",
+      ...(wishlist ?? []),
+      "Favorited Tracks",
+      ...(trackFavorites ?? []),
+    ]);
   }, [wishlist, trackFavorites]);
 
   if (isPending) {
@@ -71,7 +77,7 @@ export default function Collections() {
     );
   }
 
-  if (!wishlist) {
+  if (!wishlist && !trackFavorites) {
     return <Text>No wishlist found</Text>;
   }
   console.log(wishlist);
@@ -100,68 +106,50 @@ export default function Collections() {
           contentContainerStyle={styles.listContainer}
           data={list}
           //keyExtractor={(item, index) => `${item.trackGroupId}-${index}`}
-          renderItem={
-            ({ item }) => {
-              if (isWishlisted(item) && item.trackGroup) {
-                return (
-                  <Link
-                    href={{
-                      pathname: "/artist/[id]/album/[slug]/album-tracks",
-                      params: {
-                        id: item.trackGroup.artistId,
-                        slug: item.trackGroup.urlSlug,
-                      },
-                    }}
-                  >
-                    <CollectionPurchase trackGroup={item.trackGroup} />
-                  </Link>
-                );
-              } else if (isFavoritedTrack(item)) {
-                return (
-                  <Link
-                    href={{
-                      pathname: "/artist/[id]/album/[slug]/tracks/[trackId]",
-                      params: {
-                        id: item.track.trackGroup.artistId,
-                        slug: item.track.trackGroup.urlSlug,
-                        trackId: item.trackId,
-                      },
-                    }}
-                  >
-                    <CollectionPurchase
-                      trackGroup={item.track.trackGroup}
-                      track={item.track}
-                    />
-                  </Link>
-                );
-              }
-              return null;
+          renderItem={({ item }) => {
+            if (isWishlisted(item)) {
+              return (
+                <Link
+                  href={{
+                    pathname: "/artist/[id]/album/[slug]/album-tracks",
+                    params: {
+                      id: item.trackGroup.artistId,
+                      slug: item.trackGroup.urlSlug,
+                    },
+                  }}
+                >
+                  <CollectionPurchase trackGroup={item.trackGroup} />
+                </Link>
+              );
+            } else if (isFavoritedTrack(item)) {
+              return (
+                <Link
+                  href={{
+                    pathname: "/artist/[id]/album/[slug]/tracks/[trackId]",
+                    params: {
+                      id: item.track.trackGroup.artistId,
+                      slug: item.track.trackGroup.urlSlug,
+                      trackId: item.trackId,
+                    },
+                  }}
+                >
+                  <CollectionPurchase
+                    trackGroup={item.track.trackGroup}
+                    track={item.track}
+                  />
+                </Link>
+              );
+            } else if (typeof item === "string") {
+              return (
+                <View
+                  style={{ flexDirection: "row", justifyContent: "center" }}
+                >
+                  <Text style={styles.listText}>{item}</Text>
+                </View>
+              );
             }
-            // <Link
-            //   href={{
-            //     pathname: "/artist/[id]/album/[slug]/album-tracks",
-            //     params: {
-            //       id: item.trackGroup.artistId,
-            //       slug: item.trackGroup.urlSlug,
-            //     },
-            //   }}
-            // >
-            //   <TrackGroupItem
-            //     id={item.trackGroup.id}
-            //     cover={item.trackGroup.cover}
-            //     title={item.trackGroup.title}
-            //     artist={item.trackGroup.artist}
-            //     artistId={item.trackGroup.artistId}
-            //     urlSlug={item.trackGroup.urlSlug}
-            //     userTrackGroupPurchases={
-            //       item.trackGroup.userTrackGroupPurchases
-            //     }
-            //     releaseDate={item.trackGroup.releaseDate}
-            //     tracks={item.trackGroup.tracks}
-            //     trackGroupId={item.trackGroupId}
-            //   ></TrackGroupItem>
-            // </Link>
-          }
+            return null;
+          }}
         ></FlatList>
       </View>
     </View>
@@ -175,12 +163,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-evenly",
   },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 5,
+  },
   listContainer: {
     backgroundColor: "#FFF",
   },
   text: {
     padding: 10,
     fontWeight: "bold",
+  },
+  listText: {
+    padding: 10,
+    fontWeight: "bold",
+    fontSize: 20,
   },
   loadSpinner: {
     flex: 1,

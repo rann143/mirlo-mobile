@@ -80,8 +80,18 @@ export default function Menu() {
             }}
             style={styles.link}
           >
-            <Ionicons name="heart-outline" size={25} />
+            <Ionicons name="library-outline" size={25} />
             <Text style={{ fontSize: 20 }}>{t("profile.yourCollection")}</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              router.back();
+              router.navigate("/wishlist");
+            }}
+            style={styles.link}
+          >
+            <Ionicons name="heart-outline" size={25} />
+            <Text style={{ fontSize: 20 }}>{t("profile.yourWishlist")}</Text>
           </Pressable>
           <Pressable
             style={[
