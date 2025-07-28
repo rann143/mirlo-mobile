@@ -26,6 +26,7 @@ import { useState, useEffect, useCallback } from "react";
 import uuid from "react-native-uuid";
 import { useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
+import FavoriteTrackButton from "@/components/FavoriteTrackButton";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -56,6 +57,9 @@ export default function TrackView() {
             cover: data.result.cover,
             title: data.result.title,
             artist: data.result.artist,
+            id: data.result.trackGroupId,
+            releaseDate: data.result.releaseDate,
+            trackGroupId: data.result.trackGroupId,
           };
           filteredTrack.artist = data.result.artist.name;
           filteredTrack.artwork = data.result.cover.sizes[600];
@@ -134,7 +138,10 @@ export default function TrackView() {
           keyExtractor={(item, index) => `${index}-${item.id || item.title}`}
           renderItem={({ item }) =>
             data.result ? (
-              <PlayPauseWrapper trackObject={item}></PlayPauseWrapper>
+              <PlayPauseWrapper
+                trackObject={item}
+                onTrackScreen={true}
+              ></PlayPauseWrapper>
             ) : null
           }
           ListHeaderComponent={() => (
@@ -152,7 +159,7 @@ export default function TrackView() {
                   marginVertical: 10,
                 }}
               >
-                <View style={{ maxWidth: "75%" }}>
+                <View style={{ maxWidth: "65%" }}>
                   <Link
                     href={{
                       pathname: "/artist/[id]/album/[slug]/album-tracks",
@@ -186,7 +193,16 @@ export default function TrackView() {
                     </Link>
                   </Text>
                 </View>
-                <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  {filteredTrack && (
+                    <FavoriteTrackButton track={filteredTrack} size={40} />
+                  )}
                   <TrackPlayButton />
                 </View>
               </View>

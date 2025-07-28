@@ -2,6 +2,7 @@ import { useAuthContext } from "@/state/AuthContext";
 import { View, StyleSheet, Text } from "react-native";
 import PlayButton from "./PlayPauseWrapper";
 import { isTrackOwnedOrPreview } from "@/scripts/utils";
+import FavoriteTrackButton from "./FavoriteTrackButton";
 
 function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
@@ -18,12 +19,14 @@ type TrackItemComponentProps = {
   track: RNTrack;
   album?: AlbumProps;
   thisSongSelected: boolean;
+  onTrackScreen: boolean;
 };
 
 export const TrackItem = ({
   track,
   album,
   thisSongSelected,
+  onTrackScreen,
 }: TrackItemComponentProps) => {
   const { user } = useAuthContext();
 
@@ -40,7 +43,6 @@ export const TrackItem = ({
       }
     }
   }
-
   return (
     <View style={styles.listItem}>
       <View
@@ -68,7 +70,7 @@ export const TrackItem = ({
             {track.order}.
           </Text>
         )}
-        <View>
+        <View style={{ maxWidth: "90%" }}>
           <Text
             style={{
               color: canPlayTrack ? "black" : "darkgrey",
@@ -99,7 +101,15 @@ export const TrackItem = ({
           ) : null}
         </View>
       </View>
-      <View>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 10,
+          width: "20%",
+        }}
+      >
+        {!onTrackScreen && <FavoriteTrackButton track={track} size={15} />}
         <Text
           style={{
             color: canPlayTrack ? "black" : "darkgrey",

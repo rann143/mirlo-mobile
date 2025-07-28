@@ -137,6 +137,7 @@ interface PlayPauseWrapperProps {
   trackObject: RNTrack;
   style?: StyleProp<ViewStyle>;
   selectedAlbum?: AlbumProps;
+  onTrackScreen: boolean;
 }
 
 interface Artist {

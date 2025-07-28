@@ -82,8 +82,8 @@ export default function Collections() {
   if (!wishlist && !trackFavorites) {
     return <Text>No wishlist found</Text>;
   }
-  console.log(wishlist);
-  console.log(trackFavorites);
+  // console.log(wishlist);
+  // console.log(trackFavorites);
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
       <View style={styles.container}>
@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     backgroundColor: "#FFF",
+    paddingBottom: 10,
   },
   text: {
     padding: 10,

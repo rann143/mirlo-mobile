@@ -84,7 +84,6 @@ export default function Index() {
       </View>
     );
   };
-  console.log(trackGroups);
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
       <View style={styles.container}>

@@ -22,6 +22,7 @@ export default function PlayPauseWrapper({
   children,
   style,
   selectedAlbum,
+  onTrackScreen,
 }: PlayPauseWrapper) {
   const {
     playbackState,
@@ -140,6 +141,7 @@ export default function PlayPauseWrapper({
         track={trackObject}
         album={selectedAlbum ? selectedAlbum : undefined}
         thisSongSelected={thisSongSelected}
+        onTrackScreen={onTrackScreen}
       ></TrackItem>
     </Pressable>
   );
