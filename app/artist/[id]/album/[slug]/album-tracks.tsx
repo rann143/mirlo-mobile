@@ -30,6 +30,7 @@ import PlayPauseWrapper from "@/components/PlayPauseWrapper";
 import { useTranslation } from "react-i18next";
 import Markdown from "react-native-markdown-display";
 import { linkifyUrls } from "@/scripts/utils";
+import WishlistButton from "@/components/WishlistButton";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -187,7 +188,7 @@ export default function AlbumTracks() {
             artist: data.result.artist.name,
             artwork: data.result.cover.sizes[600],
             url: `${API_ROOT}${track.audio.url}`,
-            id: data.result.id,
+            id: track.id,
             trackArtists: track.trackArtists,
             queueIndex: track.order,
             trackGroupId: data.result.trackGroupId,
@@ -198,6 +199,9 @@ export default function AlbumTracks() {
               cover: data.result.cover,
               title: data.result.title,
               artist: data.result.artist,
+              id: data.result.trackGroupId,
+              releaseDate: data.result.releaseDate,
+              trackGroupId: data.result.trackGroupId,
             },
             audio: {
               url: track.audio.url,
@@ -303,6 +307,7 @@ export default function AlbumTracks() {
               <PlayPauseWrapper
                 trackObject={item}
                 selectedAlbum={selectedAlbum}
+                onTrackScreen={false}
               ></PlayPauseWrapper>
             ) : null
           }
@@ -321,7 +326,7 @@ export default function AlbumTracks() {
                   marginVertical: 10,
                 }}
               >
-                <View style={{ maxWidth: "75%" }}>
+                <View style={{ maxWidth: "65%" }}>
                   <Text
                     style={{
                       color: "black",
@@ -349,7 +354,14 @@ export default function AlbumTracks() {
                     </Link>
                   </Text>
                 </View>
-                <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <WishlistButton trackGroup={selectedAlbum} size={40} />
                   <MemoizedAlbumPlayButton />
                 </View>
               </View>
