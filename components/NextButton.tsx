@@ -1,11 +1,10 @@
 import { Image, Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
-import { API_ROOT } from "@/constants/api-root";
-import TrackPlayer, { PlaybackState } from "react-native-track-player";
+import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 
 export default function NextButton() {
-  const { setActiveTrack } = usePlayer();
+  const { setActiveTrack, playbackState, activeTrack } = usePlayer();
   const nextIcon = <Ionicons name="play-skip-forward" size={40} />;
 
   const nextSong = async () => {
@@ -16,16 +15,20 @@ export default function NextButton() {
 
       if (trackIndex === queueLength - 1) {
         await TrackPlayer.skip(0);
+        await TrackPlayer.play();
       } else {
         await TrackPlayer.skipToNext();
+        const cur = await TrackPlayer.getActiveTrack();
+        console.log(cur?.title);
+        await TrackPlayer.play();
       }
 
-      const newTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
-      if (newTrack) {
-        setActiveTrack(newTrack);
-      } else {
-        throw new Error("Couldn't get next Track");
-      }
+      // const newTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
+      // if (newTrack) {
+      //   setActiveTrack(newTrack);
+      // } else {
+      //   throw new Error("Couldn't get next Track");
+      // }
     } catch (err) {
       console.error("issue skipping to next song", err);
     }

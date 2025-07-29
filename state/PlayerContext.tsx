@@ -1,3 +1,4 @@
+import { incrementPlayCount, reachedMaxPlays } from "@/scripts/trackPlayUtils";
 import { createContext, useState, useContext, useEffect, useMemo } from "react";
 import TrackPlayer, {
   Capability,
@@ -7,6 +8,9 @@ import TrackPlayer, {
   PlaybackState,
   State,
 } from "react-native-track-player";
+import { useAuthContext } from "./AuthContext";
+import { isTrackOwned } from "@/scripts/utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface PlayerContextType {
   playbackState: PlaybackState | { state: undefined };
@@ -29,6 +33,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [activeTrack, setActiveTrack] = useState<RNTrack>();
   const [playerState, setPlayerState] = useState<any>(null);
   const playBackState = usePlaybackState();
+  const { user } = useAuthContext();
 
   useEffect(() => {
     setUpTrackPlayer();
@@ -46,8 +51,38 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         setPlayerState(event.state);
       }
 
+      if (event.type !== Event.PlaybackState) {
+        const track = (await TrackPlayer.getActiveTrack()) as RNTrack;
+        setActiveTrack(track);
+      }
+
       const track = (await TrackPlayer.getActiveTrack()) as RNTrack;
-      setActiveTrack(track);
+
+      if (
+        event.type === Event.PlaybackActiveTrackChanged &&
+        !isTrackOwned(track, undefined, user) &&
+        (await reachedMaxPlays(track.id))
+      ) {
+        await TrackPlayer.stop();
+        console.log("You've reached max plays. Plz purchase. Show some love");
+      }
+
+      if (
+        event.type === Event.PlaybackActiveTrackChanged &&
+        !isTrackOwned(event.lastTrack as RNTrack, undefined, user)
+      ) {
+        // Incrementing Track Play Count
+        const prevTrack = event.lastTrack as RNTrack;
+        const prevTrackDuration = prevTrack.audio.duration;
+        const prevTrackProgress = event.lastPosition;
+
+        if (prevTrackDuration !== undefined) {
+          if (prevTrackProgress / prevTrackDuration >= 0.5) {
+            console.log(prevTrack.title + ": " + prevTrack.id);
+            incrementPlayCount(prevTrack.id);
+          }
+        }
+      }
     }
   );
 

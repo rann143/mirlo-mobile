@@ -1,7 +1,6 @@
-import { Image, Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { usePlayer } from "@/state/PlayerContext";
-import { API_ROOT } from "@/constants/api-root";
 import TrackPlayer from "react-native-track-player";
 
 export default function PrevButton() {
@@ -15,16 +14,18 @@ export default function PrevButton() {
 
       if (activeTrackIndex === 0) {
         await TrackPlayer.skip(queue.length - 1);
+        await TrackPlayer.play();
       } else {
         await TrackPlayer.skipToPrevious();
+        await TrackPlayer.play();
       }
 
-      const newTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
-      if (newTrack) {
-        setActiveTrack(newTrack);
-      } else {
-        throw new Error("Couldn't get previous track");
-      }
+      // const newTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
+      // if (newTrack) {
+      //   setActiveTrack(newTrack);
+      // } else {
+      //   throw new Error("Couldn't get previous track");
+      // }
     } catch (err) {
       console.error("issue setting the song to previous track in queue");
     }

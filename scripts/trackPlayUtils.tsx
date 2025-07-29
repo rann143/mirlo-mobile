@@ -51,10 +51,14 @@ export async function incrementPlayCount(trackId: number) {
 
     if (numPlays === 0) {
       await AsyncStorage.setItem(String(trackId), "1");
+      const updated = await AsyncStorage.getItem(String(trackId));
+      console.log("trackId: " + String(trackId) + ", plays: " + updated);
       return;
     } else {
       const updatedPlays = numPlays + 1;
       await AsyncStorage.setItem(String(trackId), String(updatedPlays));
+      const updated = await AsyncStorage.getItem(String(trackId));
+      console.log("trackId: " + String(trackId) + ", plays: " + updated);
       return;
     }
   } catch (err) {
