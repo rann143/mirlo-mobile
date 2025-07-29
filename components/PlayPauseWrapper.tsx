@@ -12,8 +12,9 @@ import {
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import { isEqual } from "lodash";
 import { TrackItem } from "./TrackItem";
-import { isTrackOwnedOrPreview } from "@/scripts/utils";
+import { isTrackOwnedOrPreview, isTrackOwned } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
+import { reachedMaxPlays } from "@/scripts/trackPlayUtils";
 
 type PlayPauseWrapper = PropsWithChildren<PlayPauseWrapperProps>;
 
@@ -71,6 +72,12 @@ export default function PlayPauseWrapper({
     playBackState: PlaybackState | { state: undefined }
   ) => {
     try {
+      // MAX PLAYS IMPLEMENTATION
+      //   if (!isTrackOwned(trackObject, undefined, user) && await reachedMaxPlays(trackObject.id)) {
+      //     console.log("Please Purchase to contine listening");
+      //     return;
+      //   }
+
       const queue = await TrackPlayer.getQueue();
       // Set queue if no queue currently set
       if (!queue) {
