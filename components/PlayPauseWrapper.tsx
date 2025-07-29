@@ -35,14 +35,8 @@ export default function PlayPauseWrapper({
   const audioURL = trackObject?.url;
   const [thisSongSelected, setThisSongSelected] = useState<boolean>(false);
   const { user } = useAuthContext();
-  const trackPlayerInfo = useRef(null);
 
   const canPlayTrack = isTrackOwnedOrPreview(trackObject, user, selectedAlbum);
-
-  async function getTrackPlayerInfo() {
-    const queue = (await TrackPlayer.getQueue()) as RNTrack[];
-    const currentTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
-  }
 
   useEffect(() => {
     const checkTrack = async () => {
@@ -72,12 +66,6 @@ export default function PlayPauseWrapper({
     playBackState: PlaybackState | { state: undefined }
   ) => {
     try {
-      // MAX PLAYS IMPLEMENTATION
-      //   if (!isTrackOwned(trackObject, undefined, user) && await reachedMaxPlays(trackObject.id)) {
-      //     console.log("Please Purchase to contine listening");
-      //     return;
-      //   }
-
       const queue = await TrackPlayer.getQueue();
       // Set queue if no queue currently set
       if (!queue) {
