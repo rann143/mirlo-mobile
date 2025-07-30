@@ -37,7 +37,16 @@ export default function NowPlaying() {
           backgroundColor: "#fafafa",
         }}
       >
-        <Pressable onPress={() => router.dismiss()}>
+        <Pressable
+          onPress={() => router.dismiss()}
+          style={{
+            width: "100%",
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "row",
+          }}
+        >
           <Ionicons
             name="chevron-down-outline"
             size={40}
