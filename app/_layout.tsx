@@ -124,6 +124,15 @@ export default function RootLayout() {
                     headerShown: false,
                   }}
                 />
+                <Stack.Screen
+                  name="maxPlaysReached"
+                  options={{
+                    headerShown: false,
+                    presentation: "modal",
+                    animation: "slide_from_bottom",
+                    animationDuration: 200,
+                  }}
+                />
               </Stack>
               <Footer />
               <StatusBar style="dark" backgroundColor="white" />

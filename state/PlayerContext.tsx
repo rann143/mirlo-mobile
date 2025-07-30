@@ -10,6 +10,7 @@ import TrackPlayer, {
 } from "react-native-track-player";
 import { useAuthContext } from "./AuthContext";
 import { isTrackOwned } from "@/scripts/utils";
+import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface PlayerContextType {
@@ -34,6 +35,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [playerState, setPlayerState] = useState<any>(null);
   const playBackState = usePlaybackState();
   const { user } = useAuthContext();
+  const router = useRouter();
 
   useEffect(() => {
     setUpTrackPlayer();
@@ -64,6 +66,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         (await reachedMaxPlays(track.id))
       ) {
         await TrackPlayer.stop();
+        router.push("/maxPlaysReached");
         console.log("You've reached max plays. Plz purchase. Show some love");
       }
 
