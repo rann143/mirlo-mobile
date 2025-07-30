@@ -1,4 +1,5 @@
 import TrackPlayer, { Event } from "react-native-track-player";
+import { incrementPlayCount } from "./trackPlayUtils";
 
 module.exports = async function () {
   TrackPlayer.addEventListener(
@@ -47,4 +48,15 @@ module.exports = async function () {
   TrackPlayer.addEventListener(Event.RemoteSeek, ({ position }) =>
     TrackPlayer.seekTo(position)
   );
+  // ATTEMPT (Not complete): increment plays from PlaybackServices. Issues: 1. doesn't check if owned. 2. fires on every update, instead of once (when progress > 50% of duration)
+  // TrackPlayer.addEventListener(
+  //   Event.PlaybackProgressUpdated, // SEE DOCS
+  //   async ({ position, duration, track }) => {
+  //     const currentTrack = (await TrackPlayer.getActiveTrack()) as RNTrack;
+  //     if (position / duration >= 0.5) {
+  //       console.log(currentTrack.title + ": " + currentTrack.id);
+  //       incrementPlayCount(currentTrack.id);
+  //     }
+  //   }
+  // );
 };

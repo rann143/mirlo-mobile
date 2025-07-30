@@ -100,6 +100,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
           Capability.SkipToPrevious,
           Capability.SeekTo,
         ],
+        // progressUpdateEventInterval: 1,
       });
       console.log("track player set up");
     } catch (err) {
