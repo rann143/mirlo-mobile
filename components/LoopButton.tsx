@@ -6,7 +6,8 @@ import TrackPlayer, { RepeatMode } from "react-native-track-player";
 import { useState } from "react";
 
 export default function LoopButton() {
-  const [looping, setLooping] = useState<"none" | "track" | "queue">("none");
+  // const [looping, setLooping] = useState<"none" | "track" | "queue">("none");
+  const { looping, setLooping } = usePlayer();
   const loopIcon = (
     <Ionicons
       name="repeat"
