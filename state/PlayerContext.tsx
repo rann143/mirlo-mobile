@@ -1,4 +1,4 @@
-import { incrementPlayCount, reachedMaxPlays } from "@/scripts/trackPlayUtils";
+import { reachedMaxPlays } from "@/scripts/trackPlayUtils";
 import { createContext, useState, useContext, useEffect, useMemo } from "react";
 import TrackPlayer, {
   Capability,
@@ -11,7 +11,6 @@ import TrackPlayer, {
 import { useAuthContext } from "./AuthContext";
 import { isTrackOwned } from "@/scripts/utils";
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface PlayerContextType {
   playbackState: PlaybackState | { state: undefined };
@@ -22,6 +21,8 @@ interface PlayerContextType {
   shuffled: boolean;
   setShuffled: (shuffled: boolean) => void;
   isPlaying: boolean;
+  looping: "none" | "track" | "queue";
+  setLooping: (looping: "none" | "track" | "queue") => void;
 }
 
 export const PlayerContext = createContext<PlayerContextType | null>(null);
@@ -30,6 +31,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [shuffled, setShuffled] = useState<boolean>(false);
+  const [looping, setLooping] = useState<"none" | "track" | "queue">("none");
   const [playableTracks, setPlayableTracks] = useState<RNTrack[]>([]);
   const [activeTrack, setActiveTrack] = useState<RNTrack>();
   const [playerState, setPlayerState] = useState<any>(null);
@@ -47,6 +49,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       Event.RemotePrevious,
       Event.PlaybackActiveTrackChanged,
       Event.PlaybackState,
+      Event.PlaybackProgressUpdated,
     ],
     async (event) => {
       if (event.type === Event.PlaybackState) {
@@ -60,31 +63,19 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const track = (await TrackPlayer.getActiveTrack()) as RNTrack;
 
+      // This check runs if either the active track changes or playback progress == 0, the track is NOT owned, and reachMaxPlays === true
+      // Should this be in PlayerContext? Or in service.ts with the Increment play count functionality? I'm thinking they should probably be together.
+      // Need to work out pros & cons of where it makes most sense. This works for now.
       if (
-        event.type === Event.PlaybackActiveTrackChanged &&
+        (event.type === Event.PlaybackActiveTrackChanged ||
+          (event.type == Event.PlaybackProgressUpdated &&
+            event.position === 0)) &&
         !isTrackOwned(track, undefined, user) &&
         (await reachedMaxPlays(track.id))
       ) {
         await TrackPlayer.stop();
         router.push("/maxPlaysReached");
         console.log("You've reached max plays. Plz purchase. Show some love");
-      }
-
-      if (
-        event.type === Event.PlaybackActiveTrackChanged &&
-        !isTrackOwned(event.lastTrack as RNTrack, undefined, user)
-      ) {
-        // Incrementing Track Play Count
-        const prevTrack = event.lastTrack as RNTrack;
-        const prevTrackDuration = prevTrack.audio.duration;
-        const prevTrackProgress = event.lastPosition;
-
-        if (prevTrackDuration !== undefined) {
-          if (prevTrackProgress / prevTrackDuration >= 0.5) {
-            console.log(prevTrack.title + ": " + prevTrack.id);
-            incrementPlayCount(prevTrack.id);
-          }
-        }
       }
     }
   );
@@ -100,7 +91,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
           Capability.SkipToPrevious,
           Capability.SeekTo,
         ],
-        // progressUpdateEventInterval: 1,
+        progressUpdateEventInterval: 1,
       });
       console.log("track player set up");
     } catch (err) {
@@ -120,8 +111,10 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       shuffled: shuffled,
       setShuffled: setShuffled,
       isPlaying: isPlaying,
+      looping: looping,
+      setLooping: setLooping,
     }),
-    [playBackState, playableTracks, activeTrack, shuffled, isPlaying]
+    [playBackState, playableTracks, activeTrack, shuffled, isPlaying, looping]
   );
   return (
     <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>
