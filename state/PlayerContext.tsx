@@ -1,5 +1,12 @@
-import { reachedMaxPlays } from "@/scripts/trackPlayUtils";
-import { createContext, useState, useContext, useEffect, useMemo } from "react";
+import { incrementPlayCount, reachedMaxPlays } from "@/scripts/trackPlayUtils";
+import {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import TrackPlayer, {
   Capability,
   Event,
@@ -38,6 +45,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const playBackState = usePlaybackState();
   const { user } = useAuthContext();
   const router = useRouter();
+  const incrementedRef = useRef(false);
 
   useEffect(() => {
     setUpTrackPlayer();
@@ -55,17 +63,15 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       if (event.type === Event.PlaybackState) {
         setPlayerState(event.state);
       }
-
       if (event.type !== Event.PlaybackState) {
         const track = (await TrackPlayer.getActiveTrack()) as RNTrack;
         setActiveTrack(track);
       }
 
-      const track = (await TrackPlayer.getActiveTrack()) as RNTrack;
+      let track = (await TrackPlayer.getActiveTrack()) as RNTrack;
 
-      // This check runs if either the active track changes or playback progress == 0, the track is NOT owned, and reachMaxPlays === true
-      // Should this be in PlayerContext? Or in service.ts with the Increment play count functionality? I'm thinking they should probably be together.
-      // Need to work out pros & cons of where it makes most sense. This works for now.
+      // PLAY COUNT INCREMENTATION & CHECKING MAX PLAYS should probably be moved to services.ts so they can run when the UI isn't mounted.
+      // Check for max plays reached
       if (
         (event.type === Event.PlaybackActiveTrackChanged ||
           (event.type == Event.PlaybackProgressUpdated &&
@@ -76,6 +82,41 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         await TrackPlayer.stop();
         router.push("/maxPlaysReached");
         console.log("You've reached max plays. Plz purchase. Show some love");
+      }
+
+      // Handle track changes - reset increment flag
+      if (event.type === Event.PlaybackActiveTrackChanged) {
+        incrementedRef.current = false; // Reset for new track
+        track = (await TrackPlayer.getActiveTrack()) as RNTrack;
+      }
+
+      // Handle playback progress
+      if (event.type === Event.PlaybackProgressUpdated) {
+        const progressRatio = event.position / event.duration;
+
+        // Reset incremented flag if playback is at the beginning (< 5% to be safe)
+        if (progressRatio < 0.05) {
+          incrementedRef.current = false;
+        }
+
+        // Increment play count once when reaching 50%
+        if (
+          !isTrackOwned(track, undefined, user) &&
+          !incrementedRef.current &&
+          progressRatio >= 0.5
+        ) {
+          incrementedRef.current = true;
+          console.log(track.title + ": " + track.id);
+          incrementPlayCount(track.id);
+        }
+        // else {
+        //   console.log(
+        //     `Track owned: ${isTrackOwned(track, undefined, user)}, ` +
+        //       `Already incremented: ${incrementedRef.current}, ` +
+        //       `Progress: ${(progressRatio * 100).toFixed(1)}%`
+        //   );
+        //   console.log("track play count not incremented");
+        // }
       }
     }
   );

@@ -21,7 +21,13 @@ import { isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryAlbum } from "@/queries/queries";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { API_ROOT } from "@/constants/api-root";
 import { API_KEY } from "@/constants/api-key";
 import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
@@ -114,22 +120,34 @@ function AlbumPlayButton() {
     }
   }, [isPlaying, playableTracks, setActiveTrack]);
 
+  const playButtonIcon = useMemo(() => {
+    if (!playableTracks.length) return "play-circle-outline";
+
+    const isActivelyPlaying = playbackState.state
+      ? [State.Playing, State.Buffering].includes(playbackState.state)
+      : false;
+    const isSameTrackGroup =
+      activeTrack?.trackGroup?.urlSlug ===
+      playableTracks[0].trackGroup?.urlSlug;
+    const isCompleteQueue = playableTracks.length === q?.length;
+
+    return isActivelyPlaying && isSameTrackGroup && isCompleteQueue
+      ? "pause-circle-outline"
+      : "play-circle-outline";
+  }, [
+    playbackState.state,
+    activeTrack?.trackGroup?.urlSlug,
+    playableTracks,
+    q?.length,
+  ]);
+
   return (
     <TouchableOpacity
       onPress={togglePlayBack}
       disabled={playableTracks.length ? false : true}
     >
       <Ionicons
-        name={
-          playableTracks.length
-            ? (isPlaying || playbackState.state == State.Buffering) &&
-              activeTrack?.trackGroup?.urlSlug ===
-                playableTracks[0].trackGroup?.urlSlug &&
-              playableTracks.length === q?.length
-              ? "pause-circle-outline"
-              : "play-circle-outline"
-            : "play-circle-outline"
-        }
+        name={playButtonIcon}
         size={70}
         style={{ marginHorizontal: 5 }}
         color={playableTracks.length ? "black" : "lightgrey"}
