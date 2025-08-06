@@ -18,6 +18,7 @@ import TrackPlayer, {
 import { useAuthContext } from "./AuthContext";
 import { isTrackOwned } from "@/scripts/utils";
 import { useRouter } from "expo-router";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface PlayerContextType {
   playbackState: PlaybackState | { state: undefined };
@@ -39,7 +40,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [shuffled, setShuffled] = useState<boolean>(false);
   const [looping, setLooping] = useState<"none" | "track" | "queue">("none");
-  const [playableTracks, setPlayableTracks] = useState<RNTrack[]>([]);
+  const [playableTracks, setPlayableTracks] = useState<RNTrack[]>([]); // Available Tracks to play when opening an album (sets the stage for a potenial queue change)
   const [activeTrack, setActiveTrack] = useState<RNTrack>();
   const [playerState, setPlayerState] = useState<any>(null);
   const playBackState = usePlaybackState();
@@ -62,6 +63,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     async (event) => {
       if (event.type === Event.PlaybackState) {
         setPlayerState(event.state);
+        console.log(event.state);
       }
       if (event.type !== Event.PlaybackState) {
         const track = (await TrackPlayer.getActiveTrack()) as RNTrack;
@@ -93,7 +95,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       // Handle playback progress
       if (event.type === Event.PlaybackProgressUpdated) {
         const progressRatio = event.position / event.duration;
-
         // Reset incremented flag if playback is at the beginning (< 5% to be safe)
         if (progressRatio < 0.05) {
           incrementedRef.current = false;
