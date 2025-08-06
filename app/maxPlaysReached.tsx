@@ -90,40 +90,44 @@ export default function MaxPlaysReached() {
           </Text>
         </Pressable>
 
-        <Text
-          style={{
-            color: "white",
-            fontSize: 20,
-            margin: 10,
-          }}
-        >
-          OR
-        </Text>
-
-        <Pressable
-          onPress={() =>
-            Linking.openURL(
-              `https://mirlo.space/${activeTrack?.trackGroup.artist.urlSlug}/release/${activeTrack?.trackGroup.urlSlug}/tracks/${activeTrack?.id}`
-            )
-          }
-          style={{
-            alignItems: "center",
-            marginVertical: 10,
-            backgroundColor: "white",
-            borderRadius: 5,
-          }}
-        >
+        {activeTrack?.allowIndividualSale ? (
           <Text
             style={{
-              color: "black",
+              color: "white",
               fontSize: 20,
               margin: 10,
-              textAlign: "center",
             }}
           >
-            Buy Track "{activeTrack?.title}"
+            OR
           </Text>
-        </Pressable>
+        ) : null}
+
+        {activeTrack?.allowIndividualSale ? (
+          <Pressable
+            onPress={() =>
+              Linking.openURL(
+                `https://mirlo.space/${activeTrack?.trackGroup.artist.urlSlug}/release/${activeTrack?.trackGroup.urlSlug}/tracks/${activeTrack?.id}`
+              )
+            }
+            style={{
+              alignItems: "center",
+              marginVertical: 10,
+              backgroundColor: "white",
+              borderRadius: 5,
+            }}
+          >
+            <Text
+              style={{
+                color: "black",
+                fontSize: 20,
+                margin: 10,
+                textAlign: "center",
+              }}
+            >
+              Buy Track "{activeTrack?.title}"
+            </Text>
+          </Pressable>
+        ) : null}
 
         <Text
           style={{
@@ -133,7 +137,7 @@ export default function MaxPlaysReached() {
             marginTop: 20,
           }}
         >
-          Buy this track to:
+          Buy this {activeTrack?.allowIndividualSale ? "track" : "album"} to:
         </Text>
         <FlatList
           style={{ margin: 10 }}

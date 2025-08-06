@@ -88,6 +88,7 @@ interface RNTrack {
     isCoAuthor?: boolean;
     trackId?: number;
   }[];
+  allowIndividualSale: boolean;
   url: string;
   id: number;
   queueIndex: number;
