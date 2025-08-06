@@ -49,19 +49,28 @@ function AlbumPlayButton() {
     setActiveTrack,
     setShuffled,
   } = usePlayer();
-  const [q, setQ] = useState<RNTrack[]>([]);
+  // ORGINALLY q was used to help determine the play/pause icon for this condition: playableTracks.length === q?.length
+  // but in rookie fashion, I completely forget why/if that's needed. I don't think it is since based on the other conditions,
+  // this seems unnecessarily repetitive
 
-  useEffect(() => {
-    async function getQ() {
-      try {
-        const queue = (await TrackPlayer.getQueue()) as RNTrack[];
-        setQ(queue);
-      } catch (error) {
-        console.error("Error getting queue:", error);
-      }
-    }
-    getQ();
-  }, []);
+  // const [q, setQ] = useState<RNTrack[]>([]);
+
+  // useEffect(() => {
+  //   async function getQ() {
+  //     try {
+  //       const queue = (await TrackPlayer.getQueue()) as RNTrack[];
+  //       setQ(queue);
+  //     } catch (error) {
+  //       console.error("Error getting queue:", error);
+  //     }
+  //   }
+  //   getQ();
+  // }, []);
+
+  async function getQ() {
+    const queue = (await TrackPlayer.getQueue()) as RNTrack[];
+    return queue;
+  }
 
   const togglePlayBack = useCallback(async () => {
     try {
@@ -120,34 +129,21 @@ function AlbumPlayButton() {
     }
   }, [isPlaying, playableTracks, setActiveTrack]);
 
-  const playButtonIcon = useMemo(() => {
-    if (!playableTracks.length) return "play-circle-outline";
-
-    const isActivelyPlaying = playbackState.state
-      ? [State.Playing, State.Buffering].includes(playbackState.state)
-      : false;
-    const isSameTrackGroup =
-      activeTrack?.trackGroup?.urlSlug ===
-      playableTracks[0].trackGroup?.urlSlug;
-    const isCompleteQueue = playableTracks.length === q?.length;
-
-    return isActivelyPlaying && isSameTrackGroup && isCompleteQueue
-      ? "pause-circle-outline"
-      : "play-circle-outline";
-  }, [
-    playbackState.state,
-    activeTrack?.trackGroup?.urlSlug,
-    playableTracks,
-    q?.length,
-  ]);
-
   return (
     <TouchableOpacity
       onPress={togglePlayBack}
       disabled={playableTracks.length ? false : true}
     >
       <Ionicons
-        name={playButtonIcon}
+        name={
+          playableTracks.length
+            ? (isPlaying || playbackState.state == State.Buffering) &&
+              activeTrack?.trackGroup?.urlSlug ===
+                playableTracks[0].trackGroup?.urlSlug // && playableTracks.length === q?.length
+              ? "pause-circle-outline"
+              : "play-circle-outline"
+            : "play-circle-outline"
+        }
         size={70}
         style={{ marginHorizontal: 5 }}
         color={playableTracks.length ? "black" : "lightgrey"}
@@ -241,7 +237,6 @@ export default function AlbumTracks() {
           }
         });
       }
-
       setAlbum(allTracks);
       setPlayableTracks(tracksToPlay);
     }, [data])
