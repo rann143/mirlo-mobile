@@ -3,12 +3,10 @@ import { incrementPlayCount } from "./trackPlayUtils";
 import { useAuthContext } from "@/state/AuthContext";
 import { isTrackOwned } from "./utils";
 
-module.exports = async function () {
-  let incremented = false;
-  //POTENTIAL BUG: Can service even read from the authContext properly??
-  const { user } = useAuthContext();
-  let currentTrack: RNTrack | undefined = undefined;
+let incremented = false;
+let currentTrack: RNTrack | undefined = undefined;
 
+module.exports = async function () {
   TrackPlayer.addEventListener(
     Event.RemotePlay,
     async () => await TrackPlayer.play()
