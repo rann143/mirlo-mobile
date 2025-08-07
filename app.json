@@ -18,6 +18,9 @@
       "icon": {
         "dark": "./assets/images/mirlo-logo-logoOnly-dark.png",
         "light": "./assets/images/mirlo-logo-logoOnly-light.png"
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
       }
     },
     "android": {
@@ -26,6 +29,8 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
@@ -79,6 +84,12 @@
         "projectId": "a2ccd2d1-a537-4697-9df3-43228ba534ef"
       }
     },
-    "owner": "drod17"
+    "owner": "drod17",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a2ccd2d1-a537-4697-9df3-43228ba534ef"
+    }
   }
 }

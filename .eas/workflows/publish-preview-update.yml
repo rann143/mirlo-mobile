@@ -2,11 +2,13 @@ name: Publish preview update
 
 on:
   push:
-    branches: ["*"]
+    branches: ["preview"]
 
 jobs:
   publish_preview_update:
     name: Publish preview update
     type: update
     params:
-      branch: ${{ github.ref_name || 'test' }}
+      channel: preview
+      message: "Auto update: ${{ github.event.head_commit.message }}"
+      branch: preview
