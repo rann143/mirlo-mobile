@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          cache: yarn
+          cache: npm
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8
@@ -34,7 +34,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
 
       - name: Create preview
         uses: expo/expo-github-action/preview@v8
