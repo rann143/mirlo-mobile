@@ -11,4 +11,3 @@ jobs:
     params:
       channel: preview
       message: "Auto update: ${{ github.event.head_commit.message }}"
-      branch: preview
