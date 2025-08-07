@@ -53,6 +53,7 @@ export default function Collections() {
   useEffect(() => {
     setList([
       t("profile.yourWishlist"),
+      "Update Test",
       ...(wishlist ?? []),
       t("profile.favoritedTracks"),
       ...(trackFavorites ?? []),
