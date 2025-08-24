@@ -12,6 +12,7 @@ import { AppReadyContextProvider } from "@/state/AppReadyContext";
 import { useCallback, useEffect, useState } from "react";
 import Footer from "@/components/Footer";
 import "../i18n";
+import { checkForUpdates } from "../scripts/appVersionCheck";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,17 +35,16 @@ export default function RootLayout() {
     }
   };
 
-  const onLayoutRootView = useCallback(() => {
-    if (isDataLoaded) {
-      SplashScreen.hide();
-    }
-  }, [isDataLoaded]);
+  useEffect(() => {
+    checkForUpdates();
+  }, []);
 
   useEffect(() => {
     if (isDataLoaded) {
       SplashScreen.hide();
     }
   }, [isDataLoaded]);
+
   return (
     <AppReadyContextProvider
       value={{ isDataLoaded: isDataLoaded, setIsDataLoaded: setIsDataLoaded }}
