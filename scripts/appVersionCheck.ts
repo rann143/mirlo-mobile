@@ -1,14 +1,18 @@
 import * as Application from "expo-application";
 import { Alert, Linking, Platform } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export async function checkForUpdates() {
   try {
     const currentVersion = Application.nativeBuildVersion;
     const bundleId = Application.applicationId;
 
-    if (!currentVersion || bundleId) {
-      console.log("couldn't get current version or bundleId");
+    if (!bundleId) {
+      console.log("couldn't get bundleId");
+      return false;
+    }
+
+    if (!currentVersion) {
+      console.log("couldn't get current version");
       return false;
     }
 
@@ -39,6 +43,7 @@ export async function checkForUpdates() {
 
     // Compare versions
     if (isVersionGreater(storeVersion, currentVersion)) {
+      console.log(storeUrl);
       showForceUpdateAlert(currentVersion, storeVersion, storeUrl);
       return true;
     } else {
@@ -89,13 +94,21 @@ function showForceUpdateAlert(
   newVersion: string,
   storeUrl: string
 ) {
+  // Use iTunes URL in simulator, App Store URL on device
+  const appStoreUrl =
+    __DEV__ && Platform.OS === "ios"
+      ? "https://www.apple.com/app-store/" // Keep original iTunes URL for simulator
+      : storeUrl;
+
+  console.log(appStoreUrl);
+
   Alert.alert(
     "Update Required",
     `This version (${currentVersion}) is no longer supported. Please update to version ${newVersion} to continue using the app.`,
     [
       {
         text: "Update Now",
-        onPress: () => Linking.openURL(storeUrl),
+        onPress: () => Linking.openURL(appStoreUrl),
       },
     ],
     {
