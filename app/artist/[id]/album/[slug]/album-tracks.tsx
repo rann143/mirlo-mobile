@@ -21,16 +21,10 @@ import { isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryAlbum } from "@/queries/queries";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useState } from "react";
 import { API_ROOT } from "@/constants/api-root";
 import { API_KEY } from "@/constants/api-key";
-import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
+import TrackPlayer, { State } from "react-native-track-player";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import PlayPauseWrapper from "@/components/PlayPauseWrapper";
 import { useTranslation } from "react-i18next";
@@ -214,7 +208,7 @@ export default function AlbumTracks() {
               cover: data.result.cover,
               title: data.result.title,
               artist: data.result.artist,
-              id: data.result.trackGroupId,
+              id: data.result.id,
               releaseDate: data.result.releaseDate,
               trackGroupId: data.result.trackGroupId,
             },

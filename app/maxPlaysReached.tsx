@@ -1,22 +1,37 @@
+import * as api from "../queries/fetch/fetchWrapper";
 import {
   View,
   SafeAreaView,
   Text,
   StyleSheet,
   Pressable,
-  Linking,
-  SectionList,
   FlatList,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
-import TrackPlayer from "react-native-track-player";
 import { usePlayer } from "@/state/PlayerContext";
 import { mirloRed } from "@/constants/mirlo-red";
+import { useAuthContext } from "@/state/AuthContext";
 
 export default function MaxPlaysReached() {
   const router = useRouter();
   const { activeTrack } = usePlayer();
+  const { user } = useAuthContext();
+
+  function sendPurchaseEmail() {
+    try {
+      if (activeTrack && user) {
+        api.post(
+          `/v1/trackGroups/${activeTrack.trackGroup.id}/emailPurchaseLink?email=${user?.email}`,
+          {}
+        );
+      } else {
+        console.log("Missing active track or user email");
+      }
+    } catch (err) {
+      console.error("issue emailing purchase info", err);
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -65,44 +80,43 @@ export default function MaxPlaysReached() {
           "{activeTrack?.title}"
         </Text>
 
-        <Pressable
-          onPress={() =>
-            Linking.openURL(
-              `https://mirlo.space/${activeTrack?.trackGroup.artist.urlSlug}/release/${activeTrack?.trackGroup.urlSlug}`
-            )
-          }
-          style={{
-            alignItems: "center",
-            marginBottom: 10,
-            backgroundColor: "white",
-            borderRadius: 5,
-          }}
-        >
-          <Text
+        {user && (
+          <Pressable
+            onPress={() => {
+              sendPurchaseEmail();
+            }}
             style={{
-              fontSize: 20,
-              color: "black",
-              margin: 10,
-              textAlign: "center",
+              alignItems: "center",
+              marginBottom: 10,
+              backgroundColor: "white",
+              borderRadius: 5,
             }}
           >
-            Buy Album "{activeTrack?.trackGroup.title}"
-          </Text>
-        </Pressable>
+            <Text
+              style={{
+                fontSize: 20,
+                color: "black",
+                margin: 10,
+                textAlign: "center",
+              }}
+            >
+              Email Purchase Info
+            </Text>
+          </Pressable>
+        )}
+        {/* {activeTrack?.allowIndividualSale ? (
+            <Text
+              style={{
+                color: "white",
+                fontSize: 20,
+                margin: 10,
+              }}
+            >
+              OR
+            </Text>
+          ) : null} */}
 
-        {activeTrack?.allowIndividualSale ? (
-          <Text
-            style={{
-              color: "white",
-              fontSize: 20,
-              margin: 10,
-            }}
-          >
-            OR
-          </Text>
-        ) : null}
-
-        {activeTrack?.allowIndividualSale ? (
+        {/* {activeTrack?.allowIndividualSale ? (
           <Pressable
             onPress={() =>
               Linking.openURL(
@@ -127,7 +141,7 @@ export default function MaxPlaysReached() {
               Buy Track "{activeTrack?.title}"
             </Text>
           </Pressable>
-        ) : null}
+        ) : null} */}
 
         <Text
           style={{
