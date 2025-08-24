@@ -12,11 +12,13 @@ import { useRouter } from "expo-router";
 import { usePlayer } from "@/state/PlayerContext";
 import { mirloRed } from "@/constants/mirlo-red";
 import { useAuthContext } from "@/state/AuthContext";
+import { useState } from "react";
 
 export default function MaxPlaysReached() {
   const router = useRouter();
   const { activeTrack } = usePlayer();
   const { user } = useAuthContext();
+  const [isEmailSent, setIsEmailSent] = useState<Boolean>(false);
 
   function sendPurchaseEmail() {
     try {
@@ -25,6 +27,7 @@ export default function MaxPlaysReached() {
           `/v1/trackGroups/${activeTrack.trackGroup.id}/emailPurchaseLink?email=${user?.email}`,
           {}
         );
+        setIsEmailSent(true);
       } else {
         console.log("Missing active track or user email");
       }
@@ -80,7 +83,21 @@ export default function MaxPlaysReached() {
           "{activeTrack?.title}"
         </Text>
 
-        {user && (
+        {!user && (
+          <Text
+            style={{
+              fontSize: 20,
+              color: "white",
+              margin: 10,
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+          >
+            Log In or Sign Up for Purchase Info!
+          </Text>
+        )}
+
+        {user && !isEmailSent && (
           <Pressable
             onPress={() => {
               sendPurchaseEmail();
@@ -101,6 +118,28 @@ export default function MaxPlaysReached() {
               }}
             >
               Email Purchase Info
+            </Text>
+          </Pressable>
+        )}
+
+        {user && isEmailSent && (
+          <Pressable
+            style={{
+              alignItems: "center",
+              marginBottom: 10,
+              backgroundColor: "white",
+              borderRadius: 5,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                color: "black",
+                margin: 10,
+                textAlign: "center",
+              }}
+            >
+              Email Sent! ✅
             </Text>
           </Pressable>
         )}
