@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as api from "../queries/fetch/fetchWrapper";
 import { Link } from "expo-router";
 import { useRouter } from "expo-router";
+import { API_ROOT } from "@/constants/api-root";
 
 export default function Index() {
   const { setIsDataLoaded } = useAppIsReadyContext();
@@ -43,7 +44,7 @@ export default function Index() {
   const trackGroups = data?.pages.flatMap((page) => page.results) || [];
 
   useEffect(() => {
-    if (data) {
+    if (data || API_ROOT === "http://localhost:3000") {
       const timer = setTimeout(() => {
         setIsDataLoaded(true);
       }, 1000);
