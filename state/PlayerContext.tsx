@@ -18,7 +18,6 @@ import TrackPlayer, {
 import { useAuthContext } from "./AuthContext";
 import { isTrackOwned } from "@/scripts/utils";
 import { useRouter } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface PlayerContextType {
   playbackState: PlaybackState | { state: undefined };
@@ -59,15 +58,25 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       Event.PlaybackActiveTrackChanged,
       Event.PlaybackState,
       Event.PlaybackProgressUpdated,
+      Event.PlaybackQueueEnded,
     ],
     async (event) => {
       if (event.type === Event.PlaybackState) {
         setPlayerState(event.state);
         console.log(event.state);
       }
-      if (event.type !== Event.PlaybackState) {
+      if (
+        [
+          Event.RemoteNext,
+          Event.RemotePrevious,
+          Event.PlaybackActiveTrackChanged,
+        ].includes(event.type)
+      ) {
         const track = (await TrackPlayer.getActiveTrack()) as RNTrack;
         setActiveTrack(track);
+      }
+      if (event.type === Event.PlaybackQueueEnded) {
+        await TrackPlayer.skip(0);
       }
 
       let track = (await TrackPlayer.getActiveTrack()) as RNTrack;
