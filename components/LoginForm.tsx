@@ -119,13 +119,9 @@ export default function LoginForm() {
             marginTop: 30,
           }}
         >
-          <Pressable
-            onPress={() => Linking.openURL("https://mirlo.space/signup")}
-          >
-            <Text style={{ color: "white", textDecorationLine: "underline" }}>
-              {t("signUp")}
-            </Text>
-          </Pressable>
+          <Text style={{ color: "white" }}>
+            Sign up online at https://mirlo.space/
+          </Text>
         </View>
       </View>
     </View>
