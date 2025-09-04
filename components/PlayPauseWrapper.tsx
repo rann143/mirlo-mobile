@@ -68,12 +68,13 @@ export default function PlayPauseWrapper({
     try {
       const queue = await TrackPlayer.getQueue();
       // Set queue if no queue currently set
-      if (!queue) {
+      if (!queue.length) {
         console.log("no curr track: setting track");
         await TrackPlayer.setQueue(playableTracks);
-        await TrackPlayer.load(trackObject);
+        await TrackPlayer.skip(trackObject.queueIndex);
         await TrackPlayer.play();
         setActiveTrack(trackObject);
+        console.log("Q set from nothing");
         return;
       }
 
@@ -90,9 +91,10 @@ export default function PlayPauseWrapper({
         try {
           setShuffled(false);
           await TrackPlayer.setQueue(playableTracks);
-          await TrackPlayer.load(trackObject);
+          await TrackPlayer.skip(trackObject.queueIndex);
           await TrackPlayer.play();
           setActiveTrack(trackObject);
+          console.log("Q set from diff album");
           return;
         } catch (err) {
           console.error("issue changing albums", err);
@@ -123,9 +125,13 @@ export default function PlayPauseWrapper({
 
   return (
     <Pressable
-      onPress={() => {
+      onPress={async () => {
+        console.log(playableTracks);
         if (canPlayTrack) {
-          togglePlayBack(playbackState);
+          await togglePlayBack(playbackState);
+          console.log("Queue:");
+          const q = await TrackPlayer.getQueue();
+          console.log(q);
         } else {
           return;
         }
