@@ -1,4 +1,4 @@
-import { ActivityIndicator, Text, View, FlatList } from "react-native";
+import { ActivityIndicator, View, FlatList } from "react-native";
 import MenuButton from "@/components/MenuButton";
 import SearchButton from "@/components/SearchButton";
 import { StyleSheet } from "react-native";

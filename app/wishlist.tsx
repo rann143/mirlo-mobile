@@ -8,19 +8,13 @@ import {
 import { useAuthContext } from "@/state/AuthContext";
 import { Link, router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
-import { queryUserPurchases, queryWishlist } from "@/queries/queries";
+import { queryWishlist } from "@/queries/queries";
 import { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MenuButton from "@/components/MenuButton";
 import SearchButton from "@/components/SearchButton";
 import CollectionPurchase from "@/components/CollectionPurchase";
-import {
-  isFavoritedTrack,
-  isTrackGroupPurchase,
-  isTrackPurchase,
-  isWishlisted,
-} from "@/types/typeguards";
-import TrackGroupItem from "@/components/TrackGroupItem";
+import { isFavoritedTrack, isWishlisted } from "@/types/typeguards";
 import { useTranslation } from "react-i18next";
 import ErrorNotification from "@/components/ErrorNotification";
 
