@@ -3,6 +3,7 @@ interface LoggedInUser {
   name: string;
   id: number;
   userTrackGroupPurchases?: { trackGroupId: number }[];
+  userTrackPurchases?: { trackId: number }[];
   isAdmin: boolean;
   currency?: string;
   wishlist?: {

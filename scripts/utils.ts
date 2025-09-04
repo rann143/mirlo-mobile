@@ -35,11 +35,18 @@ export const isTrackOwned = (
     return false;
   }
   const lookInTrackGroup = trackGroup ?? track.trackGroup;
+
+  // Checks if you are the owner/artist of the track
   const ownsTrack = lookInTrackGroup.artistId === user.id;
-  const boughtTrack = !!lookInTrackGroup.userTrackGroupPurchases?.find(
+  // Checks if you bought the track individually
+  const boughtTrack = !!user.userTrackPurchases?.find(
+    (utgp) => utgp.trackId === track.id
+  );
+  // Checks if you bought the album that the track belongs to
+  const boughtTrackGroup = !!lookInTrackGroup.userTrackGroupPurchases?.find(
     (utgp) => utgp.userId === user.id
   );
-  return ownsTrack || boughtTrack;
+  return ownsTrack || boughtTrack || boughtTrackGroup;
 };
 
 export const linkifyUrls = (text: string) => {
