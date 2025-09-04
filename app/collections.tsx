@@ -9,12 +9,13 @@ import { useAuthContext } from "@/state/AuthContext";
 import { Link, router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { queryUserPurchases } from "@/queries/queries";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MenuButton from "@/components/MenuButton";
 import SearchButton from "@/components/SearchButton";
 import CollectionPurchase from "@/components/CollectionPurchase";
 import { isTrackGroupPurchase, isTrackPurchase } from "@/types/typeguards";
+import ErrorNotification from "@/components/ErrorNotification";
 
 export default function Collections() {
   const { user } = useAuthContext();
@@ -23,6 +24,7 @@ export default function Collections() {
   const { isPending, isError, data, error } = useQuery(
     queryUserPurchases(userId)
   );
+  const [showError, setShowError] = useState<boolean>(true);
   const purchases = data?.results;
 
   useEffect(() => {
@@ -44,9 +46,14 @@ export default function Collections() {
   }
 
   if (isError) {
+    console.error(error);
     return (
-      <View>
-        <Text>Error: {error.message}</Text>
+      <View style={{ flex: 1 }}>
+        <ErrorNotification
+          visible={showError}
+          onDismiss={() => setShowError(false)}
+          error={error}
+        />
       </View>
     );
   }

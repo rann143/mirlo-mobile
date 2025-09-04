@@ -31,6 +31,7 @@ import { useTranslation } from "react-i18next";
 import Markdown from "react-native-markdown-display";
 import { linkifyUrls } from "@/scripts/utils";
 import WishlistButton from "@/components/WishlistButton";
+import ErrorNotification from "@/components/ErrorNotification";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -182,6 +183,7 @@ export default function AlbumTracks() {
   const [album, setAlbum] = useState<RNTrack[]>();
   const { t } = useTranslation("translation");
   const { width } = useWindowDimensions();
+  const [showError, setShowError] = useState<boolean>(true);
 
   useFocusEffect(
     useCallback(() => {
@@ -250,9 +252,14 @@ export default function AlbumTracks() {
   }
 
   if (isError) {
+    console.error(error);
     return (
-      <View>
-        <Text>Error: {error.message} </Text>
+      <View style={{ flex: 1 }}>
+        <ErrorNotification
+          visible={showError}
+          onDismiss={() => setShowError(false)}
+          error={error}
+        />
       </View>
     );
   }

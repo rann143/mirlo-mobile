@@ -4,13 +4,13 @@ import SearchButton from "@/components/SearchButton";
 import { StyleSheet } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TrackGroupItem from "@/components/TrackGroupItem";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppIsReadyContext } from "@/state/AppReadyContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as api from "../queries/fetch/fetchWrapper";
 import { Link } from "expo-router";
-import { useRouter } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
+import ErrorNotification from "@/components/ErrorNotification";
 
 export default function Index() {
   const { setIsDataLoaded } = useAppIsReadyContext();
@@ -40,8 +40,8 @@ export default function Index() {
     },
   });
   const { top } = useSafeAreaInsets();
-  const router = useRouter();
   const trackGroups = data?.pages.flatMap((page) => page.results) || [];
+  const [showError, setShowError] = useState<boolean>(true);
 
   useEffect(() => {
     if (data || API_ROOT === "http://localhost:3000") {
@@ -65,9 +65,14 @@ export default function Index() {
   }
 
   if (isError) {
+    console.error(error);
     return (
-      <View>
-        <Text style={{ color: "red" }}>Error: {error.message}</Text>
+      <View style={{ flex: 1 }}>
+        <ErrorNotification
+          visible={showError}
+          onDismiss={() => setShowError(false)}
+          error={error}
+        />
       </View>
     );
   }

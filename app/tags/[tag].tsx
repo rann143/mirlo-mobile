@@ -14,8 +14,12 @@ import { useRouter } from "expo-router";
 import * as api from "../../queries/fetch/fetchWrapper";
 import TrackGroupItem from "@/components/TrackGroupItem";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import ErrorNotification from "@/components/ErrorNotification";
+import { useState } from "react";
 export default function TagsView() {
   const { tag } = useLocalSearchParams();
+
+  const [showError, setShowError] = useState<boolean>(true);
 
   const {
     isPending,
@@ -56,9 +60,14 @@ export default function TagsView() {
   }
 
   if (isError) {
+    console.error(error);
     return (
-      <View>
-        <Text style={{ color: "red" }}>Error: {error.message}</Text>
+      <View style={{ flex: 1 }}>
+        <ErrorNotification
+          visible={showError}
+          onDismiss={() => setShowError(false)}
+          error={error}
+        />
       </View>
     );
   }

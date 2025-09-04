@@ -63,7 +63,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     async (event) => {
       if (event.type === Event.PlaybackState) {
         setPlayerState(event.state);
-        console.log(event.state);
+        //console.log(event.state);
       }
       if (
         [

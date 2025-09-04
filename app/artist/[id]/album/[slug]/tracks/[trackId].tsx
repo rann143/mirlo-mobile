@@ -24,6 +24,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
 import FavoriteTrackButton from "@/components/FavoriteTrackButton";
+import ErrorNotification from "@/components/ErrorNotification";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -38,6 +39,7 @@ export default function TrackView() {
   const [album, setAlbum] = useState<RNTrack[]>();
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
+  const [showError, setShowError] = useState<boolean>(true);
 
   useFocusEffect(
     useCallback(() => {
@@ -91,9 +93,14 @@ export default function TrackView() {
   }
 
   if (isError) {
+    console.error(error);
     return (
-      <View>
-        <Text>Error: {error.message} </Text>
+      <View style={{ flex: 1 }}>
+        <ErrorNotification
+          visible={showError}
+          onDismiss={() => setShowError(false)}
+          error={error}
+        />
       </View>
     );
   }

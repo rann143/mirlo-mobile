@@ -62,7 +62,7 @@ function PlayerPlayButton({ buttonColor }: PlayButtonProps) {
       ) {
         await TrackPlayer.pause();
       } else {
-        console.log(playbackState.state);
+        //console.log(playbackState.state);
       }
     } catch (error) {
       console.error("issue with player toggle playback botton", error);

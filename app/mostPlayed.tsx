@@ -14,12 +14,15 @@ import { Link } from "expo-router";
 import { useRouter } from "expo-router";
 import { queryMostPlayed } from "@/queries/queries";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import ErrorNotification from "@/components/ErrorNotification";
+import { useState } from "react";
 
 export default function Index() {
   const { isPending, isError, data, error } = useQuery(queryMostPlayed({}));
   const { top } = useSafeAreaInsets();
   const trackGroups = data?.results;
   const router = useRouter();
+  const [showError, setShowError] = useState<boolean>(true);
 
   if (isPending) {
     return (
@@ -34,9 +37,14 @@ export default function Index() {
   }
 
   if (isError) {
+    console.error(error);
     return (
-      <View>
-        <Text style={{ color: "red" }}>Error: {error.message}</Text>
+      <View style={{ flex: 1 }}>
+        <ErrorNotification
+          visible={showError}
+          onDismiss={() => setShowError(false)}
+          error={error}
+        />
       </View>
     );
   }

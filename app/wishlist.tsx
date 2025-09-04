@@ -22,6 +22,7 @@ import {
 } from "@/types/typeguards";
 import TrackGroupItem from "@/components/TrackGroupItem";
 import { useTranslation } from "react-i18next";
+import ErrorNotification from "@/components/ErrorNotification";
 
 export default function Collections() {
   const { user } = useAuthContext();
@@ -29,6 +30,7 @@ export default function Collections() {
   const { top } = useSafeAreaInsets();
   const { isPending, isError, data, error } = useQuery(queryWishlist(userId));
   const { t } = useTranslation();
+  const [showError, setShowError] = useState<boolean>(true);
   const [list, setList] = useState<
     (
       | {
@@ -72,9 +74,14 @@ export default function Collections() {
   }
 
   if (isError) {
+    console.error(error);
     return (
-      <View>
-        <Text>Error: {error.message}</Text>
+      <View style={{ flex: 1 }}>
+        <ErrorNotification
+          visible={showError}
+          onDismiss={() => setShowError(false)}
+          error={error}
+        />
       </View>
     );
   }
