@@ -82,7 +82,7 @@ export default function Footer({ style }: ViewProps) {
               color={pathname === "/" ? "#BE3455" : "#ababab"}
             ></Ionicons>
             <Text style={{ color: pathname === "/" ? "#BE3455" : "#ababab" }}>
-              Home
+              Releases
             </Text>
           </Pressable>
 
