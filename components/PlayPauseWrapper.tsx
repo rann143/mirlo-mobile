@@ -129,9 +129,7 @@ export default function PlayPauseWrapper({
         console.log(playableTracks);
         if (canPlayTrack) {
           await togglePlayBack(playbackState);
-          console.log("Queue:");
           const q = await TrackPlayer.getQueue();
-          console.log(q);
         } else {
           return;
         }

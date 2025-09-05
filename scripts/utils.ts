@@ -28,6 +28,7 @@ export const isTrackOwned = (
   trackGroup?: AlbumProps,
   user?: LoggedInUser | null
 ) => {
+  console.log("runnning isTrackOwned");
   if (!user) {
     return false;
   }

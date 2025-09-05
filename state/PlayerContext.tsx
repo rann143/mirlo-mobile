@@ -47,9 +47,18 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
   const incrementedRef = useRef(false);
 
+  const activeTrackOwnedRef = useRef<boolean>(false);
+  const activeTrackIdRef = useRef<number | null>(null);
+
   useEffect(() => {
     setUpTrackPlayer();
   }, []);
+
+  // Clear cache when user changes (ownership might change with different users)
+  useEffect(() => {
+    activeTrackOwnedRef.current = false;
+    activeTrackIdRef.current = null;
+  }, [user]);
 
   useTrackPlayerEvents(
     [
@@ -74,27 +83,39 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       ) {
         const track = (await TrackPlayer.getActiveTrack()) as RNTrack;
         setActiveTrack(track);
+
+        // Cache ownership status when track changes
+        activeTrackOwnedRef.current = isTrackOwned(track, undefined, user);
+        activeTrackIdRef.current = track.id;
+        incrementedRef.current = false; // Reset for new track
       }
       if (event.type === Event.PlaybackQueueEnded) {
         await TrackPlayer.skip(0);
       }
 
-      let track = (await TrackPlayer.getActiveTrack()) as RNTrack;
+      // Get current track (only if we haven't already got it above)
+      let track: RNTrack;
+      if (event.type === Event.PlaybackActiveTrackChanged) {
+        track = activeTrack!; // We already have it from above
+      } else {
+        track = (await TrackPlayer.getActiveTrack()) as RNTrack;
+      }
 
       // PLAY COUNT INCREMENTATION & CHECKING MAX PLAYS should probably be moved to services.ts so they can run when the UI isn't mounted.
       // Check for max plays reached
+      // Check for max plays reached - use cached ownership
       if (
         (event.type === Event.PlaybackActiveTrackChanged ||
           (event.type == Event.PlaybackProgressUpdated &&
             event.position === 0)) &&
-        !isTrackOwned(track, undefined, user) &&
-        (await reachedMaxPlays(track.id))
+        !activeTrackOwnedRef.current && // Use cached value
+        (await reachedMaxPlays(activeTrackIdRef.current || track.id))
       ) {
         await TrackPlayer.stop();
         router.push("/maxPlaysReached");
         console.log("You've reached max plays. Plz purchase. Show some love");
+        return; // Exit early to avoid further processing
       }
-
       // Handle track changes - reset increment flag
       if (event.type === Event.PlaybackActiveTrackChanged) {
         incrementedRef.current = false; // Reset for new track
@@ -103,6 +124,11 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Handle playback progress
       if (event.type === Event.PlaybackProgressUpdated) {
+        // Early return if track is owned - no need to track plays
+        if (activeTrackOwnedRef.current) {
+          return;
+        }
+
         const progressRatio = event.position / event.duration;
         // Reset incremented flag if playback is at the beginning (< 5% to be safe)
         if (progressRatio < 0.05) {
@@ -110,23 +136,13 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         }
 
         // Increment play count once when reaching 50%
-        if (
-          !isTrackOwned(track, undefined, user) &&
-          !incrementedRef.current &&
-          progressRatio >= 0.5
-        ) {
+        if (!incrementedRef.current && progressRatio >= 0.5) {
           incrementedRef.current = true;
-          console.log(track.title + ": " + track.id);
-          incrementPlayCount(track.id);
+          console.log(
+            track.title + ": " + (activeTrackIdRef.current || track.id)
+          );
+          incrementPlayCount(activeTrackIdRef.current || track.id);
         }
-        // else {
-        //   console.log(
-        //     `Track owned: ${isTrackOwned(track, undefined, user)}, ` +
-        //       `Already incremented: ${incrementedRef.current}, ` +
-        //       `Progress: ${(progressRatio * 100).toFixed(1)}%`
-        //   );
-        //   console.log("track play count not incremented");
-        // }
       }
     }
   );

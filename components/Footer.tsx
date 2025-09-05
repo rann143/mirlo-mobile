@@ -30,7 +30,6 @@ export default function Footer({ style }: ViewProps) {
   };
   const pathname = usePathname();
   const { user } = useAuthContext();
-  const inCollection = isTrackOwned(playableTracks[0], undefined, user);
   return (
     <View
       style={[
