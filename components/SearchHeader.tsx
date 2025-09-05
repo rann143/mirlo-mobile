@@ -28,7 +28,7 @@ export default function SearchHeader({ style }: ViewProps) {
         <Ionicons
           name="search-outline"
           size={30}
-          style={{ color: "#d6d6d6" }}
+          style={{ color: "#ababab" }}
         ></Ionicons>
         <SearchBar />
         <Pressable
@@ -41,7 +41,7 @@ export default function SearchHeader({ style }: ViewProps) {
           <Ionicons
             name="close-outline"
             size={30}
-            style={{ color: "#d6d6d6", marginHorizontal: 15 }}
+            style={{ color: "#ababab", marginHorizontal: 15 }}
           ></Ionicons>
         </Pressable>
       </View>

@@ -17,7 +17,7 @@ export default function MenuButton({ style }: ViewProps) {
       <Ionicons
         name="menu-outline"
         size={30}
-        style={{ color: "#d6d6d6" }}
+        style={{ color: "#ababab" }}
       ></Ionicons>
     </Pressable>
   );

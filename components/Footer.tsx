@@ -4,6 +4,7 @@ import {
   Image,
   TouchableOpacity,
   ViewProps,
+  Text,
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import TrackPlayer, {
@@ -18,6 +19,7 @@ import { Pressable } from "react-native";
 import { Link, router, usePathname } from "expo-router";
 import { isTrackOwned } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
+import { mirloRed } from "@/constants/mirlo-red";
 
 export default function Footer({ style }: ViewProps) {
   const progress = useProgress();
@@ -69,6 +71,7 @@ export default function Footer({ style }: ViewProps) {
             onPress={() => {
               router.dismissTo("/");
             }}
+            style={{ justifyContent: "center", alignItems: "center" }}
           >
             <Ionicons
               name={pathname === "/" ? "home" : "home-outline"}
@@ -76,9 +79,11 @@ export default function Footer({ style }: ViewProps) {
               accessibilityRole="button"
               accessibilityHint="Navigates to recent releases"
               size={40}
-              color={pathname === "/" ? "#BE3455" : "#d6d6d6"}
-              style={{ marginRight: 15 }}
+              color={pathname === "/" ? "#BE3455" : "#ababab"}
             ></Ionicons>
+            <Text style={{ color: pathname === "/" ? "#BE3455" : "#ababab" }}>
+              Home
+            </Text>
           </Pressable>
 
           <Pressable
@@ -98,15 +103,27 @@ export default function Footer({ style }: ViewProps) {
             accessibilityLabel="Your Collection"
             accessibilityRole="button"
             accessibilityHint="Navigates to your collection page"
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginLeft: 10,
+            }}
           >
             <Ionicons
               //name="heart-outline"
               name={pathname === "/collections" ? "library" : "library-outline"}
               size={40}
-              color={pathname === "/collections" ? "#BE3455" : "#d6d6d6"}
+              color={pathname === "/collections" ? "#BE3455" : "#ababab"}
               style={{ marginHorizontal: 15 }}
               // #BE3455
             ></Ionicons>
+            <Text
+              style={{
+                color: pathname === "/collections" ? "#BE3455" : "#ababab",
+              }}
+            >
+              Collection
+            </Text>
           </Pressable>
 
           <Pressable
@@ -126,15 +143,26 @@ export default function Footer({ style }: ViewProps) {
             accessibilityLabel="Your Wishlist"
             accessibilityRole="button"
             accessibilityHint="Navigates to your wishlist page"
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginLeft: 10,
+            }}
           >
             <Ionicons
               //name="heart-outline"
               name={pathname === "/wishlist" ? "heart" : "heart-outline"}
               size={40}
-              color={pathname === "/wishlist" ? "#BE3455" : "#d6d6d6"}
-              style={{ marginLeft: 15 }}
+              color={pathname === "/wishlist" ? "#BE3455" : "#ababab"}
               // #BE3455
             ></Ionicons>
+            <Text
+              style={{
+                color: pathname === "/wishlist" ? "#BE3455" : "#ababab",
+              }}
+            >
+              Wishlist
+            </Text>
           </Pressable>
         </View>
         <View

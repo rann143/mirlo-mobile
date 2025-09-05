@@ -15,7 +15,7 @@ export default function SearchButton() {
       <Ionicons
         name="search-outline"
         size={30}
-        style={{ color: "#d6d6d6" }}
+        style={{ color: "#ababab" }}
       ></Ionicons>
     </Pressable>
   );
