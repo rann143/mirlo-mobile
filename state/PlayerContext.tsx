@@ -102,7 +102,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       // PLAY COUNT INCREMENTATION & CHECKING MAX PLAYS should probably be moved to services.ts so they can run when the UI isn't mounted.
-      // Check for max plays reached
       // Check for max plays reached - use cached ownership
       if (
         (event.type === Event.PlaybackActiveTrackChanged ||
@@ -115,11 +114,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         router.push("/maxPlaysReached");
         console.log("You've reached max plays. Plz purchase. Show some love");
         return; // Exit early to avoid further processing
-      }
-      // Handle track changes - reset increment flag
-      if (event.type === Event.PlaybackActiveTrackChanged) {
-        incrementedRef.current = false; // Reset for new track
-        track = (await TrackPlayer.getActiveTrack()) as RNTrack;
       }
 
       // Handle playback progress
