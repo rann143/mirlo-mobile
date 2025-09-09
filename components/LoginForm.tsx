@@ -12,6 +12,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as WebBrowser from "expo-web-browser";
+import ErrorNotification from "./ErrorNotification";
 
 type LoginInputs = {
   email: string;
@@ -30,8 +31,9 @@ export default function LoginForm() {
     },
   });
   const router = useRouter();
-  const [loginError, setLoginError] = useState<string>("");
+  const [loginError, setLoginError] = useState<Error | null>(null);
   const { t } = useTranslation("translation", { keyPrefix: "logIn" });
+  const [showError, setShowError] = useState<boolean>(true);
 
   const { mutate: login } = useLoginMutation();
 
@@ -48,7 +50,8 @@ export default function LoginForm() {
       onError(e) {
         console.error("e", e.message);
         console.error(e);
-        setLoginError(e.message);
+        setLoginError(e);
+        setShowError(true);
       },
     });
   };
@@ -103,7 +106,11 @@ export default function LoginForm() {
           <Text style={{ color: "white" }}>Password is required.</Text>
         )}
         {loginError && (
-          <Text style={{ color: "white", marginTop: 10 }}>{loginError}</Text>
+          <ErrorNotification
+            visible={showError}
+            onDismiss={() => setShowError(false)}
+            error={loginError}
+          />
         )}
 
         <TouchableOpacity

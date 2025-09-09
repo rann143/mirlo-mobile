@@ -19,34 +19,29 @@ const ErrorNotification = ({
   visible = true,
   error,
 }: ErrorNotificationProps) => {
-  const slideAnim = React.useRef(new Animated.Value(-100)).current;
+  // const slideAnim = React.useRef(new Animated.Value(-100)).current;
 
-  React.useEffect(() => {
-    if (visible) {
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(slideAnim, {
-        toValue: -100,
-        duration: 250,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [visible]);
+  // React.useEffect(() => {
+  //   if (visible) {
+  //     Animated.timing(slideAnim, {
+  //       toValue: 0,
+  //       duration: 300,
+  //       useNativeDriver: true,
+  //     }).start();
+  //   } else {
+  //     Animated.timing(slideAnim, {
+  //       toValue: -100,
+  //       duration: 250,
+  //       useNativeDriver: true,
+  //     }).start();
+  //   }
+  // }, [visible]);
 
   if (!visible) return null;
 
   return (
     <SafeAreaView>
-      <Animated.View
-        style={[
-          styles.errorNotification,
-          { transform: [{ translateY: slideAnim }] },
-        ]}
-      >
+      <View style={[styles.errorNotification]}>
         <View style={styles.errorIcon}>
           <Text style={styles.iconText}>⚠️</Text>
         </View>
@@ -60,7 +55,6 @@ const ErrorNotification = ({
             </View>
           ) : (
             <View>
-              {" "}
               <Text style={styles.errorTitle}>{error.name}</Text>
               <Text style={styles.errorMessage}>{error.message}</Text>
             </View>
@@ -73,7 +67,7 @@ const ErrorNotification = ({
         >
           <Text style={styles.dismissText}>×</Text>
         </TouchableOpacity>
-      </Animated.View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -84,8 +78,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     marginHorizontal: 16,
-    marginVertical: 12,
-    borderRadius: 12,
+    marginVertical: 15,
+    borderRadius: 15,
     flexDirection: "row",
     alignItems: "center",
     shadowColor: "#ff6b6b",
