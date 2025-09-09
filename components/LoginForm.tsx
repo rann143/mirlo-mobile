@@ -2,18 +2,16 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   View,
   TextInput,
-  Button,
   Pressable,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useLoginMutation } from "@/queries/authQueries";
 import { useRouter } from "expo-router";
-import * as Linking from "expo-linking";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import * as WebBrowser from "expo-web-browser";
 
 type LoginInputs = {
   email: string;
@@ -36,6 +34,10 @@ export default function LoginForm() {
   const { t } = useTranslation("translation", { keyPrefix: "logIn" });
 
   const { mutate: login } = useLoginMutation();
+
+  const handleBrowserOpen = async () => {
+    await WebBrowser.openBrowserAsync("https://mirlo.space/signup");
+  };
 
   const onSubmit = async (data: LoginInputs) => {
     login(data, {
@@ -119,9 +121,11 @@ export default function LoginForm() {
             marginTop: 30,
           }}
         >
-          <Text style={{ color: "white" }}>
-            Sign up online at https://mirlo.space/
-          </Text>
+          <Pressable onPress={handleBrowserOpen}>
+            <Text style={{ color: "white", textDecorationLine: "underline" }}>
+              Don't have an account? Sign Up
+            </Text>
+          </Pressable>
         </View>
       </View>
     </View>
