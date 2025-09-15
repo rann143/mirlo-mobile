@@ -153,7 +153,7 @@ export default function SearchPage() {
         }}
       >
         <Link href={{ pathname: "/topSold" }} onPress={() => router.back()}>
-          Best Selling{" >"}
+          Popular{" >"}
         </Link>
         <Link href={{ pathname: "/mostPlayed" }} onPress={() => router.back()}>
           Most Listened To{" >"}
