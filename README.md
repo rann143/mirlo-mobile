@@ -25,24 +25,19 @@ This gif displays the most recent versions of the home, search, menu, album, and
 
 ### Setup
 
-1. Run API Locally
-
-   Follow instructions in [mirlo's README](https://github.com/funmusicplace/mirlo/blob/main/README.md)
-
-2. Set up env variables & install dependencies
+1. Install dependencies
 
    ```bash
-   cp .env.example .env
    npm install
    ```
 
-3. Build native iOS app
+2. Build native iOS app
 
    ```bash
    npx expo run:ios
    ```
 
-4. Start the app
+3. Start the app
 
    ```bash
    npx expo start
@@ -60,6 +55,12 @@ This project uses [file-based routing](https://docs.expo.dev/router/introduction
 
 ## Contributing
 
+_Branch Structure:_
+
+**main** - Production branch (what users see in app store)
+
+**preview** - Staging/Testing branch (for reviewing changes with our internal distribution builds before they go live)
+
 **1. Create Feature Branch**
 
 Always branch from main with the latest code
@@ -76,10 +77,23 @@ git checkout -b feature/your-feature-name
   - Commit
 
 **3. Submit Pull Request**
+   
+   ***Important: Always target the 'preview' branch, never 'main'.**
   
    Then create a PR with:
    
-   - Base branch: main ← Your branch: feature/your-feature-name
+   - Base branch: preview ← Your branch: feature/your-feature-name
    - Clear description of what you changed
    - Screenshots/videos if it's a UI change
+**4. Testing Your Changes**
+ 
+ After your PR merges to staging:
 
+   - Changes are automatically available in our staging app builds
+   - Maintainers will test your changes before promoting to production
+
+### What Happens Next
+
+- Your PR gets reviewed against the preview branch
+- Once merged to preview, your changes automatically deploy to our testing environment
+- After testing, maintainers merge preview → main for production release
