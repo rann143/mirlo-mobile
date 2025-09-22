@@ -33,7 +33,7 @@ export default function Collections() {
           trackGroup: AlbumProps;
           createdAt: Date;
         }
-      | { userId: number; trackId: number; track: RNTrack }
+      | { userId: number; trackId: number; track: RNTrack; createdAt: Date }
       | string
     )[]
   >([]);
@@ -47,6 +47,14 @@ export default function Collections() {
   }, [user]);
 
   useEffect(() => {
+    wishlist?.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    trackFavorites?.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
     setList([
       t("profile.yourWishlist"),
       ...(wishlist ?? []),

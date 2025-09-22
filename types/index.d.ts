@@ -14,6 +14,7 @@ interface LoggedInUser {
     userId: number;
     trackId: number;
     track: RNTrack;
+    createdAt: Date;
   }[];
   language?: string;
 }
