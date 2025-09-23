@@ -25,17 +25,19 @@ export default function FavoriteTrackButton({
     !!user?.trackFavorites?.find((w) => w.trackId === track.id)
   );
 
-  if (!user) {
-    return null;
-  }
-
   const onPress = useCallback(async () => {
+    if (!user) return;
+
     await api.post(`/v1/tracks/${track.id}/favorite`, {
       favorite: !isInFavorites,
     });
     setIsInFavorites((val) => !val);
     refreshLoggedInUser();
-  }, [isInFavorites, track.id]);
+  }, [user, isInFavorites, track.id, refreshLoggedInUser]);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <Pressable onPress={onPress} style={style}>

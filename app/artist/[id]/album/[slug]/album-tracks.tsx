@@ -342,7 +342,7 @@ export default function AlbumTracks() {
                   marginVertical: 10,
                 }}
               >
-                <View style={{ maxWidth: "65%" }}>
+                <View style={{ maxWidth: "60%", marginRight: 10 }}>
                   <Text
                     style={{
                       color: "black",

@@ -7,7 +7,7 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import * as api from "../queries/fetch/fetchWrapper";
 import { useState } from "react";
 import { useAuthContext } from "@/state/AuthContext";
@@ -16,21 +16,21 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { mirloRed } from "@/constants/mirlo-red";
 
 export default function EmailPurchaseInfoModal() {
+  const { trackGroupId, artist, trackGroupTitle } = useLocalSearchParams();
   const router = useRouter();
-  const { activeTrack } = usePlayer();
   const { user } = useAuthContext();
   const [isEmailSent, setIsEmailSent] = useState<Boolean>(false);
 
   function sendPurchaseEmail() {
     try {
-      if (activeTrack && user) {
+      if (user) {
         api.post(
-          `/v1/trackGroups/${activeTrack.trackGroup.id}/emailPurchaseLink?email=${user?.email}`,
+          `/v1/trackGroups/${trackGroupId}/emailPurchaseLink?email=${user?.email}`,
           {}
         );
         setIsEmailSent(true);
       } else {
-        console.log("Missing active track or user email");
+        console.log("missing user");
       }
     } catch (err) {
       console.error("issue emailing purchase info", err);
@@ -52,17 +52,20 @@ export default function EmailPurchaseInfoModal() {
         }}
       >
         {!user && (
-          <Text
-            style={{
-              fontSize: 20,
-              color: "white",
-              margin: 10,
-              textAlign: "center",
-              fontWeight: "bold",
-            }}
-          >
-            Log In or Sign Up for Purchase Info!
-          </Text>
+          <Pressable onPress={() => router.push("/login")}>
+            <Text
+              style={{
+                fontSize: 20,
+                color: "white",
+                margin: 10,
+                textAlign: "center",
+                fontWeight: "bold",
+                textDecorationLine: "underline",
+              }}
+            >
+              Log In or Sign Up for Purchase Info!
+            </Text>
+          </Pressable>
         )}
         {user && !isEmailSent && (
           <Pressable
@@ -117,12 +120,12 @@ export default function EmailPurchaseInfoModal() {
             marginTop: 20,
           }}
         >
-          Buy this {activeTrack?.allowIndividualSale ? "track" : "album"} to:
+          Buy {trackGroupTitle} to:
         </Text>
         <FlatList
           style={{ margin: 10 }}
           data={[
-            { text: `Support ${activeTrack?.artist}` },
+            { text: `Support ${artist}` },
             { text: "Get unlimited streaming" },
             { text: "Get high quality downloads" },
           ]}

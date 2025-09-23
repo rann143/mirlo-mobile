@@ -23,7 +23,15 @@ export default function Login() {
             backgroundColor: "white",
           }}
         >
-          <Pressable onPress={() => router.dismissTo("/")}>
+          <Pressable
+            onPress={() => {
+              if (router.canDismiss()) {
+                router.dismiss();
+              } else {
+                router.dismissTo("/");
+              }
+            }}
+          >
             <Ionicons
               name="chevron-back-outline"
               size={40}
