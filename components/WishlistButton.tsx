@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, ViewStyle } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useCallback, useState } from "react";
 import { useAuthContext } from "@/state/AuthContext";
@@ -12,7 +12,7 @@ type WishlistButton = {
   trackGroup: {
     id: number;
   };
-  style?: ViewProps;
+  style?: ViewStyle;
   size?: number;
 };
 
