@@ -85,11 +85,12 @@ git checkout -b feature/your-feature-name
    - Base branch: preview ← Your branch: feature/your-feature-name
    - Clear description of what you changed
    - Screenshots/videos if it's a UI change
+   - 
 **4. Testing Your Changes**
  
- After your PR merges to staging:
+ After your PR merges to preview:
 
-   - Changes are automatically available in our staging app builds
+   - Changes are automatically available in our preview app builds
    - Maintainers will test your changes before promoting to production
 
 ### What Happens Next
