@@ -45,7 +45,11 @@ export default function LoginForm() {
     login(data, {
       onSuccess() {
         console.log("logged in successfully");
-        router.dismissTo("/");
+        if (router.canDismiss()) {
+          router.dismiss();
+        } else {
+          router.dismissTo("/");
+        }
       },
       onError(e) {
         console.error("e", e.message);

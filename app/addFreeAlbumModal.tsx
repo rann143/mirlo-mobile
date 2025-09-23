@@ -2,8 +2,45 @@ import DismissModalBar from "@/components/DismissModalBar";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { mirloRed } from "@/constants/mirlo-red";
+import { usePlayer } from "@/state/PlayerContext";
+import { useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
+import * as api from "../queries/fetch/fetchWrapper";
+import { authRefresh } from "@/queries/authQueries";
+import { useAuthContext } from "@/state/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function addFreeAlbumModal() {
+  const { user, refreshLoggedInUser } = useAuthContext();
+  const queryClient = useQueryClient();
+  const { trackGroupTitle, trackGroupId } = useLocalSearchParams();
+  const [isAdded, setIsAdded] = useState<boolean>(false);
+  const [adding, setAdding] = useState(false);
+
+  const getFreeAlbum = useCallback(async () => {
+    try {
+      if (!user) {
+        return;
+      }
+      setAdding(true);
+      const response = await api.post(
+        `/v1/trackGroups/${trackGroupId}/purchase`,
+        {
+          price: 0,
+        }
+      );
+      queryClient.invalidateQueries({
+        queryKey: ["fetchUserPurchases", { userId: user.id }],
+      });
+      refreshLoggedInUser();
+      setAdding(false);
+      setIsAdded(true);
+      console.log(response);
+    } catch (err) {
+      console.error("Issue purchasing free album", err);
+    }
+  }, [trackGroupId]);
+
   return (
     <SafeAreaView style={styles.container}>
       <DismissModalBar />
@@ -17,9 +54,28 @@ export default function addFreeAlbumModal() {
           backgroundColor: mirloRed,
         }}
       >
+        <Text
+          style={{
+            fontSize: 20,
+            color: "white",
+            textAlign: "center",
+            marginBottom: 20,
+          }}
+        >
+          Add <Text style={{ fontWeight: "bold" }}>{trackGroupTitle}</Text> to
+          your collection.
+        </Text>
+        <Text style={{ fontSize: 20, marginBottom: 20, color: "white" }}>
+          You'll add this free album to your collection.
+        </Text>
         <Pressable
           onPress={() => {
-            console.log("IMPLEMENT: ADD FREE ALBUM TO COLLECTION");
+            if (!adding && !isAdded) {
+              getFreeAlbum();
+            } else {
+              console.log("already processed");
+              return;
+            }
           }}
           style={{
             alignItems: "center",
@@ -36,7 +92,7 @@ export default function addFreeAlbumModal() {
               textAlign: "center",
             }}
           >
-            Add Free Album to Collection
+            {!isAdded ? "Add to Collection" : "Added! ✅"}
           </Text>
         </Pressable>
       </View>

@@ -1,7 +1,8 @@
 import { useAuthContext } from "@/state/AuthContext";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { Pressable, ViewProps, ViewStyle } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useCallback, useState } from "react";
 
 type AddAlbumButtonProps = {
   trackGroup: AlbumProps;
@@ -22,20 +23,37 @@ export default function AddAlbumButton({
   );
 
   const onPress = () => {
-    if (trackGroup.minPrice === 0 || trackGroup.minPrice === null) {
-      router.push("/addFreeAlbumModal");
+    if (!user) {
+      router.push({
+        pathname: "/emailPurchaseInfoModal",
+        params: {
+          trackGroupTitle: trackGroup.title,
+          trackGroupId: trackGroup.id,
+          artist: trackGroup.artist.name,
+        },
+      });
+    } else if (
+      user &&
+      (trackGroup.minPrice === 0 || trackGroup.minPrice === null)
+    ) {
+      router.push({
+        pathname: "/addFreeAlbumModal",
+        params: {
+          trackGroupTitle: trackGroup.title,
+          trackGroupId: trackGroup.id,
+        },
+      });
       return;
+    } else {
+      router.push({
+        pathname: "/emailPurchaseInfoModal",
+        params: {
+          trackGroupTitle: trackGroup.title,
+          trackGroupId: trackGroup.id,
+          artist: trackGroup.artist.name,
+        },
+      });
     }
-    router.push("/emailPurchaseInfoModal");
-
-    // if (!user) {
-    //   router.push("/emailPurchaseInfoModal")
-    // } else if (user && ) {
-    //   console.log('free');
-    //       //router.push(ADD TO COLLECTION)
-    // } else {
-    //       router.push("/emailPurchaseInfoModal")
-    // }
   };
 
   return ids && ids.includes(trackGroup.id) ? null : (
