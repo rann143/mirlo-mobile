@@ -63,6 +63,7 @@ interface AlbumProps {
   about?: string;
   tags?: string[];
   trackGroupId: number;
+  minPrice?: number;
 }
 
 interface TrackProps {

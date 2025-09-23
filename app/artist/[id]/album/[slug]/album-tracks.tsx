@@ -32,6 +32,7 @@ import Markdown from "react-native-markdown-display";
 import { linkifyUrls } from "@/scripts/utils";
 import WishlistButton from "@/components/WishlistButton";
 import ErrorNotification from "@/components/ErrorNotification";
+import AddAlbumButton from "@/components/AddAlbumButton";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -376,7 +377,12 @@ export default function AlbumTracks() {
                     alignItems: "center",
                   }}
                 >
-                  <WishlistButton trackGroup={selectedAlbum} size={40} />
+                  <AddAlbumButton trackGroup={selectedAlbum} size={40} />
+                  <WishlistButton
+                    trackGroup={selectedAlbum}
+                    size={40}
+                    style={{ marginLeft: 10 }}
+                  />
                   <MemoizedAlbumPlayButton />
                 </View>
               </View>
