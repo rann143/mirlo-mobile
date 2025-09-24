@@ -25,19 +25,24 @@ This gif displays the most recent versions of the home, search, menu, album, and
 
 ### Setup
 
-1. Install dependencies
+1. Run API Locally
+
+   Follow instructions in [mirlo's README](https://github.com/funmusicplace/mirlo/blob/main/README.md)
+
+2. Set up env variables & install dependencies
 
    ```bash
+   cp .env.example .env
    npm install
    ```
 
-2. Build native iOS app
+3. Build native iOS app
 
    ```bash
    npx expo run:ios
    ```
 
-3. Start the app
+4. Start the app
 
    ```bash
    npx expo start
