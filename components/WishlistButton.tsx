@@ -29,7 +29,10 @@ export default function WishlistButton({
 
   const onPress = useCallback(async () => {
     if (!user) {
-      router.push("/emailVerificationModal");
+      router.push({
+        pathname: "/emailVerificationModal",
+        params: { accessing: "your wishlist" },
+      });
       return null;
     }
     await api.post(`/v1/trackGroups/${trackGroup.id}/wishlist`, {
