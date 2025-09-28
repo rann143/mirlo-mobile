@@ -63,10 +63,10 @@ function AlbumPlayButton() {
   //   getQ();
   // }, []);
 
-  async function getQ() {
-    const queue = (await TrackPlayer.getQueue()) as RNTrack[];
-    return queue;
-  }
+  // async function getQ() {
+  //   const queue = (await TrackPlayer.getQueue()) as RNTrack[];
+  //   return queue;
+  // }
 
   const togglePlayBack = useCallback(async () => {
     try {
@@ -342,7 +342,7 @@ export default function AlbumTracks() {
                   marginVertical: 10,
                 }}
               >
-                <View style={{ maxWidth: "60%", marginRight: 10 }}>
+                <View style={{ maxWidth: "55%", marginRight: 10 }}>
                   <Text
                     style={{
                       color: "black",

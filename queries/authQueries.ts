@@ -15,7 +15,7 @@ type LoginBody = {
   password: string;
 };
 
-async function storeTokens(): Promise<boolean> {
+export async function storeTokens(): Promise<boolean> {
   try {
     const cookies = await CookieManager.getAll();
 
