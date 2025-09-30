@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   Text,
+  ScrollView,
 } from "react-native";
 import { useSearch } from "@/state/SearchContext";
 import { useEffect, useMemo, useRef } from "react";
@@ -30,7 +31,7 @@ export default function SearchPage() {
     isSearching,
   } = useSearch();
   const { data: tags, isPending } = useQuery(
-    queryTags({ orderBy: "count", take: 15 })
+    queryTags({ orderBy: "count", take: 25 })
   );
   const { top, bottom } = useSafeAreaInsets();
   const router = useRouter();
@@ -97,12 +98,13 @@ export default function SearchPage() {
         !showSuggestions &&
         !searchValue &&
         !searchResults.length && (
-          <View style={{ marginTop: 20, marginHorizontal: 20, gap: 20 }}>
+          <ScrollView style={{ marginTop: 20, marginHorizontal: 10, gap: 20 }}>
             <Text>Or Search By Popular Tags:</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 3 }}>
               {tagPills}
             </View>
-          </View>
+            <TypeLinks />
+          </ScrollView>
         )}
 
       {isSearching && (
@@ -145,20 +147,25 @@ export default function SearchPage() {
           keyExtractor={(item, index) => `${index}-${item.id || item.name}`}
         />
       )}
-      <View
-        style={{
-          marginHorizontal: 20,
-          gap: 20,
-          marginTop: 15,
-        }}
-      >
-        <Link href={{ pathname: "/topSold" }} onPress={() => router.back()}>
-          Popular{" >"}
-        </Link>
-        <Link href={{ pathname: "/mostPlayed" }} onPress={() => router.back()}>
-          Most Listened To{" >"}
-        </Link>
-      </View>
+    </View>
+  );
+}
+
+function TypeLinks() {
+  const router = useRouter();
+  return (
+    <View
+      style={{
+        gap: 20,
+        marginTop: 15,
+      }}
+    >
+      <Link href={{ pathname: "/topSold" }} onPress={() => router.back()}>
+        Popular{" >"}
+      </Link>
+      <Link href={{ pathname: "/mostPlayed" }} onPress={() => router.back()}>
+        Most Listened To{" >"}
+      </Link>
     </View>
   );
 }

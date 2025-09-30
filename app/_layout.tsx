@@ -77,7 +77,7 @@ export default function RootLayout() {
                 <Stack.Screen
                   name="now-playing"
                   options={{
-                    presentation: "modal",
+                    presentation: "fullScreenModal",
                     animation: "slide_from_bottom",
                     animationDuration: 100,
                     headerShown: false,

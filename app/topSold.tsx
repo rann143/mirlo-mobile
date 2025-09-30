@@ -73,7 +73,7 @@ export default function Index() {
             ></Ionicons>
           </Pressable>
           <Text style={{ fontSize: 20, flex: 1, textAlign: "center" }}>
-            Best Selling
+            Popular
           </Text>
           <MenuButton style={{ marginHorizontal: 10 }} />
         </View>

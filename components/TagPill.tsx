@@ -20,7 +20,7 @@ export default function TagPill({ tagName }: TagPillProps) {
         padding: 10,
         paddingHorizontal: 15,
         borderRadius: 18,
-        marginRight: 10,
+        marginRight: 5,
         marginVertical: 5,
       }}
       onPress={() => router.back()}
