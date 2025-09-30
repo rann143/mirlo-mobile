@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ViewProps,
   Text,
+  useWindowDimensions,
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import TrackPlayer, {
@@ -30,6 +31,8 @@ export default function Footer({ style }: ViewProps) {
   };
   const pathname = usePathname();
   const { user } = useAuthContext();
+  const { width, height } = useWindowDimensions();
+  const size = width < 380 ? 30 : 40;
   return (
     <View
       style={[
@@ -62,7 +65,7 @@ export default function Footer({ style }: ViewProps) {
             flexDirection: "row",
             height: "100%",
             alignItems: "center",
-            marginLeft: 20,
+            marginLeft: 10,
             marginTop: -20,
           }}
         >
@@ -77,7 +80,7 @@ export default function Footer({ style }: ViewProps) {
               accessibilityLabel="Recent Releases"
               accessibilityRole="button"
               accessibilityHint="Navigates to recent releases"
-              size={40}
+              size={size}
               color={pathname === "/" ? "#BE3455" : "#ababab"}
             ></Ionicons>
             <Text style={{ color: pathname === "/" ? "#BE3455" : "#ababab" }}>
@@ -88,7 +91,10 @@ export default function Footer({ style }: ViewProps) {
           <Pressable
             onPress={() => {
               if (!user) {
-                router.navigate("/login");
+                router.push({
+                  pathname: "/emailVerificationModal",
+                  params: { accessing: "Your Collection" },
+                });
               } else {
                 if (pathname === "/") {
                   router.navigate("/collections");
@@ -111,7 +117,7 @@ export default function Footer({ style }: ViewProps) {
             <Ionicons
               //name="heart-outline"
               name={pathname === "/collections" ? "library" : "library-outline"}
-              size={40}
+              size={size}
               color={pathname === "/collections" ? "#BE3455" : "#ababab"}
               style={{ marginHorizontal: 15 }}
               // #BE3455
@@ -128,7 +134,10 @@ export default function Footer({ style }: ViewProps) {
           <Pressable
             onPress={() => {
               if (!user) {
-                router.navigate("/login");
+                router.push({
+                  pathname: "/emailVerificationModal",
+                  params: { accessing: "Your Wishlist" },
+                });
               } else {
                 if (pathname === "/") {
                   router.navigate("/wishlist");
@@ -151,7 +160,7 @@ export default function Footer({ style }: ViewProps) {
             <Ionicons
               //name="heart-outline"
               name={pathname === "/wishlist" ? "heart" : "heart-outline"}
-              size={40}
+              size={size}
               color={pathname === "/wishlist" ? "#BE3455" : "#ababab"}
               // #BE3455
             ></Ionicons>

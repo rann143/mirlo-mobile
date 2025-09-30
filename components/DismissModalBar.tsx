@@ -1,9 +1,10 @@
-import { View, Pressable } from "react-native";
+import { View, Pressable, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function DismissModalBar() {
   const router = useRouter();
+  const { width, height } = useWindowDimensions();
 
   return (
     <View
@@ -12,7 +13,7 @@ export default function DismissModalBar() {
         alignItems: "center",
         justifyContent: "space-between",
         width: "100%",
-        height: 60,
+        height: height * 0.08,
         backgroundColor: "#fafafa",
       }}
     >

@@ -331,8 +331,11 @@ export default function AlbumTracks() {
             <View style={{ marginBottom: 10 }}>
               <Image
                 source={{ uri: selectedAlbum?.cover?.sizes[600] }}
-                style={[styles.image, { width: width }]}
-                resizeMode="cover"
+                style={[
+                  styles.image,
+                  { width: width, height: width < 380 ? width * 0.9 : width },
+                ]}
+                resizeMode={width < 380 ? "stretch" : "cover"}
               />
               <View
                 style={{
