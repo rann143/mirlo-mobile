@@ -4,9 +4,8 @@ import { useCallback, useState } from "react";
 import { useAuthContext } from "@/state/AuthContext";
 import { useTranslation } from "react-i18next";
 import * as api from "../queries/fetch/fetchWrapper";
-import { useAppIsReadyContext } from "@/state/AppReadyContext";
-import { ViewProps } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 
 type WishlistButton = {
   trackGroup: {
@@ -26,12 +25,16 @@ export default function WishlistButton({
   const [isInWishlist, setIsInWishlist] = useState(
     !!user?.wishlist?.find((w) => w.trackGroupId === trackGroup.id)
   );
-
-  if (!user) {
-    return null;
-  }
+  const router = useRouter();
 
   const onPress = useCallback(async () => {
+    if (!user) {
+      router.push({
+        pathname: "/emailVerificationModal",
+        params: { accessing: "your wishlist" },
+      });
+      return null;
+    }
     await api.post(`/v1/trackGroups/${trackGroup.id}/wishlist`, {
       wishlist: !isInWishlist,
     });

@@ -19,24 +19,6 @@ const ErrorNotification = ({
   visible = true,
   error,
 }: ErrorNotificationProps) => {
-  // const slideAnim = React.useRef(new Animated.Value(-100)).current;
-
-  // React.useEffect(() => {
-  //   if (visible) {
-  //     Animated.timing(slideAnim, {
-  //       toValue: 0,
-  //       duration: 300,
-  //       useNativeDriver: true,
-  //     }).start();
-  //   } else {
-  //     Animated.timing(slideAnim, {
-  //       toValue: -100,
-  //       duration: 250,
-  //       useNativeDriver: true,
-  //     }).start();
-  //   }
-  // }, [visible]);
-
   if (!visible) return null;
 
   return (
@@ -90,6 +72,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
     elevation: 8,
+    width: "80%",
+    gap: 5,
   },
   errorIcon: {
     width: 24,
@@ -109,12 +93,12 @@ const styles = StyleSheet.create({
   errorTitle: {
     color: "white",
     fontWeight: "600",
-    fontSize: 14,
+    fontSize: 16,
     marginBottom: 2,
   },
   errorMessage: {
     color: "white",
-    fontSize: 12,
+    fontSize: 15,
     opacity: 0.9,
     lineHeight: 16,
   },
