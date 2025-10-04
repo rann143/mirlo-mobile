@@ -21,7 +21,7 @@ import { useRouter } from "expo-router";
 
 interface PlayerContextType {
   playbackState: PlaybackState | { state: undefined };
-  playableTracks: Array<RNTrack>;
+  playableTracks: RNTrack[];
   setPlayableTracks: (tracks: RNTrack[]) => void;
   activeTrack: RNTrack | undefined;
   setActiveTrack: (track: RNTrack) => void;
@@ -68,8 +68,16 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       Event.PlaybackState,
       Event.PlaybackProgressUpdated,
       Event.PlaybackQueueEnded,
+      Event.PlaybackError,
     ],
     async (event) => {
+      if (
+        event.type === Event.PlaybackError &&
+        event.message === "Track play limit exceeded"
+      ) {
+        	router.push("/maxPlaysReached")
+      }
+
       if (event.type === Event.PlaybackState) {
         setPlayerState(event.state);
         //console.log(event.state);
@@ -133,12 +141,12 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!incrementedRef.current && progressRatio >= 0.5) {
           incrementedRef.current = true;
           console.log(
-            track.title + ": " + (activeTrackIdRef.current || track.id)
+            track.title + ": " + (activeTrackIdRef.current || track.id),
           );
           incrementPlayCount(activeTrackIdRef.current || track.id);
         }
       }
-    }
+    },
   );
 
   async function setUpTrackPlayer() {
@@ -175,7 +183,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       looping: looping,
       setLooping: setLooping,
     }),
-    [playBackState, playableTracks, activeTrack, shuffled, isPlaying, looping]
+    [playBackState, playableTracks, activeTrack, shuffled, isPlaying, looping],
   );
   return (
     <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>
