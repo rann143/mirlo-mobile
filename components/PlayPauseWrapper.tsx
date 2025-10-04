@@ -63,7 +63,7 @@ export default function PlayPauseWrapper({
   }, [activeTrack, playableTracks]);
 
   const togglePlayBack = async (
-    playBackState: PlaybackState | { state: undefined }
+    playBackState: PlaybackState | { state: undefined },
   ) => {
     try {
       const queue = await TrackPlayer.getQueue();
@@ -126,7 +126,7 @@ export default function PlayPauseWrapper({
   return (
     <Pressable
       onPress={async () => {
-        console.log(playableTracks);
+        //console.log(playableTracks);
         if (canPlayTrack) {
           await togglePlayBack(playbackState);
           const q = await TrackPlayer.getQueue();
