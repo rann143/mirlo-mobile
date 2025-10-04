@@ -18,7 +18,7 @@ export default function MaxPlaysReached() {
   const router = useRouter();
   const { activeTrack } = usePlayer();
   const { user } = useAuthContext();
-  const [isEmailSent, setIsEmailSent] = useState<Boolean>(false);
+  const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
 
   function sendPurchaseEmail() {
     try {

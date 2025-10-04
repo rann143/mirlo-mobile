@@ -75,9 +75,9 @@ function AlbumPlayButton() {
       // Set queue if no queue currently set or if the queue is empty
       if (!queue || queue.length === 0) {
         await TrackPlayer.setQueue(playableTracks);
-        await TrackPlayer.play();
         const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
         setActiveTrack(current);
+        await TrackPlayer.play();
         return;
       }
 
@@ -94,9 +94,9 @@ function AlbumPlayButton() {
         try {
           setShuffled(false);
           await TrackPlayer.setQueue(playableTracks);
-          await TrackPlayer.play();
           const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
           setActiveTrack(current);
+          await TrackPlayer.play();
           return;
         } catch (err) {
           console.error("issue changing albums", err);
@@ -169,14 +169,14 @@ function formatUTCDate(utcDate: string | undefined) {
     ? `${t("trackGroupCard.releaseDate")} ${result}`
     : t("trackGroupCard.released").substring(
         0,
-        t("trackGroupCard.released").indexOf(":") + 1
+        t("trackGroupCard.released").indexOf(":") + 1,
       ) + ` ${result}`;
 }
 
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
   const { isPending, isError, data, error } = useQuery(
-    queryAlbum({ slug: slug, id: id })
+    queryAlbum({ slug: slug, id: id }),
   );
   const router = useRouter();
   const { setPlayableTracks } = usePlayer();
@@ -237,7 +237,7 @@ export default function AlbumTracks() {
       }
       setAlbum(allTracks);
       setPlayableTracks(tracksToPlay);
-    }, [data])
+    }, [data]),
   );
 
   if (isPending) {
@@ -410,7 +410,7 @@ export default function AlbumTracks() {
                 <View style={{ marginBottom: 20 }}>
                   <Markdown>
                     {linkifyUrls(
-                      selectedAlbum.about.replace(/([^\n])\n([^\n])/g, "$1 $2")
+                      selectedAlbum.about.replace(/([^\n])\n([^\n])/g, "$1 $2"),
                     )}
                   </Markdown>
                 </View>

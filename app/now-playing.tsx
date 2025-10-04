@@ -25,9 +25,7 @@ export default function NowPlaying() {
   const progress = useProgress();
   const router = useRouter();
   const { t } = useTranslation();
-  const { width, height } = useWindowDimensions();
-
-  console.log(width);
+  const { width } = useWindowDimensions();
 
   return (
     <SafeAreaView style={styles.container}>

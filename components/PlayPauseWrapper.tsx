@@ -72,8 +72,8 @@ export default function PlayPauseWrapper({
         console.log("no curr track: setting track");
         await TrackPlayer.setQueue(playableTracks);
         await TrackPlayer.skip(trackObject.queueIndex);
-        await TrackPlayer.play();
         setActiveTrack(trackObject);
+        await TrackPlayer.play();
         console.log("Q set from nothing");
         return;
       }
@@ -92,8 +92,8 @@ export default function PlayPauseWrapper({
           setShuffled(false);
           await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.skip(trackObject.queueIndex);
-          await TrackPlayer.play();
           setActiveTrack(trackObject);
+          await TrackPlayer.play();
           console.log("Q set from diff album");
           return;
         } catch (err) {

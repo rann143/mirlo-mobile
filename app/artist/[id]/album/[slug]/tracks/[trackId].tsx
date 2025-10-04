@@ -264,9 +264,9 @@ function TrackPlayButton() {
         if (!queue) {
           console.log("no curr track: setting track");
           await TrackPlayer.setQueue(playableTracks);
-          await TrackPlayer.play();
           const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
           setActiveTrack(current);
+          await TrackPlayer.play();
           return;
         }
 
@@ -284,9 +284,9 @@ function TrackPlayButton() {
           try {
             setShuffled(false);
             await TrackPlayer.setQueue(playableTracks);
-            await TrackPlayer.play();
             const current = (await TrackPlayer.getActiveTrack()) as RNTrack;
             setActiveTrack(current);
+            await TrackPlayer.play();
             return;
           } catch (err) {
             console.error("issue changing albums", err);
