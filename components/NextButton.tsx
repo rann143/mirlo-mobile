@@ -13,7 +13,7 @@ export default function NextButton() {
       const queueLength = queue.length;
 
       if (trackIndex === queueLength - 1) {
-        await TrackPlayer.skip(0);
+        await TrackPlayer.skip(0)
         await TrackPlayer.play();
       } else {
         await TrackPlayer.skipToNext();
