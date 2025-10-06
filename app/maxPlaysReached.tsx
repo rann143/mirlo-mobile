@@ -25,7 +25,7 @@ export default function MaxPlaysReached() {
       if (activeTrack && user) {
         api.post(
           `/v1/trackGroups/${activeTrack.trackGroup.id}/emailPurchaseLink?email=${user?.email}`,
-          {}
+          {},
         );
         setIsEmailSent(true);
       } else {
