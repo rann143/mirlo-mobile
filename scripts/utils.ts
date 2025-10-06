@@ -1,7 +1,7 @@
 export const isTrackOwnedOrPreview = (
   track: RNTrack,
   user?: LoggedInUser | null,
-  trackGroup?: AlbumProps
+  trackGroup?: AlbumProps,
 ): boolean => {
   if (track.isPreview) {
     return true;
@@ -18,7 +18,7 @@ export const isTrackOwnedOrPreview = (
   const lookInTrackGroup = trackGroup ?? track.trackGroup;
   const ownsTrack = lookInTrackGroup.artistId === user.id;
   const boughtTrack = !!lookInTrackGroup.userTrackGroupPurchases?.find(
-    (utgp) => utgp.userId === user.id
+    (utgp) => utgp.userId === user.id,
   );
   return ownsTrack || boughtTrack;
 };
@@ -26,7 +26,7 @@ export const isTrackOwnedOrPreview = (
 export const isTrackOwned = (
   track: RNTrack,
   trackGroup?: AlbumProps,
-  user?: LoggedInUser | null
+  user?: LoggedInUser | null,
 ) => {
   if (!user) {
     return false;
@@ -40,11 +40,11 @@ export const isTrackOwned = (
   const ownsTrack = lookInTrackGroup.artistId === user.id;
   // Checks if you bought the track individually
   const boughtTrack = !!user.userTrackPurchases?.find(
-    (utgp) => utgp.trackId === track.id
+    (utgp) => utgp.trackId === track.id,
   );
   // Checks if you bought the album that the track belongs to
   const boughtTrackGroup = !!lookInTrackGroup.userTrackGroupPurchases?.find(
-    (utgp) => utgp.userId === user.id
+    (utgp) => utgp.userId === user.id,
   );
   return ownsTrack || boughtTrack || boughtTrackGroup;
 };
