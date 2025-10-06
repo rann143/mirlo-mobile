@@ -17,19 +17,27 @@ async function getPlays(trackId: number): Promise<number | undefined> {
   }
 }
 
-export async function reachedMaxPlays(trackId: number) {
+export async function reachedMaxPlays(trackId: number, maxFreePlays?: number) {
   try {
     const plays: number | undefined = await getPlays(trackId);
 
     if (plays === undefined) {
       console.error(
-        "Issue getting number of plays: 'number of plays undefined'"
+        "Issue getting number of plays: 'number of plays undefined'",
       );
       return;
     }
 
-    if (plays >= MAX_PLAYS) {
-      return true;
+    if (maxFreePlays !== undefined) {
+        console.log(maxFreePlays);
+      if (plays >= maxFreePlays) {
+        return true;
+      }
+    } else {
+        console.log('using default MAX_PLAYS: ' + MAX_PLAYS);
+      if (plays >= MAX_PLAYS) {
+        return true;
+      }
     }
 
     return false;
@@ -44,7 +52,7 @@ export async function incrementPlayCount(trackId: number) {
 
     if (numPlays === undefined) {
       console.error(
-        "Issue getting number of plays: 'number of plays undefined'"
+        "Issue getting number of plays: 'number of plays undefined'",
       );
       return;
     }

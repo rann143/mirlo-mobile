@@ -75,7 +75,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         event.type === Event.PlaybackError &&
         event.message === "Track play limit exceeded"
       ) {
-        	router.push("/maxPlaysReached")
+        router.push("/maxPlaysReached");
       }
 
       if (event.type === Event.PlaybackState) {
@@ -93,7 +93,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         setActiveTrack(track);
 
         // Cache ownership status when track changes
-        activeTrackOwnedRef.current = isTrackOwned(track, undefined, user);
         activeTrackIdRef.current = track.id;
         incrementedRef.current = false; // Reset for new track
       }
@@ -111,39 +110,44 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // PLAY COUNT INCREMENTATION & CHECKING MAX PLAYS should probably be moved to services.ts so they can run when the UI isn't mounted.
       // Check for max plays reached - use cached ownership
-      if (
-        (event.type === Event.PlaybackActiveTrackChanged ||
-          (event.type == Event.PlaybackProgressUpdated &&
-            event.position === 0)) &&
-        !activeTrackOwnedRef.current && // Use cached value
-        (await reachedMaxPlays(activeTrackIdRef.current || track.id))
-      ) {
-        await TrackPlayer.stop();
-        router.push("/maxPlaysReached");
-        console.log("You've reached max plays. Plz purchase. Show some love");
-        return; // Exit early to avoid further processing
-      }
-
-      // Handle playback progress
-      if (event.type === Event.PlaybackProgressUpdated) {
-        // Early return if track is owned - no need to track plays
-        if (activeTrackOwnedRef.current) {
-          return;
+      // Run only if user is not logged in since this is all tracked by the api for logged in users. For logged in users, reachedMaxPlays modal will be pushed on playback Error
+      if (!user) {
+        if (
+          (event.type === Event.PlaybackActiveTrackChanged ||
+            (event.type === Event.PlaybackProgressUpdated &&
+              event.position === 0)) &&
+          (await reachedMaxPlays(
+            activeTrackIdRef.current || track.id,
+            track.trackGroup.artist.maxFreePlays,
+          ))
+        ) {
+          await TrackPlayer.stop();
+          router.push("/maxPlaysReached");
+          console.log("You've reached max plays. Plz purchase. Show some love");
+          return; // Exit early to avoid further processing
         }
 
-        const progressRatio = event.position / event.duration;
-        // Reset incremented flag if playback is at the beginning (< 5% to be safe)
-        if (progressRatio < 0.05) {
-          incrementedRef.current = false;
-        }
+        // Handle playback progress
+        if (event.type === Event.PlaybackProgressUpdated) {
+          // Early return if track is owned - no need to track plays
+          if (activeTrackOwnedRef.current) {
+            return;
+          }
 
-        // Increment play count once when reaching 50%
-        if (!incrementedRef.current && progressRatio >= 0.5) {
-          incrementedRef.current = true;
-          console.log(
-            track.title + ": " + (activeTrackIdRef.current || track.id),
-          );
-          incrementPlayCount(activeTrackIdRef.current || track.id);
+          const progressRatio = event.position / event.duration;
+          // Reset incremented flag if playback is at the beginning (< 5% to be safe)
+          if (progressRatio < 0.05) {
+            incrementedRef.current = false;
+          }
+
+          // Increment play count once when reaching 50%
+          if (!incrementedRef.current && progressRatio >= 0.5) {
+            incrementedRef.current = true;
+            console.log(
+              track.title + ": " + (activeTrackIdRef.current || track.id),
+            );
+            incrementPlayCount(activeTrackIdRef.current || track.id);
+          }
         }
       }
     },

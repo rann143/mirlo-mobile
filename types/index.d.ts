@@ -174,6 +174,7 @@ interface Artist {
   };
   location?: string;
   bio: string;
+  maxFreePlays?: number;
 }
 
 interface Tag {
