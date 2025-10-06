@@ -32,7 +32,7 @@ export default function TrackView() {
   const { slug, id, trackId } = useLocalSearchParams();
 
   const { data, isPending, isError, error } = useQuery(
-    queryAlbum({ slug: slug, id: id })
+    queryAlbum({ slug: slug, id: id }),
   );
   const router = useRouter();
   const { playableTracks, setPlayableTracks } = usePlayer();
@@ -45,7 +45,7 @@ export default function TrackView() {
     useCallback(() => {
       if (data) {
         const filteredTrack = data.result.tracks?.find(
-          (track) => track.id === Number(trackId)
+          (track) => track.id === Number(trackId),
         );
 
         if (filteredTrack) {
@@ -77,7 +77,7 @@ export default function TrackView() {
           setAlbum([filteredTrack]);
         }
       }
-    }, [data])
+    }, [data]),
   );
 
   if (isPending) {
@@ -106,7 +106,7 @@ export default function TrackView() {
   }
 
   const filteredTrack = data.result.tracks?.find(
-    (track) => track.id === Number(trackId)
+    (track) => track.id === Number(trackId),
   );
 
   if (!filteredTrack) {
@@ -357,7 +357,7 @@ function formatUTCDate(utcDate: string | undefined) {
     ? `${t("trackGroupCard.releaseDate").trim()} ${result}`
     : t("trackGroupCard.released").substring(
         0,
-        t("trackGroupCard.released").indexOf(":") + 1
+        t("trackGroupCard.released").indexOf(":") + 1,
       ) + ` ${result}`;
 }
 
