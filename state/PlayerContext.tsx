@@ -111,7 +111,8 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       // PLAY COUNT INCREMENTATION & CHECKING MAX PLAYS should probably be moved to services.ts so they can run when the UI isn't mounted.
       // Check for max plays reached - use cached ownership
       // Run only if user is not logged in since this is all tracked by the api for logged in users. For logged in users, reachedMaxPlays modal will be pushed on playback Error
-      if (!user) {
+      // Run only if the track has maxFreePlays set
+      if (!user && track.trackGroup.artist.maxFreePlays !== undefined) {
         if (
           (event.type === Event.PlaybackActiveTrackChanged ||
             (event.type === Event.PlaybackProgressUpdated &&
@@ -124,7 +125,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
           await TrackPlayer.stop();
           router.push("/maxPlaysReached");
           console.log("You've reached max plays. Plz purchase. Show some love");
-          return; // Exit early to avoid further processing
+          return;
         }
 
         // Handle playback progress
