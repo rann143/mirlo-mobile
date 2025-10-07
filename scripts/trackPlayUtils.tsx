@@ -34,10 +34,8 @@ export async function reachedMaxPlays(trackId: number, maxFreePlays?: number) {
         return true;
       }
     } else {
-        console.log('using default MAX_PLAYS: ' + MAX_PLAYS);
-      if (plays >= MAX_PLAYS) {
-        return true;
-      }
+        console.log('No maxFreePlays set');
+        return;
     }
 
     return false;
