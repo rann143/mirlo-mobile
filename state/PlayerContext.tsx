@@ -119,7 +119,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
               event.position === 0)) &&
           (await reachedMaxPlays(
             activeTrackIdRef.current || track.id,
-            track.trackGroup.artist.maxFreePlays,
+            track.trackGroup.artist.maxFreePlays
           ))
         ) {
           await TrackPlayer.stop();
@@ -145,13 +145,13 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
           if (!incrementedRef.current && progressRatio >= 0.5) {
             incrementedRef.current = true;
             console.log(
-              track.title + ": " + (activeTrackIdRef.current || track.id),
+              track.title + ": " + (activeTrackIdRef.current || track.id)
             );
             incrementPlayCount(activeTrackIdRef.current || track.id);
           }
         }
       }
-    },
+    }
   );
 
   async function setUpTrackPlayer() {
@@ -188,7 +188,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       looping: looping,
       setLooping: setLooping,
     }),
-    [playBackState, playableTracks, activeTrack, shuffled, isPlaying, looping],
+    [playBackState, playableTracks, activeTrack, shuffled, isPlaying, looping]
   );
   return (
     <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>
