@@ -1,7 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const MAX_PLAYS = 3;
-
 async function getPlays(trackId: number): Promise<number | undefined> {
   try {
     const id = String(trackId);
@@ -17,14 +15,17 @@ async function getPlays(trackId: number): Promise<number | undefined> {
   }
 }
 
-export async function reachedMaxPlays(trackId: number, maxFreePlays?: number): Promise<boolean | undefined> {
+export async function reachedMaxPlays(
+  trackId: number,
+  maxFreePlays?: number,
+): Promise<boolean | undefined> {
   try {
     // If no limit is set, no need to check anything
     if (maxFreePlays == null) {
       console.log("No maxFreePlays set");
       return false; // No limit means limit not reached
     }
-    
+
     const plays: number | undefined = await getPlays(trackId);
     if (plays === undefined) {
       console.error(
@@ -32,7 +33,7 @@ export async function reachedMaxPlays(trackId: number, maxFreePlays?: number): P
       );
       return undefined; // Can't determine, something went wrong
     }
-    
+
     console.log(maxFreePlays);
     return plays >= maxFreePlays;
   } catch (err) {
