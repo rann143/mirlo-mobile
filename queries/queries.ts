@@ -19,7 +19,7 @@ const fetchTrackGroups: QueryFunction<
       tag?: string;
       distinctArtists?: boolean;
     },
-    ...any
+    ...any,
   ]
 > = ({
   queryKey: [_, { skip, take, orderBy, tag, distinctArtists }],
@@ -56,7 +56,7 @@ const fetchTopSold: QueryFunction<
     {
       take?: number;
       datePurchased?: string;
-    }
+    },
   ]
 > = ({ queryKey: [_, { take, datePurchased }], signal }) => {
   const params = new URLSearchParams();
@@ -78,7 +78,7 @@ const fetchMostPlayed: QueryFunction<
     "fetchMostPlayed",
     {
       take?: number;
-    }
+    },
   ]
 > = ({ queryKey: [_, { take }], signal }) => {
   const params = new URLSearchParams();
@@ -93,7 +93,7 @@ export function queryMostPlayed(opts: { take?: number }) {
   });
 }
 const fetchUserPurchases: QueryFunction<
-  { results: UserTrackGroupPurchase[] },
+  { results: UserTransaction[] },
   ["fetchUserPurchases", { userId: number | undefined }, ...any]
 > = ({ queryKey: [_, { userId }], signal }) => {
   return api.get(`/v1/users/${userId}/purchases`, {});
@@ -114,7 +114,7 @@ const fetchAlbum: QueryFunction<
     {
       slug: string | string[];
       id: string | string[];
-    }
+    },
   ]
 > = ({ queryKey: [_, { slug, id }], signal }) => {
   const safeSlug = Array.isArray(slug) ? slug[0] : slug;
@@ -166,7 +166,7 @@ const fetchTags: QueryFunction<
       take?: number;
       orderBy?: "asc" | "count";
     },
-    ...any
+    ...any,
   ]
 > = ({ queryKey: [_, { skip, take, orderBy }], signal }) => {
   const params = new URLSearchParams();

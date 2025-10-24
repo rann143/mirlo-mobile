@@ -19,6 +19,20 @@ interface LoggedInUser {
   language?: string;
 }
 
+interface UserTransaction {
+  id: string;
+  userId: number;
+  user: User;
+  createdAt: Date;
+  amount: number;
+  currency: string;
+  platformCut?: number;
+  stripeCut?: number;
+  stripeId?: string;
+  trackGroupPurchases: UserTrackGroupPurchase[];
+  trackPurchases: UserTrackPurchase[];
+}
+
 interface UserTrackGroupPurchase {
   userId: number;
   user?: User;
