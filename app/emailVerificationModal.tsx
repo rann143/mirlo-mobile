@@ -10,6 +10,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { mirloRed } from "@/constants/mirlo-red";
@@ -158,7 +159,13 @@ export default function EmailVerificationModal() {
               key="email-input"
               style={styles.inputStyle}
               autoCapitalize="none"
+              inputMode="email"
+              //{...(Platform.OS === "android" && { autoComplete: "email" })}
+              //{...(Platform.OS === "ios" && {
+              //  textContentType: "emailAddress",
+              //})}
               autoComplete="email"
+              //keyboardType="email-address"
               placeholderTextColor="#555"
               onBlur={onBlur}
               onChangeText={onChange}

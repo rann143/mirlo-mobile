@@ -80,6 +80,9 @@ export default function LoginForm() {
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               style={styles.inputStyle}
+              autoCapitalize="none"
+              inputMode="email"
+              autoComplete="email"
               placeholderTextColor="#555"
               onBlur={onBlur}
               onChangeText={onChange}
