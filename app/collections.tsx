@@ -61,6 +61,13 @@ export default function Collections() {
   if (!purchases) {
     return <Text>No purchases found</Text>;
   }
+
+  const allTrackGroupPurchases = purchases.flatMap(
+    (purchase) => purchase.trackGroupPurchases
+  );
+
+  console.log(allTrackGroupPurchases);
+
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
       <View style={styles.container}>
@@ -83,8 +90,8 @@ export default function Collections() {
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
-          data={purchases}
-          keyExtractor={(item, index) => `${item.trackGroup.id}-${index}`}
+          data={allTrackGroupPurchases}
+          keyExtractor={(item, index) => `${item.trackGroup.id}`}
           renderItem={({ item }) => {
             if (isTrackGroupPurchase(item) && item.trackGroup) {
               return (
