@@ -17,7 +17,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import DismissModalBar from "@/components/DismissModalBar";
 import { useTranslation } from "react-i18next";
 import ErrorNotification from "@/components/ErrorNotification";
-import { MirloFetchError } from "@/queries/fetch/MirloFetchError";
 import { storeTokens } from "@/queries/authQueries";
 
 type VerifyEmailInputs = {
@@ -27,7 +26,7 @@ type verifyCodeInputs = {
   code: string;
 };
 
-export default function emailVerificationModal() {
+export default function EmailVerificationModal() {
   const { accessing } = useLocalSearchParams();
   const {
     control: controlEmail,
@@ -48,11 +47,9 @@ export default function emailVerificationModal() {
       code: "",
     },
   });
-  const { user } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [waitingForVerification, setWaitingForVerification] = useState(false);
   const [email, setEmail] = useState("");
-  const [emailVerified, setEmailVerified] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
   const { t: tVerify } = useTranslation("translation", {
@@ -80,7 +77,7 @@ export default function emailVerificationModal() {
         setIsLoading(false);
       }
     },
-    [email, resetCode]
+    [resetCode],
   );
 
   const verifyCode = useCallback(
@@ -93,8 +90,6 @@ export default function emailVerificationModal() {
             { userId: string }
           >("/auth/verify-email", { ...code, email });
           if (response.userId) {
-            setEmailVerified(true);
-
             queryClient.invalidateQueries({
               predicate: (query) => query.queryKey.includes("auth"),
             });
@@ -110,7 +105,7 @@ export default function emailVerificationModal() {
         setIsLoading(false);
       }
     },
-    [email, queryClient, setEmailVerified]
+    [email, queryClient, router],
   );
 
   return !waitingForVerification ? (
@@ -162,6 +157,8 @@ export default function emailVerificationModal() {
             <TextInput
               key="email-input"
               style={styles.inputStyle}
+              autoCapitalize="none"
+              autoComplete="email"
               placeholderTextColor="#555"
               onBlur={onBlur}
               onChangeText={onChange}
