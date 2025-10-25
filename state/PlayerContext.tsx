@@ -73,14 +73,13 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
     async (event) => {
       if (
         event.type === Event.PlaybackError &&
-        event.message === "Track play limit exceeded"
+        event.message.includes("Track play limit exceeded")
       ) {
         router.push("/maxPlaysReached");
       }
 
       if (event.type === Event.PlaybackState) {
         setPlayerState(event.state);
-        //console.log(event.state);
       }
       if (
         [
@@ -108,7 +107,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         track = (await TrackPlayer.getActiveTrack()) as RNTrack;
       }
 
-      // PLAY COUNT INCREMENTATION & CHECKING MAX PLAYS should probably be moved to services.ts so they can run when the UI isn't mounted.
+      // PLAY COUNT INCREMENTATION & CHECKING MAX PLAYS should probably be moved to services.ts so they can run when the UI isn't mounted?
       // Check for max plays reached - use cached ownership
       // Run only if user is not logged in since this is all tracked by the api for logged in users. For logged in users, reachedMaxPlays modal will be pushed on playback Error
       // Run only if the track has maxFreePlays set
@@ -119,7 +118,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
               event.position === 0)) &&
           (await reachedMaxPlays(
             activeTrackIdRef.current || track.id,
-            track.trackGroup.artist.maxFreePlays
+            track.trackGroup.artist.maxFreePlays,
           ))
         ) {
           await TrackPlayer.stop();
@@ -130,10 +129,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
         // Handle playback progress
         if (event.type === Event.PlaybackProgressUpdated) {
-          // Early return if track is owned - no need to track plays
-          if (activeTrackOwnedRef.current) {
-            return;
-          }
 
           const progressRatio = event.position / event.duration;
           // Reset incremented flag if playback is at the beginning (< 5% to be safe)
@@ -145,13 +140,13 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
           if (!incrementedRef.current && progressRatio >= 0.5) {
             incrementedRef.current = true;
             console.log(
-              track.title + ": " + (activeTrackIdRef.current || track.id)
+              track.title + ": " + (activeTrackIdRef.current || track.id),
             );
             incrementPlayCount(activeTrackIdRef.current || track.id);
           }
         }
       }
-    }
+    },
   );
 
   async function setUpTrackPlayer() {
@@ -188,7 +183,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       looping: looping,
       setLooping: setLooping,
     }),
-    [playBackState, playableTracks, activeTrack, shuffled, isPlaying, looping]
+    [playBackState, playableTracks, activeTrack, shuffled, isPlaying, looping],
   );
   return (
     <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>
