@@ -31,7 +31,6 @@ export default function WishlistButton({
     if (!user) {
       router.push({
         pathname: "/emailVerificationModal",
-        params: { accessing: "your wishlist" },
       });
       return null;
     }

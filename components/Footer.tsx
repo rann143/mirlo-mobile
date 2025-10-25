@@ -93,7 +93,6 @@ export default function Footer({ style }: ViewProps) {
               if (!user) {
                 router.push({
                   pathname: "/emailVerificationModal",
-                  params: { accessing: "Your Collection" },
                 });
               } else {
                 if (pathname === "/") {
@@ -136,7 +135,6 @@ export default function Footer({ style }: ViewProps) {
               if (!user) {
                 router.push({
                   pathname: "/emailVerificationModal",
-                  params: { accessing: "Your Wishlist" },
                 });
               } else {
                 if (pathname === "/") {

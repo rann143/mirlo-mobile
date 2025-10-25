@@ -10,11 +10,10 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { mirloRed } from "@/constants/mirlo-red";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import DismissModalBar from "@/components/DismissModalBar";
 import { useTranslation } from "react-i18next";
 import ErrorNotification from "@/components/ErrorNotification";
@@ -28,7 +27,6 @@ type verifyCodeInputs = {
 };
 
 export default function EmailVerificationModal() {
-  const { accessing } = useLocalSearchParams();
   const {
     control: controlEmail,
     handleSubmit: handleSubmitEmail,
@@ -130,7 +128,7 @@ export default function EmailVerificationModal() {
               textDecorationLine: "underline",
             }}
           >
-            Log In or Sign Up for {accessing}!
+            Login or Sign Up to View!
           </Text>
         </Pressable>
         <Text
