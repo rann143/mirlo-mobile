@@ -49,11 +49,11 @@ export default function Collections() {
   useEffect(() => {
     wishlist?.sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
     trackFavorites?.sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
     setList([
       t("profile.yourWishlist"),
@@ -61,7 +61,7 @@ export default function Collections() {
       t("profile.favoritedTracks"),
       ...(trackFavorites ?? []),
     ]);
-  }, [wishlist, trackFavorites]);
+  }, [wishlist, trackFavorites, t]);
 
   if (isPending) {
     return (

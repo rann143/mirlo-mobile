@@ -27,7 +27,6 @@ export default function AddAlbumButton({
       router.push({
         pathname: "/emailVerificationModal",
         params: {
-          accessing: "Purchase Info",
           trackGroupTitle: trackGroup.title,
           trackGroupId: trackGroup.id,
           artist: trackGroup.artist.name,

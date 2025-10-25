@@ -137,7 +137,7 @@ export default function LoginForm() {
         >
           <Pressable onPress={handleBrowserOpen}>
             <Text style={{ color: "white", textDecorationLine: "underline" }}>
-              Don't have an account? Sign Up
+              {t("signUp")}
             </Text>
           </Pressable>
         </View>

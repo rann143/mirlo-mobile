@@ -146,11 +146,14 @@ export default function Menu() {
               ]}
               onPress={async () => {
                 await WebBrowser.openBrowserAsync(
-                  "https://mirlo.space/profile"
+                  "https://mirlo.space/profile",
                 );
               }}
             >
-              <Text style={{ fontSize: 20, color: "red" }}>Delete Account</Text>
+              <Text style={{ fontSize: 20, color: "red" }}>
+                {t("profile.deleteAccount")}
+              </Text>
+              <Ionicons name="open-outline" size={25} color="red" />
             </Pressable>
           )}
         </View>
