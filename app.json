@@ -92,5 +92,6 @@
       "url": "https://u.expo.dev/a2ccd2d1-a537-4697-9df3-43228ba534ef",
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 2000  
+    }
   }
 }
