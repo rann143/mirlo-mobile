@@ -18,6 +18,7 @@ import TrackPlayer, {
 import { useAuthContext } from "./AuthContext";
 import { isTrackOwned } from "@/scripts/utils";
 import { useRouter } from "expo-router";
+import * as api from "../queries/fetch/fetchWrapper";
 
 interface PlayerContextType {
   playbackState: PlaybackState | { state: undefined };
@@ -107,10 +108,44 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         track = (await TrackPlayer.getActiveTrack()) as RNTrack;
       }
 
-      // PLAY COUNT INCREMENTATION & CHECKING MAX PLAYS should probably be moved to services.ts so they can run when the UI isn't mounted?
-      // Check for max plays reached - use cached ownership
-      // Run only if user is not logged in since this is all tracked by the api for logged in users. For logged in users, reachedMaxPlays modal will be pushed on playback Error
+      // Handle playback progress
+      if (event.type === Event.PlaybackProgressUpdated) {
+        const progressRatio = event.position / event.duration;
+        // Reset incremented flag if playback is at the beginning (< 5% to be safe)
+        if (progressRatio < 0.05) {
+          incrementedRef.current = false;
+        }
+
+        // Increment play count once when reaching 50%
+        if (!incrementedRef.current && progressRatio >= 0.5) {
+          incrementedRef.current = true;
+          console.log(
+            track.title + ": " + (activeTrackIdRef.current || track.id),
+          );
+
+          // If there's not a logged-in user, we need to track plays locally. We only want to track plays if we need to -> if maxFreePlays is set.
+          // This way we don't take up memory tracking plays for songs that can be played an unlimited number of times without being purchased.
+          // We are tracking plays locally to determine if this device has reached maxFreePlays.
+          // The api point is used to register the trackPlay in the database.
+          if (!user && track.trackGroup.artist.maxFreePlays !== undefined) {
+            incrementPlayCount(activeTrackIdRef.current || track.id);
+          }
+          try {
+            const res = await api.get(
+              `/v1/tracks/${activeTrackIdRef}/trackPlay`,
+              {},
+            );
+            console.log(res);
+          } catch (error) {
+            console.error("Failed to record track play:", error);
+          }
+        }
+      }
+
+      // Check for max plays reached
+      // Run only if user is not logged in since this is all tracked by the api for logged in users.
       // Run only if the track has maxFreePlays set
+      // For logged in users, reachedMaxPlays modal will be pushed on playback Error
       if (!user && track.trackGroup.artist.maxFreePlays !== undefined) {
         if (
           (event.type === Event.PlaybackActiveTrackChanged ||
@@ -125,25 +160,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
           router.push("/maxPlaysReached");
           console.log("You've reached max plays. Plz purchase. Show some love");
           return;
-        }
-
-        // Handle playback progress
-        if (event.type === Event.PlaybackProgressUpdated) {
-
-          const progressRatio = event.position / event.duration;
-          // Reset incremented flag if playback is at the beginning (< 5% to be safe)
-          if (progressRatio < 0.05) {
-            incrementedRef.current = false;
-          }
-
-          // Increment play count once when reaching 50%
-          if (!incrementedRef.current && progressRatio >= 0.5) {
-            incrementedRef.current = true;
-            console.log(
-              track.title + ": " + (activeTrackIdRef.current || track.id),
-            );
-            incrementPlayCount(activeTrackIdRef.current || track.id);
-          }
         }
       }
     },
@@ -160,7 +176,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
           Capability.SkipToPrevious,
           Capability.SeekTo,
         ],
-        progressUpdateEventInterval: 1,
+        progressUpdateEventInterval: 2, //Every 2 seconds
       });
       console.log("track player set up");
     } catch (err) {
