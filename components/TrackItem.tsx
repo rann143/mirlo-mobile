@@ -55,7 +55,7 @@ export const TrackItem = ({
         {track && (
           <Text
             style={{
-              color: canPlayTrack ? "#636363" : "darkgrey",
+              color: canPlayTrack ? "#636363" : "lightgrey",
               fontSize: 16,
               width: 30,
               marginLeft: 5,
@@ -72,7 +72,7 @@ export const TrackItem = ({
         <View style={{ maxWidth: "90%" }}>
           <Text
             style={{
-              color: canPlayTrack ? "#636363" : "darkgrey",
+              color: canPlayTrack ? "#636363" : "lightgrey",
               fontSize: 16,
               paddingRight: 5,
               fontWeight: canPlayTrack
@@ -111,7 +111,7 @@ export const TrackItem = ({
         {!onTrackScreen && <FavoriteTrackButton track={track} size={15} />}
         <Text
           style={{
-            color: canPlayTrack ? "#636363" : "darkgrey",
+            color: canPlayTrack ? "#636363" : "lightgrey",
             fontSize: 15,
             marginRight: 10,
             fontWeight: canPlayTrack
