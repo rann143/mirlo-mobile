@@ -131,7 +131,11 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
             incrementPlayCount(activeTrackIdRef.current || track.id);
           }
           try {
-            await api.get(`/v1/tracks/${track.id}/trackPlay`, {});
+            const res = await api.get(
+              `/v1/tracks/${activeTrackIdRef}/trackPlay`,
+              {},
+            );
+            console.log(res);
           } catch (error) {
             console.error("Failed to record track play:", error);
           }
