@@ -48,7 +48,7 @@ export default function WishlistButton({
     <Pressable onPress={onPress} style={style}>
       <Ionicons
         name={isInWishlist ? "heart" : "heart-outline"}
-        color={"#BE3455"}
+        color={isInWishlist ? "#BE3455": "#ababab"}
         size={size}
       />
     </Pressable>

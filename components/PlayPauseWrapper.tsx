@@ -90,6 +90,8 @@ export default function PlayPauseWrapper({
       if (!isSameAlbum) {
         try {
           setShuffled(false);
+          console.log(playableTracks);
+          console.log(trackObject);
           await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.skip(trackObject.queueIndex);
           setActiveTrack(trackObject);

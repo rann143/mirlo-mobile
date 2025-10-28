@@ -153,7 +153,7 @@ export default function Collections() {
             } else if (typeof item === "string") {
               return (
                 <View
-                  style={{ flexDirection: "row", justifyContent: "center" }}
+                  style={{ flexDirection: "row", justifyContent: "flex-start" }}
                 >
                   <Text style={styles.listText}>{item}</Text>
                 </View>

@@ -22,7 +22,7 @@ export default function FavoriteTrackButton({
 }: FavoriteTrackButton) {
   const { user, refreshLoggedInUser } = useAuthContext();
   const [isInFavorites, setIsInFavorites] = useState(
-    !!user?.trackFavorites?.find((w) => w.trackId === track.id)
+    !!user?.trackFavorites?.find((w) => w.trackId === track.id),
   );
 
   const onPress = useCallback(async () => {
@@ -43,7 +43,7 @@ export default function FavoriteTrackButton({
     <Pressable onPress={onPress} style={style}>
       <Ionicons
         name={isInFavorites ? "star" : "star-outline"}
-        color={"#BE3455"}
+        color={isInFavorites ? "#BE3455" : "#ababab"}
         size={size}
       />
     </Pressable>

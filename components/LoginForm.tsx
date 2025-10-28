@@ -183,6 +183,5 @@ const styles = StyleSheet.create({
     marginTop: 40,
     backgroundColor: "#FFF",
     paddingVertical: 5,
-    borderRadius: 50,
   },
 });

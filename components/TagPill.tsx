@@ -17,7 +17,7 @@ export default function TagPill({ tagName }: TagPillProps) {
         backgroundColor: "#f0f0f0",
         borderWidth: 1,
         borderColor: "#e3e1e1",
-        padding: 10,
+        padding: 6,
         paddingHorizontal: 15,
         borderRadius: 18,
         marginRight: 5,

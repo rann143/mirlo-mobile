@@ -63,7 +63,7 @@ export default function TrackView() {
           filteredTrack.artist = data.result.artist.name;
           filteredTrack.artwork = data.result.cover.sizes[600];
           filteredTrack.url = `${API_ROOT}${filteredTrack.audio.url}`;
-          filteredTrack.queueIndex = filteredTrack.order;
+          filteredTrack.queueIndex = 0; //Only displaying 1 track on this screen
           filteredTrack.trackGroupId = data.result.trackGroupId;
           filteredTrack.audio = {
             url: filteredTrack.audio.url,

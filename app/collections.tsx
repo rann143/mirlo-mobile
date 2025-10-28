@@ -16,16 +16,18 @@ import SearchButton from "@/components/SearchButton";
 import CollectionPurchase from "@/components/CollectionPurchase";
 import { isTrackGroupPurchase, isTrackPurchase } from "@/types/typeguards";
 import ErrorNotification from "@/components/ErrorNotification";
+import { useTranslation } from "react-i18next";
 
 export default function Collections() {
   const { user } = useAuthContext();
   const userId = user?.id;
   const { top } = useSafeAreaInsets();
   const { isPending, isError, data, error } = useQuery(
-    queryUserPurchases(userId)
+    queryUserPurchases(userId),
   );
   const [showError, setShowError] = useState<boolean>(true);
   const purchases = data?.results;
+  const {t} = useTranslation("translation");
 
   useEffect(() => {
     if (!user) {
@@ -63,7 +65,7 @@ export default function Collections() {
   }
 
   const allTrackGroupPurchases = purchases.flatMap(
-    (purchase) => purchase.trackGroupPurchases
+    (purchase) => purchase.trackGroupPurchases,
   );
 
   console.log(allTrackGroupPurchases);
@@ -92,6 +94,13 @@ export default function Collections() {
           contentContainerStyle={styles.listContainer}
           data={allTrackGroupPurchases}
           keyExtractor={(item, index) => `${item.trackGroup.id}`}
+          ListHeaderComponent={
+            <View
+              style={{ flexDirection: "row", justifyContent: "flex-start" }}
+            >
+              <Text style={styles.listText}>{t("profile.yourCollection")}</Text>
+            </View>
+          }
           renderItem={({ item }) => {
             if (isTrackGroupPurchase(item) && item.trackGroup) {
               return (
@@ -150,5 +159,10 @@ const styles = StyleSheet.create({
   },
   loadSpinner: {
     flex: 1,
+  },
+  listText: {
+    padding: 10,
+    fontWeight: "bold",
+    fontSize: 20,
   },
 });

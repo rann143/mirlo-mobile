@@ -54,7 +54,7 @@ export default function Menu() {
         {user && user.name && (
           <View>
             <Text
-              style={{ marginVertical: 20, fontSize: 25, fontWeight: "bold" }}
+              style={{ marginTop: 20, fontSize: 25, fontWeight: "bold" }}
             >
               {user.name}
             </Text>
@@ -162,8 +162,6 @@ export default function Menu() {
   );
 }
 
-const { width } = Dimensions.get("window");
-
 const styles = StyleSheet.create({
   separator: {
     borderBottomColor: "grey",
@@ -175,7 +173,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     padding: 10,
-    borderRadius: 10,
     alignItems: "center",
     gap: 10,
   },

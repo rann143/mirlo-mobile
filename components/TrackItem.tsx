@@ -1,6 +1,5 @@
 import { useAuthContext } from "@/state/AuthContext";
 import { View, StyleSheet, Text } from "react-native";
-import PlayButton from "./PlayPauseWrapper";
 import { isTrackOwnedOrPreview } from "@/scripts/utils";
 import FavoriteTrackButton from "./FavoriteTrackButton";
 
@@ -56,7 +55,7 @@ export const TrackItem = ({
         {track && (
           <Text
             style={{
-              color: canPlayTrack ? "black" : "darkgrey",
+              color: canPlayTrack ? "#424242" : "darkgrey",
               fontSize: 16,
               width: 30,
               marginLeft: 5,
@@ -73,7 +72,7 @@ export const TrackItem = ({
         <View style={{ maxWidth: "90%" }}>
           <Text
             style={{
-              color: canPlayTrack ? "black" : "darkgrey",
+              color: canPlayTrack ? "#424242" : "darkgrey",
               fontSize: 16,
               paddingRight: 5,
               fontWeight: canPlayTrack
@@ -112,7 +111,7 @@ export const TrackItem = ({
         {!onTrackScreen && <FavoriteTrackButton track={track} size={15} />}
         <Text
           style={{
-            color: canPlayTrack ? "black" : "darkgrey",
+            color: canPlayTrack ? "#424242" : "darkgrey",
             fontSize: 15,
             marginRight: 10,
             fontWeight: canPlayTrack

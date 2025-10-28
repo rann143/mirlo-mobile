@@ -31,7 +31,7 @@ export default function SearchPage() {
     isSearching,
   } = useSearch();
   const { data: tags, isPending } = useQuery(
-    queryTags({ orderBy: "count", take: 25 })
+    queryTags({ orderBy: "count", take: 25 }),
   );
   const { top, bottom } = useSafeAreaInsets();
   const router = useRouter();
@@ -55,7 +55,7 @@ export default function SearchPage() {
         setSearchResults([]);
         setShowSuggestions(false);
       }
-    }, 500)
+    }, 500),
   ).current;
 
   useEffect(() => {
@@ -157,7 +157,7 @@ function TypeLinks() {
     <View
       style={{
         gap: 20,
-        marginTop: 15,
+        paddingVertical: 15,
       }}
     >
       <Link href={{ pathname: "/topSold" }} onPress={() => router.back()}>

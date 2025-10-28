@@ -58,7 +58,7 @@ export default function AddAlbumButton({
 
   return ids && ids.includes(trackGroup.id) ? null : (
     <Pressable onPress={onPress} style={style}>
-      <Ionicons name="add-circle-outline" size={size} />
+      <Ionicons name="add-circle-outline" size={size} color="#ababab" />
     </Pressable>
   );
 }

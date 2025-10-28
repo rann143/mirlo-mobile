@@ -65,7 +65,7 @@ export default function Footer({ style }: ViewProps) {
             flexDirection: "row",
             height: "100%",
             alignItems: "center",
-            marginLeft: 10,
+            marginLeft: 20,
             marginTop: -20,
           }}
         >
@@ -83,9 +83,6 @@ export default function Footer({ style }: ViewProps) {
               size={size}
               color={pathname === "/" ? "#BE3455" : "#ababab"}
             ></Ionicons>
-            <Text style={{ color: pathname === "/" ? "#BE3455" : "#ababab" }}>
-              Releases
-            </Text>
           </Pressable>
 
           <Pressable
@@ -121,13 +118,6 @@ export default function Footer({ style }: ViewProps) {
               style={{ marginHorizontal: 15 }}
               // #BE3455
             ></Ionicons>
-            <Text
-              style={{
-                color: pathname === "/collections" ? "#BE3455" : "#ababab",
-              }}
-            >
-              Collection
-            </Text>
           </Pressable>
 
           <Pressable
@@ -162,13 +152,6 @@ export default function Footer({ style }: ViewProps) {
               color={pathname === "/wishlist" ? "#BE3455" : "#ababab"}
               // #BE3455
             ></Ionicons>
-            <Text
-              style={{
-                color: pathname === "/wishlist" ? "#BE3455" : "#ababab",
-              }}
-            >
-              Wishlist
-            </Text>
           </Pressable>
         </View>
         <View
