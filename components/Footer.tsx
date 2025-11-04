@@ -173,14 +173,13 @@ export default function Footer({ style }: ViewProps) {
             }}
             disabled={activeTrack ? false : true}
           >
-            <Image
+          {activeTrack && activeTrack.artwork ?
+<Image
               source={
-                activeTrack && activeTrack.artwork
-                  ? { uri: activeTrack.artwork }
-                  : require("@/assets/images/mirlo-logo-logoOnly-light.png")
+                  { uri: activeTrack.artwork }
               }
               style={styles.image}
-            />
+            /> : null}
           </Link>
         </View>
       </View>
