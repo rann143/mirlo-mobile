@@ -90,8 +90,6 @@ export default function PlayPauseWrapper({
       if (!isSameAlbum) {
         try {
           setShuffled(false);
-          console.log(playableTracks);
-          console.log(trackObject);
           await TrackPlayer.setQueue(playableTracks);
           await TrackPlayer.skip(trackObject.queueIndex);
           setActiveTrack(trackObject);
@@ -128,7 +126,6 @@ export default function PlayPauseWrapper({
   return (
     <Pressable
       onPress={async () => {
-        //console.log(playableTracks);
         if (canPlayTrack) {
           await togglePlayBack(playbackState);
           const q = await TrackPlayer.getQueue();
