@@ -8,6 +8,8 @@ import {
 import * as api from "./fetch/fetchWrapper";
 import { MirloFetchError } from "./fetch/MirloFetchError";
 
+type UserPurchase = UserTrackPurchase | UserTrackGroupPurchase;
+
 const fetchTrackGroups: QueryFunction<
   { results: AlbumProps[] },
   [
@@ -105,6 +107,21 @@ export function queryUserPurchases(userId: number | undefined) {
     queryFn: fetchUserPurchases,
     enabled: !!userId,
   });
+}
+
+const fetchUserCollection: QueryFunction<
+  { results: UserPurchase[] },
+  ["fetchUserCollection", { userId: number | undefined }, ...any]
+> = ({ queryKey: [_, { userId }], signal }) => {
+  return api.get(`/v1/users/${userId}/collection`, {});
+};
+
+export function queryUserCollection(userId: number | undefined) {
+    return queryOptions({
+        queryKey: ["fetchUserCollection", {userId}],
+        queryFn: fetchUserCollection,
+        enabled: !!userId,
+    })
 }
 
 const fetchAlbum: QueryFunction<

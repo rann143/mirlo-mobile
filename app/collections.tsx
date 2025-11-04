@@ -8,7 +8,7 @@ import {
 import { useAuthContext } from "@/state/AuthContext";
 import { Link, router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
-import { queryUserPurchases } from "@/queries/queries";
+import { queryUserCollection } from "@/queries/queries";
 import { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MenuButton from "@/components/MenuButton";
@@ -23,11 +23,11 @@ export default function Collections() {
   const userId = user?.id;
   const { top } = useSafeAreaInsets();
   const { isPending, isError, data, error } = useQuery(
-    queryUserPurchases(userId),
+    queryUserCollection(userId),
   );
   const [showError, setShowError] = useState<boolean>(true);
   const purchases = data?.results;
-  const {t} = useTranslation("translation");
+  const { t } = useTranslation("translation");
 
   useEffect(() => {
     if (!user) {
@@ -64,12 +64,6 @@ export default function Collections() {
     return <Text>No purchases found</Text>;
   }
 
-  const allTrackGroupPurchases = purchases.flatMap(
-    (purchase) => purchase.trackGroupPurchases,
-  );
-
-  console.log(allTrackGroupPurchases);
-
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
       <View style={styles.container}>
@@ -92,8 +86,10 @@ export default function Collections() {
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
-          data={allTrackGroupPurchases}
-          keyExtractor={(item, index) => `${item.trackGroup.id}`}
+          data={purchases}
+          keyExtractor={(item) =>
+            `${isTrackGroupPurchase(item) ? item.trackGroupId : item.trackId}`
+          }
           ListHeaderComponent={
             <View
               style={{ flexDirection: "row", justifyContent: "flex-start" }}
@@ -122,14 +118,14 @@ export default function Collections() {
                   href={{
                     pathname: "/artist/[id]/album/[slug]/tracks/[trackId]",
                     params: {
-                      id: item.trackGroup.artistId,
-                      slug: item.trackGroup.urlSlug,
+                      id: item.track.trackGroup.artistId,
+                      slug: item.track.trackGroup.urlSlug,
                       trackId: item.trackId,
                     },
                   }}
                 >
                   <CollectionPurchase
-                    trackGroup={item.trackGroup}
+                    trackGroup={item.track.trackGroup}
                     track={item.track}
                   />
                 </Link>
