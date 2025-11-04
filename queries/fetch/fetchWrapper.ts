@@ -15,7 +15,7 @@ import { head } from "lodash";
  */
 async function fetchWrapper<R>(
   endpoint: string,
-  init: RequestInit
+  init: RequestInit,
 ): Promise<R> {
   const jwtToken = await SecureStorage.getItemAsync("jwt");
   const refreshToken = await SecureStorage.getItemAsync("refresh");
@@ -48,7 +48,15 @@ async function fetchWrapper<R>(
     }
     throw new MirloFetchError(res, message);
   }
-  return await res.json();
+  const text = await res.text();
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    // If it's not JSON, return the raw text
+    // or wrap it in an object
+    return text as any;
+  }
 }
 
 /**
@@ -64,7 +72,7 @@ async function fetchWrapper<R>(
 export function post<T, R>(
   endpoint: string,
   body: T,
-  init: RequestInit = {}
+  init: RequestInit = {},
 ): Promise<R> {
   return fetchWrapper(endpoint, {
     method: "POST",
@@ -96,7 +104,7 @@ export function get<R>(endpoint: string, init: RequestInit): Promise<R> {
 export function getMany<R>(
   endpoint: string,
   init: RequestInit,
-  query?: { [key: string]: string }
+  query?: { [key: string]: string },
 ): Promise<{ results: R[]; total?: number }> {
   const fullEndpoint = convertQueryToSeachParams(endpoint, query);
 
@@ -107,7 +115,7 @@ export function getMany<R>(
 }
 function convertQueryToSeachParams(
   endpoint: string,
-  query?: { [key: string]: string }
+  query?: { [key: string]: string },
 ) {
   if (query) {
     const searchParams = new URLSearchParams();
