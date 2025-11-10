@@ -95,7 +95,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
         // Cache ownership status when track changes
         activeTrackOwnedRef.current = isTrackOwned(track);
-        console.log(activeTrackOwnedRef);
         activeTrackIdRef.current = track.id;
         incrementedRef.current = false; // Reset for new track
       }
