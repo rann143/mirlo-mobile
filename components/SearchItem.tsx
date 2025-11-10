@@ -52,8 +52,8 @@ export default function SearchItem({ result, index }: Result) {
               result.trackGroupCover?.sizes?.[120]
                 ? { uri: result.trackGroupCover.sizes[120] }
                 : result.avatar?.sizes?.[120]
-                ? { uri: result.avatar.sizes[120] }
-                : require("@/assets/images/mirlo-logo-logoOnly-light.png")
+                  ? { uri: result.avatar.sizes[120] }
+                  : require("@/assets/images/mirlo-logo-logoOnly-light.png")
             }
             style={styles.image}
           />
@@ -87,7 +87,7 @@ export default function SearchItem({ result, index }: Result) {
   );
 }
 const constructUrl = (r: any) => {
-  if (!r || !r.artistId) {
+  if (!r) {
     return "/";
   }
 
@@ -95,8 +95,11 @@ const constructUrl = (r: any) => {
     return `/artist/${r.artistId}/album/${r.trackGroupId}/tracks/${r.id}` as const;
   } else if (r.isTrackGroup) {
     return `/artist/${r.artistId}/album/${r.trackGroupId}/album-tracks` as const; // as const tells typescript this is a literal string pattern
-  } else {
+  } else if (r.isArtist) {
     return `/artist/${r.artistId}/artist-page` as const;
+  } else {
+    console.log(r.name);
+    return `/tags/${r.name}` as const;
   }
 };
 

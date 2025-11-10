@@ -16,7 +16,7 @@ type SearchContextType = {
           id: string | number;
           name: string;
           isNew?: boolean;
-        }
+        },
   ) => void;
   searchResults: Result[];
   setSearchResults: (results: Result[]) => void;
@@ -66,18 +66,24 @@ export const SearchContextProvider: React.FC<{
     const artists = await api.getMany<Artist>(
       `/v1/artists`,
       {},
-      { name: searchString }
+      { name: searchString.trim() },
     );
     const trackGroups = await api.getMany<AlbumProps>(
       `/v1/trackGroups`,
       {},
-      { title: searchString }
+      { title: searchString.trim() },
     );
     const tracks = await api.getMany<RNTrack>(
       `/v1/tracks`,
       {},
-      { title: searchString }
+      { title: searchString.trim() },
     );
+    const tags = await api.getMany<Tag>(
+      `/v1/tags`,
+      {},
+      { tag: searchString.trim(), orderBy: "count" },
+    );
+    console.log(tags);
     const results = [
       ...artists.results.map((r, rid) => ({
         firstInCategory: rid === 0,
@@ -109,6 +115,12 @@ export const SearchContextProvider: React.FC<{
         trackGroupCover: tr.trackGroup.cover,
         name: tr.title,
         isTrack: true,
+      })),
+      ...tags.results.map((tg, tgid) => ({
+        id: tgid,
+        name: tg.tag,
+        category: t("headerSearch.tags").slice(0, -1),
+        isTag: true,
       })),
     ];
 

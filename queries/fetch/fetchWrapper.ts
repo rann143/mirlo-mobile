@@ -2,7 +2,6 @@ import { API_ROOT } from "@/constants/api-root";
 import { API_KEY } from "@/constants/api-key";
 import { MirloFetchError } from "./MirloFetchError";
 import * as SecureStorage from "expo-secure-store";
-import { head } from "lodash";
 
 /**
  * Wraps fetch() calls to Mirlo's API with error handling.
