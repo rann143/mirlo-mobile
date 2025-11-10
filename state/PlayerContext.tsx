@@ -77,6 +77,7 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         event.message.includes("Track play limit exceeded")
       ) {
         router.push("/maxPlaysReached");
+        return;
       }
 
       if (event.type === Event.PlaybackState) {
@@ -93,6 +94,8 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         setActiveTrack(track);
 
         // Cache ownership status when track changes
+        activeTrackOwnedRef.current = isTrackOwned(track);
+        console.log(activeTrackOwnedRef);
         activeTrackIdRef.current = track.id;
         incrementedRef.current = false; // Reset for new track
       }
@@ -109,7 +112,10 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       // Handle playback progress
-      if (event.type === Event.PlaybackProgressUpdated) {
+      if (
+        !activeTrackOwnedRef.current &&
+        event.type === Event.PlaybackProgressUpdated
+      ) {
         const progressRatio = event.position / event.duration;
         // Reset incremented flag if playback is at the beginning (< 5% to be safe)
         if (progressRatio < 0.05) {
@@ -131,7 +137,11 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
             incrementPlayCount(activeTrackIdRef.current || track.id);
           }
           try {
-            await api.get(`/v1/tracks/${track.id}/trackPlay`, {});
+            const res = await api.get(
+              `/v1/tracks/${activeTrackIdRef.current}/trackPlay`,
+              {},
+            );
+            console.log(res);
           } catch (error) {
             console.error("Failed to record track play:", error);
           }
@@ -154,7 +164,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         ) {
           await TrackPlayer.stop();
           router.push("/maxPlaysReached");
-          console.log("You've reached max plays. Plz purchase. Show some love");
           return;
         }
       }
