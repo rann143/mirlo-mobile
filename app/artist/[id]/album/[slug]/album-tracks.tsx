@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Pressable,
   useWindowDimensions,
+  Modal,
 } from "react-native";
 import {
   useLocalSearchParams,
@@ -17,7 +18,7 @@ import {
   useFocusEffect,
 } from "expo-router";
 import { usePlayer } from "@/state/PlayerContext";
-import { isTrackOwnedOrPreview } from "@/scripts/utils";
+import { handleExternalPurchase, isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryAlbum } from "@/queries/queries";
@@ -33,6 +34,7 @@ import { linkifyUrls } from "@/scripts/utils";
 import WishlistButton from "@/components/WishlistButton";
 import ErrorNotification from "@/components/ErrorNotification";
 import AddAlbumButton from "@/components/AddAlbumButton";
+import { mirloRed } from "@/constants/mirlo-red";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -45,28 +47,6 @@ function AlbumPlayButton() {
     setActiveTrack,
     setShuffled,
   } = usePlayer();
-  // ORGINALLY q was used to help determine the play/pause icon for this condition: playableTracks.length === q?.length
-  // but in rookie fashion, I completely forget why/if that's needed. I don't think it is since based on the other conditions,
-  // this seems unnecessarily repetitive
-
-  // const [q, setQ] = useState<RNTrack[]>([]);
-
-  // useEffect(() => {
-  //   async function getQ() {
-  //     try {
-  //       const queue = (await TrackPlayer.getQueue()) as RNTrack[];
-  //       setQ(queue);
-  //     } catch (error) {
-  //       console.error("Error getting queue:", error);
-  //     }
-  //   }
-  //   getQ();
-  // }, []);
-
-  // async function getQ() {
-  //   const queue = (await TrackPlayer.getQueue()) as RNTrack[];
-  //   return queue;
-  // }
 
   const togglePlayBack = useCallback(async () => {
     try {
@@ -185,6 +165,7 @@ export default function AlbumTracks() {
   const { t } = useTranslation("translation");
   const { width } = useWindowDimensions();
   const [showError, setShowError] = useState<boolean>(true);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -380,7 +361,11 @@ export default function AlbumTracks() {
                     alignItems: "center",
                   }}
                 >
-                  <AddAlbumButton trackGroup={selectedAlbum} size={40} />
+                  <AddAlbumButton
+                    trackGroup={selectedAlbum}
+                    size={40}
+                    setModalVisible={setModalVisible}
+                  />
                   <WishlistButton
                     trackGroup={selectedAlbum}
                     size={40}
@@ -422,6 +407,42 @@ export default function AlbumTracks() {
             </View>
           )}
         ></FlatList>
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          animationType="none"
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <View style={styles.modalView}>
+              <Pressable
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: mirloRed,
+                  padding: 10,
+                  borderRadius: 10,
+                }}
+                onPress={() => handleExternalPurchase(selectedAlbum)}
+              >
+                <Text style={{ color: "white", fontSize: 18 }}>
+                  Purchase Info{" "}
+                </Text>
+                <Ionicons name="open-outline" color="white" size={18} />
+              </Pressable>
+              <Pressable
+                style={{ marginTop: 30 }}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={{ color: "#666", fontSize: 16 }}>Close</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       </View>
     </SafeAreaView>
   );
@@ -461,5 +482,21 @@ const styles = StyleSheet.create({
   },
   loadSpinner: {
     flex: 1,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    paddingBottom: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
