@@ -112,6 +112,20 @@ export function getMany<R>(
     ...init,
   });
 }
+
+export function generateDownload<R>(
+  endpoint: string,
+  init: RequestInit,
+  query?: { [key: string]: string },
+): Promise<R> {
+  const fullEndpoint = convertQueryToSeachParams(endpoint, query);
+
+  return fetchWrapper(fullEndpoint, {
+    method: "GET",
+    ...init,
+  });
+}
+
 function convertQueryToSeachParams(
   endpoint: string,
   query?: { [key: string]: string },

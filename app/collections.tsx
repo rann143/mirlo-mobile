@@ -63,6 +63,7 @@ export default function Collections() {
   if (!purchases) {
     return <Text>No purchases found</Text>;
   }
+  console.log(purchases);
 
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>

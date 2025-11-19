@@ -247,6 +247,7 @@ export default function AlbumTracks() {
   }
 
   const selectedAlbum = data.result;
+  console.log(selectedAlbum);
 
   const tagPills = selectedAlbum.tags?.map((tagName, index) => {
     return (

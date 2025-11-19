@@ -42,6 +42,14 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.5"
+          }
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -54,14 +62,6 @@
             "image": "./assets/images/Logo-Mirlo_LogoOnly.png",
             "backgroundColor": "#000000"
           }
-        }
-      ],
-      "expo-audio",
-      [
-        "expo-video",
-        {
-          "supportsBackgroundPlayback": true,
-          "supportsPictureInPicture": true
         }
       ],
       [
