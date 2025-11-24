@@ -59,6 +59,48 @@ async function fetchWrapper<R>(
 }
 
 /**
+ * Wraps fetch() GET calls for binary data (like zip files)
+ * 
+ * @param endpoint The API request path (appended to API_ROOT)
+ * @param init Fetch request options
+ * @returns The resolved ArrayBuffer
+ */
+export async function getBinary(endpoint: string, init: RequestInit = {}): Promise<ArrayBuffer> {
+  const jwtToken = await SecureStorage.getItemAsync("jwt");
+  const refreshToken = await SecureStorage.getItemAsync("refresh");
+  let cookieHeader = "";
+  if (jwtToken) cookieHeader += `jwt=${jwtToken}; `;
+  if (refreshToken) cookieHeader += `refresh=${refreshToken}`;
+  
+  const headers = new Headers(init.headers);
+  if (cookieHeader) {
+    headers.append("Cookie", cookieHeader);
+  }
+  if (API_KEY) {
+    headers.append("mirlo-api-key", API_KEY);
+  }
+  
+  const res = await fetch(`${API_ROOT}${endpoint}`, {
+    ...init,
+    method: "GET",
+    headers,
+  });
+  
+  if (!res.ok) {
+    let message;
+    try {
+      message = (await res.json()).error;
+    } catch (e) {
+      message = res.statusText;
+    }
+    throw new MirloFetchError(res, message);
+  }
+  
+  // Return raw binary data
+  return await res.arrayBuffer();
+}
+
+/**
  * Wraps fetch() POST calls to Mirlo's API with error handling.
  *
  * @param endpoint The API request path (appended to API_ROOT)

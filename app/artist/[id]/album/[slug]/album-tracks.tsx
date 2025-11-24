@@ -35,6 +35,7 @@ import WishlistButton from "@/components/WishlistButton";
 import ErrorNotification from "@/components/ErrorNotification";
 import AddAlbumButton from "@/components/AddAlbumButton";
 import { mirloRed } from "@/constants/mirlo-red";
+import DownloadButton from "@/components/DownloadButton";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -362,6 +363,12 @@ export default function AlbumTracks() {
                     alignItems: "center",
                   }}
                 >
+                  <DownloadButton
+                    itemData={selectedAlbum}
+                    format="320.mp3"
+                    prefix={`trackGroups/${selectedAlbum.id}`}
+                    size={40}
+                  />
                   <AddAlbumButton
                     trackGroup={selectedAlbum}
                     size={40}

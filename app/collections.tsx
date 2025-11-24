@@ -26,7 +26,7 @@ export default function Collections() {
     queryUserCollection(userId),
   );
   const [showError, setShowError] = useState<boolean>(true);
-  const purchases = data?.results;
+  const collection = data?.results;
   const { t } = useTranslation("translation");
 
   useEffect(() => {
@@ -60,10 +60,10 @@ export default function Collections() {
     );
   }
 
-  if (!purchases) {
+  if (!collection) {
     return <Text>No purchases found</Text>;
   }
-  console.log(purchases);
+  console.log(collection);
 
   return (
     <View style={{ flex: 1, paddingTop: top, backgroundColor: "white" }}>
@@ -87,7 +87,7 @@ export default function Collections() {
         <FlatList
           style={{ width: "100%" }}
           contentContainerStyle={styles.listContainer}
-          data={purchases}
+          data={collection}
           keyExtractor={(item) =>
             `${isTrackGroupPurchase(item) ? item.trackGroupId : item.trackId}`
           }
