@@ -1,4 +1,4 @@
-import { ActivityIndicator, View, FlatList } from "react-native";
+import { ActivityIndicator, View, Text, FlatList } from "react-native";
 import MenuButton from "@/components/MenuButton";
 import SearchButton from "@/components/SearchButton";
 import { StyleSheet } from "react-native";
@@ -11,9 +11,12 @@ import * as api from "../queries/fetch/fetchWrapper";
 import { Link } from "expo-router";
 import { API_ROOT } from "@/constants/api-root";
 import ErrorNotification from "@/components/ErrorNotification";
+import { useNetworkState } from "expo-network";
+import { mirloRed } from "@/constants/mirlo-red";
 
 export default function Index() {
   const { setIsDataLoaded } = useAppIsReadyContext();
+  const networkState = useNetworkState();
   const {
     isPending,
     isError,
@@ -38,6 +41,7 @@ export default function Index() {
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.results.length === 20 ? allPages.length * 20 : null;
     },
+    refetchOnReconnect: "always",
   });
   const { top } = useSafeAreaInsets();
   const trackGroups = data?.pages.flatMap((page) => page.results) || [];
@@ -50,9 +54,9 @@ export default function Index() {
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [data]);
+  }, [data, setIsDataLoaded]);
 
-  if (isPending) {
+  if (networkState.isInternetReachable && isPending) {
     return (
       <View style={{ flex: 1 }}>
         <ActivityIndicator
@@ -64,7 +68,7 @@ export default function Index() {
     );
   }
 
-  if (isError) {
+  if (networkState.isInternetReachable && isError) {
     console.error(error);
     return (
       <View style={{ flex: 1 }}>
@@ -109,41 +113,62 @@ export default function Index() {
           <SearchButton />
           <MenuButton />
         </View>
-        <FlatList
-          style={{ width: "100%" }}
-          contentContainerStyle={styles.listContainer}
-          data={trackGroups}
-          keyExtractor={(item, index) => `${item.id}-${index}`}
-          renderItem={({ item }) => (
-            <Link
-              href={{
-                pathname: "/artist/[id]/album/[slug]/album-tracks",
-                params: { id: item.artistId, slug: item.urlSlug },
+        {networkState.isInternetReachable ? (
+          <FlatList
+            style={{ width: "100%" }}
+            contentContainerStyle={styles.listContainer}
+            data={trackGroups}
+            keyExtractor={(item, index) => `${item.id}-${index}`}
+            renderItem={({ item }) => (
+              <Link
+                href={{
+                  pathname: "/artist/[id]/album/[slug]/album-tracks",
+                  params: { id: item.artistId, slug: item.urlSlug },
+                }}
+              >
+                <TrackGroupItem
+                  id={item.id}
+                  cover={item.cover}
+                  title={item.title}
+                  artist={item.artist}
+                  artistId={item.artistId}
+                  urlSlug={item.urlSlug}
+                  userTrackGroupPurchases={item.userTrackGroupPurchases}
+                  releaseDate={item.releaseDate}
+                  tracks={item.tracks}
+                  trackGroupId={item.trackGroupId}
+                ></TrackGroupItem>
+              </Link>
+            )}
+            onEndReached={() => {
+              if (!hasNextPage || isFetchingNextPage) {
+                return;
+              }
+              fetchNextPage();
+            }}
+            onEndReachedThreshold={0.0}
+            ListFooterComponent={renderLoadingFooter}
+          ></FlatList>
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 25,
+                fontWeight: "bold",
+                textAlign: "center",
+                color: mirloRed,
               }}
             >
-              <TrackGroupItem
-                id={item.id}
-                cover={item.cover}
-                title={item.title}
-                artist={item.artist}
-                artistId={item.artistId}
-                urlSlug={item.urlSlug}
-                userTrackGroupPurchases={item.userTrackGroupPurchases}
-                releaseDate={item.releaseDate}
-                tracks={item.tracks}
-                trackGroupId={item.trackGroupId}
-              ></TrackGroupItem>
-            </Link>
-          )}
-          onEndReached={() => {
-            if (!hasNextPage || isFetchingNextPage) {
-              return;
-            }
-            fetchNextPage();
-          }}
-          onEndReachedThreshold={0.0}
-          ListFooterComponent={renderLoadingFooter}
-        ></FlatList>
+              Whoops! Looks like you're not connected to the internet!
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );

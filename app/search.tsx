@@ -17,6 +17,8 @@ import TagPill from "@/components/TagPill";
 import { optionDisplay } from "@/components/SearchOptionRenderer";
 import { Link } from "expo-router";
 import { useRouter } from "expo-router";
+import { useNetworkState } from "expo-network";
+import { mirloRed } from "@/constants/mirlo-red";
 
 export default function SearchPage() {
   const {
@@ -34,7 +36,7 @@ export default function SearchPage() {
     queryTags({ orderBy: "count", take: 25 }),
   );
   const { top, bottom } = useSafeAreaInsets();
-  const router = useRouter();
+  const networkState = useNetworkState();
 
   const tagPills = useMemo(() => {
     const group = tags?.results.map((tag, index) => {
@@ -60,9 +62,9 @@ export default function SearchPage() {
 
   useEffect(() => {
     searchCallbackRef(searchValue);
-  }, [searchValue]);
+  }, [searchValue, searchCallbackRef]);
 
-  if (isPending) {
+  if (networkState.isInternetReachable && isPending) {
     return (
       <View
         style={{
@@ -94,7 +96,27 @@ export default function SearchPage() {
     >
       <SearchHeader style={{ borderBottomWidth: 1, marginBottom: 1 }} />
 
-      {!isSearching &&
+      {!networkState.isInternetReachable ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 25,
+              fontWeight: "bold",
+              textAlign: "center",
+              color: mirloRed,
+            }}
+          >
+            Whoops! Looks like you're not connected to the internet!
+          </Text>
+        </View>
+      ) : (
+        !isSearching &&
         !showSuggestions &&
         !searchValue &&
         !searchResults.length && (
@@ -105,7 +127,8 @@ export default function SearchPage() {
             </View>
             <TypeLinks />
           </ScrollView>
-        )}
+        )
+      )}
 
       {isSearching && (
         <View style={{ marginVertical: 30, flex: 1 }}>

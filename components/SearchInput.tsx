@@ -2,9 +2,11 @@ import { useSearch } from "@/state/SearchContext";
 import { Controller, useForm } from "react-hook-form";
 import { useCallback } from "react";
 import { TextInput, useWindowDimensions, View } from "react-native";
+import { useNetworkState } from "expo-network";
 
 export default function SearchInput() {
   const { searchValue, setSearchValue } = useSearch();
+  const networkState = useNetworkState();
   const {
     control,
     formState: { errors },
@@ -32,6 +34,7 @@ export default function SearchInput() {
             }}
             value={searchValue}
             onChangeText={onChangeValue}
+            editable={networkState.isConnected ? true : false}
           />
         )}
       />

@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 import Footer from "@/components/Footer";
 import "../i18n";
 import { checkForUpdates } from "../scripts/appVersionCheck";
+import { useNetworkState } from "expo-network";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,6 +26,7 @@ TrackPlayer.registerPlaybackService(() => require("../scripts/service"));
 
 export default function RootLayout() {
   const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
+  const network = useNetworkState();
   // Needed for TanStack Query Devtools
   const onCopy = async (text: string) => {
     try {
@@ -40,10 +42,10 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (isDataLoaded) {
+    if (!network.isInternetReachable || isDataLoaded) {
       SplashScreen.hide();
     }
-  }, [isDataLoaded]);
+  }, [isDataLoaded, network.isInternetReachable]);
 
   return (
     <AppReadyContextProvider
@@ -54,7 +56,6 @@ export default function RootLayout() {
           <PlayerContextProvider>
             <SearchContextProvider>
               <Stack screenOptions={{ animation: "none" }}>
-                <Stack.Screen name="login" options={{ headerShown: false }} />
                 <Stack.Screen
                   name="index"
                   options={{
@@ -67,6 +68,7 @@ export default function RootLayout() {
                     headerShown: false,
                   }}
                 />
+                <Stack.Screen name="login" options={{ headerShown: false }} />
                 <Stack.Screen
                   name="artist/[id]"
                   options={{
