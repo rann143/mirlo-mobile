@@ -17,6 +17,37 @@ import CollectionPurchase from "@/components/CollectionPurchase";
 import { isTrackGroupPurchase, isTrackPurchase } from "@/types/typeguards";
 import ErrorNotification from "@/components/ErrorNotification";
 import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNetworkState } from "expo-network";
+
+type UserPurchase = UserTrackPurchase | UserTrackGroupPurchase;
+
+async function getDownloadedData() {
+  try {
+    const downloadedKeys = await AsyncStorage.getItem("downloadedKeys");
+    console.log(downloadedKeys);
+
+    const data: { results: AlbumProps[] } = { results: [] };
+    if (downloadedKeys) {
+      const parsed = JSON.parse(downloadedKeys);
+      for (const key of parsed) {
+        const album = await AsyncStorage.getItem(key);
+        if (!album) {
+          console.error("Error getting downloaded album with key: " + key);
+          continue;
+        }
+        const parsedAlbum = JSON.parse(album) as AlbumProps;
+        data.results.push(parsedAlbum);
+      }
+    } else {
+      return undefined;
+    }
+
+    return data;
+  } catch (err) {
+    console.error("Error getting downloaded albums: ", err);
+  }
+}
 
 export default function Collections() {
   const { user } = useAuthContext();
@@ -26,16 +57,31 @@ export default function Collections() {
     queryUserCollection(userId),
   );
   const [showError, setShowError] = useState<boolean>(true);
-  const collection = data?.results;
+  const networkState = useNetworkState();
+  // const collection = data?.results;
+  const [collection, setCollection] = useState<any>(null);
   const { t } = useTranslation("translation");
 
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-    }
-  }, [user]);
+  //useEffect(() => {
+  //  if (networkState.isConnected && !user) {
+  //    router.push("/login");
+  //  }
+  //}, [user, networkState]);
 
-  if (isPending) {
+  useEffect(() => {
+    const loadCollection = async () => {
+      if (networkState.isConnected) {
+        setCollection(data?.results ?? []);
+      } else {
+        const downloadedData = await getDownloadedData();
+        setCollection(downloadedData?.results ?? []);
+      }
+    };
+
+    loadCollection();
+  }, [networkState.isConnected, data?.results]);
+
+  if (networkState.isConnected && isPending) {
     return (
       <View style={{ flex: 1 }}>
         <ActivityIndicator
@@ -47,7 +93,7 @@ export default function Collections() {
     );
   }
 
-  if (isError) {
+  if (networkState.isConnected && isError) {
     console.error(error);
     return (
       <View style={{ flex: 1 }}>
@@ -110,7 +156,9 @@ export default function Collections() {
                     },
                   }}
                 >
-                  <CollectionPurchase trackGroup={item.trackGroup} />
+                  <CollectionPurchase
+                    trackGroup={item.trackGroup}
+                  />
                 </Link>
               );
             } else if (isTrackPurchase(item)) {

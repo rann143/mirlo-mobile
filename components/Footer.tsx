@@ -4,10 +4,10 @@ import {
   Image,
   TouchableOpacity,
   ViewProps,
-  Text,
   useWindowDimensions,
 } from "react-native";
 import Slider from "@react-native-community/slider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import TrackPlayer, {
   PlaybackState,
   State,
@@ -21,18 +21,21 @@ import { Link, router, usePathname } from "expo-router";
 import { isTrackOwned } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { mirloRed } from "@/constants/mirlo-red";
+import { useNetworkState } from "expo-network";
 
 export default function Footer({ style }: ViewProps) {
   const progress = useProgress();
   const { bottom } = useSafeAreaInsets();
-  const { playableTracks, activeTrack } = usePlayer() as {
+  const { activeTrack } = usePlayer() as {
     activeTrack: RNTrack | undefined;
     playableTracks: RNTrack[];
   };
   const pathname = usePathname();
   const { user } = useAuthContext();
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const size = width < 380 ? 30 : 40;
+  const networkState = useNetworkState();
+
   return (
     <View
       style={[
@@ -87,18 +90,19 @@ export default function Footer({ style }: ViewProps) {
 
           <Pressable
             onPress={() => {
-              if (!user) {
+              if (networkState.isConnected && !user) {
                 router.push({
                   pathname: "/emailVerificationModal",
                 });
+                return;
+              }
+
+              if (pathname === "/") {
+                router.navigate("/collections");
+              } else if (pathname === "/collections") {
+                return;
               } else {
-                if (pathname === "/") {
-                  router.navigate("/collections");
-                } else if (pathname === "/collections") {
-                  return;
-                } else {
-                  router.dismissTo("/collections");
-                }
+                router.dismissTo("/collections");
               }
             }}
             accessibilityLabel="Your Collection"
@@ -173,13 +177,12 @@ export default function Footer({ style }: ViewProps) {
             }}
             disabled={activeTrack ? false : true}
           >
-          {activeTrack && activeTrack.artwork ?
-<Image
-              source={
-                  { uri: activeTrack.artwork }
-              }
-              style={styles.image}
-            /> : null}
+            {activeTrack && activeTrack.artwork ? (
+              <Image
+                source={{ uri: activeTrack.artwork }}
+                style={styles.image}
+              />
+            ) : null}
           </Link>
         </View>
       </View>

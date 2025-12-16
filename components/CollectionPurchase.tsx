@@ -1,5 +1,6 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 
+
 type CollectionPurchaseProps = {
   trackGroup: AlbumProps;
   track?: RNTrack;

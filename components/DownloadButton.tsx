@@ -27,22 +27,19 @@ export default function DownloadButton({
   );
   const onPress = useCallback(async () => {
     try {
-      const cleanTitle = itemData.title
-        .replace(/[^\w\s-]/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
-
-      const exists = await getAlbumData(`${itemData.title}-${itemData.id}`);
+      const storageKey = getAlbumStorageKey(itemData);
+      const exists = await getAlbumData(storageKey);
       console.log("exists: " + exists);
       console.log(exists);
 
       if (exists) {
         console.log("album already downloaded");
         console.log("removing download");
-        await AsyncStorage.removeItem(`${itemData.title}-${itemData.id}`);
+        await AsyncStorage.removeItem(storageKey);
+
         const albumDir = new Directory(
           Paths.document,
-          `offline-audio/${cleanTitle}_${itemData.id}`,
+          `offline-audio/${storageKey}`,
         );
         albumDir.delete();
         console.log("album deleted from storage");
@@ -116,11 +113,16 @@ async function downloadAudioZip(
 
     const extractDir = new Directory(Paths.document, "offline-audio");
 
+    const albumStorageKey = getAlbumStorageKey({
+      title: audioFolderTitle,
+      id: audioFolderId,
+    });
+
     // Convert file URI to path by removing 'file://' and decoding
     const zipPath = decodeURIComponent(zipFile.uri.replace("file://", ""));
     const extractPath =
       decodeURIComponent(Paths.document.uri.replace("file://", "")) +
-      `offline-audio/${cleanTitle}_${audioFolderId}`;
+      `offline-audio/${albumStorageKey}`;
     console.log(extractDir.uri);
     try {
       const extractresult = await unzip(zipPath, extractPath);
@@ -139,18 +141,14 @@ async function downloadAudioZip(
 
 async function storeAlbumData(albumData: AlbumProps) {
   try {
-    const cleanTitle = albumData.title
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-
+    const albumPathName = getAlbumStorageKey(albumData);
     const albumDir = new Directory(
       Paths.document,
-      `offline-audio/${cleanTitle}_${albumData.id}`,
+      `offline-audio/${albumPathName}`,
     );
 
     if (!albumDir.exists) {
-      throw new Error(`album ${albumData.title}_${albumData.id} doesnt exist`);
+      throw new Error(`album ${albumPathName} doesnt exist`);
     }
 
     const files = albumDir.list();
@@ -174,11 +172,16 @@ async function storeAlbumData(albumData: AlbumProps) {
 
     albumData.tracks = downloadedTracks;
 
-    const stringifiedData = JSON.stringify(albumData);
-    await AsyncStorage.setItem(
-      `${albumData.title}-${albumData.id}`,
-      stringifiedData,
-    );
+    const finalizedData = {
+      trackGroup: albumData,
+      trackGroupId: albumData.id,
+    };
+
+    const stringifiedData = JSON.stringify(finalizedData);
+
+    const storageKey = getAlbumStorageKey(albumData);
+    await AsyncStorage.setItem(storageKey, stringifiedData);
+    await storeDownloadedKey(storageKey);
   } catch (err) {
     console.error("Error storing Album data: ", err);
   }
@@ -199,4 +202,25 @@ async function getAlbumData(albumStored: string) {
   } catch (err) {
     console.log("Error getting stored Album data: ", err);
   }
+}
+
+async function storeDownloadedKey(key: string) {
+  const downloadedKeys = await AsyncStorage.getItem("downloadedKeys");
+
+  const keys: string[] = downloadedKeys ? JSON.parse(downloadedKeys) : [];
+
+  if (!keys.includes(key)) {
+    keys.push(key);
+  }
+
+  await AsyncStorage.setItem("downloadedKeys", JSON.stringify(keys));
+}
+
+function getAlbumStorageKey(album: { title: string; id: string | number }) {
+  const cleanTitle = album.title
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return `${cleanTitle}-${album.id}`;
 }
