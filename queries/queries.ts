@@ -117,11 +117,11 @@ const fetchUserCollection: QueryFunction<
 };
 
 export function queryUserCollection(userId: number | undefined) {
-    return queryOptions({
-        queryKey: ["fetchUserCollection", {userId}],
-        queryFn: fetchUserCollection,
-        enabled: !!userId,
-    })
+  return queryOptions({
+    queryKey: ["fetchUserCollection", { userId }],
+    queryFn: fetchUserCollection,
+    enabled: !!userId,
+  });
 }
 
 const fetchAlbum: QueryFunction<
