@@ -58,15 +58,14 @@ export default function Collections() {
   );
   const [showError, setShowError] = useState<boolean>(true);
   const networkState = useNetworkState();
-  // const collection = data?.results;
   const [collection, setCollection] = useState<any>(null);
   const { t } = useTranslation("translation");
 
-  //useEffect(() => {
-  //  if (networkState.isConnected && !user) {
-  //    router.push("/login");
-  //  }
-  //}, [user, networkState]);
+  useEffect(() => {
+    if (networkState.isConnected && !user) {
+      router.push("/login");
+    }
+  }, [user, networkState]);
 
   useEffect(() => {
     const loadCollection = async () => {
@@ -156,9 +155,7 @@ export default function Collections() {
                     },
                   }}
                 >
-                  <CollectionPurchase
-                    trackGroup={item.trackGroup}
-                  />
+                  <CollectionPurchase trackGroup={item.trackGroup} />
                 </Link>
               );
             } else if (isTrackPurchase(item)) {

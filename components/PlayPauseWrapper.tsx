@@ -15,8 +15,9 @@ import { TrackItem } from "./TrackItem";
 import { isTrackOwnedOrPreview, isTrackOwned } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { reachedMaxPlays } from "@/scripts/trackPlayUtils";
+import { useNetworkState } from "expo-network";
 
-type PlayPauseWrapper = PropsWithChildren<PlayPauseWrapperProps>;
+type PlayPauseWrapperType = PropsWithChildren<PlayPauseWrapperProps>;
 
 export default function PlayPauseWrapper({
   trackObject,
@@ -24,7 +25,7 @@ export default function PlayPauseWrapper({
   style,
   selectedAlbum,
   onTrackScreen,
-}: PlayPauseWrapper) {
+}: PlayPauseWrapperType) {
   const {
     playbackState,
     playableTracks,
@@ -35,8 +36,12 @@ export default function PlayPauseWrapper({
   const audioURL = trackObject?.url;
   const [thisSongSelected, setThisSongSelected] = useState<boolean>(false);
   const { user } = useAuthContext();
+  const networkState = useNetworkState();
 
-  const canPlayTrack = isTrackOwnedOrPreview(trackObject, user, selectedAlbum);
+  // This assumes any playPauseWrapper displayed offline is an owned & downloaded album. Not robust. Needs Improvement.
+  const canPlayTrack = networkState.isConnected
+    ? isTrackOwnedOrPreview(trackObject, user, selectedAlbum)
+    : true;
 
   useEffect(() => {
     const checkTrack = async () => {

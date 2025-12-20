@@ -36,6 +36,8 @@ import ErrorNotification from "@/components/ErrorNotification";
 import AddAlbumButton from "@/components/AddAlbumButton";
 import { mirloRed } from "@/constants/mirlo-red";
 import DownloadButton from "@/components/DownloadButton";
+import { useNetworkState, NetworkState } from "expo-network";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type DateTimeFormatOptions = Intl.DateTimeFormatOptions;
 
@@ -154,6 +156,119 @@ function formatUTCDate(utcDate: string | undefined) {
       ) + ` ${result}`;
 }
 
+function processTracks(
+  user: LoggedInUser | null | undefined,
+  networkState: NetworkState,
+  data: { result: AlbumProps },
+  setAlbum: (album: RNTrack[]) => void,
+  setPlayableTracks: (tracks: RNTrack[]) => void,
+) {
+  const tracksToPlay: RNTrack[] = [];
+  const allTracks: RNTrack[] = [];
+  let playableIndex = 0;
+
+  if (data && data.result.tracks) {
+    data.result.tracks.forEach((track) => {
+      const newTrack: RNTrack = {
+        title: track.title,
+        artist: data.result.artist.name,
+        artwork: data.result.cover.sizes[600],
+        url: networkState.isConnected
+          ? `${API_ROOT}${track.audio.url}`
+          : track.audio.url,
+        allowIndividualSale: track.allowIndividualSale,
+        id: track.id,
+        trackArtists: track.trackArtists,
+        queueIndex: track.order,
+        trackGroupId: data.result.trackGroupId,
+        trackGroup: {
+          userTrackGroupPurchases: data.result.userTrackGroupPurchases,
+          artistId: data.result.artistId,
+          urlSlug: data.result.urlSlug,
+          cover: data.result.cover,
+          title: data.result.title,
+          artist: data.result.artist,
+          id: data.result.id,
+          releaseDate: data.result.releaseDate,
+          trackGroupId: data.result.trackGroupId,
+        },
+        audio: {
+          url: track.audio.url,
+          duration: track.audio.duration,
+        },
+        isPreview: track.isPreview,
+        order: track.order,
+        headers: {
+          "mirlo-api-key": API_KEY,
+        },
+      };
+
+      allTracks.push(newTrack);
+
+      if (
+        networkState.isConnected &&
+        isTrackOwnedOrPreview(newTrack, user, data.result)
+      ) {
+        newTrack.queueIndex = playableIndex;
+        playableIndex++;
+        tracksToPlay.push(newTrack);
+      }
+
+      if (!networkState.isConnected) {
+        newTrack.queueIndex = playableIndex;
+        playableIndex++;
+        tracksToPlay.push(newTrack);
+      }
+    });
+  }
+  console.log("all tracks: ");
+  console.log(allTracks);
+  console.log("track to play");
+  console.log(tracksToPlay);
+
+  setAlbum(allTracks);
+  setPlayableTracks(tracksToPlay);
+}
+
+async function getDownloadedAlbum(
+  id: string | string[],
+  urlSlug: string | string[],
+) {
+  try {
+    const downloadedKeys = await AsyncStorage.getItem("downloadedKeys");
+    console.log(downloadedKeys);
+
+    let data: { result: AlbumProps } | undefined = undefined;
+    if (downloadedKeys) {
+      const parsed = JSON.parse(downloadedKeys);
+      for (const key of parsed) {
+        const album = await AsyncStorage.getItem(key);
+        if (!album) {
+          console.error("Error getting downloaded album with key: " + key);
+          continue;
+        }
+        const parsedAlbum = JSON.parse(album).trackGroup as AlbumProps;
+        if (
+          parsedAlbum.artistId === Number(id) &&
+          parsedAlbum.urlSlug === urlSlug
+        ) {
+          data = { result: parsedAlbum };
+        }
+      }
+    } else {
+      return undefined;
+    }
+
+    if (data === undefined) {
+      return undefined;
+    }
+
+    return data;
+  } catch (err) {
+    console.error("Error getting downloaded albums: ", err);
+  }
+}
+
 export default function AlbumTracks() {
   const { id, slug } = useLocalSearchParams();
   const { isPending, isError, data, error } = useQuery(
@@ -167,62 +282,37 @@ export default function AlbumTracks() {
   const { width } = useWindowDimensions();
   const [showError, setShowError] = useState<boolean>(true);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const networkState = useNetworkState();
+  const [apiData, setApiData] = useState<AlbumProps | null>(null);
 
   useFocusEffect(
     useCallback(() => {
-      const tracksToPlay: RNTrack[] = [];
-      const allTracks: RNTrack[] = [];
-      let playableIndex = 0;
+      const loadAlbum = async () => {
+        const albumData =
+          networkState.isConnected && data
+            ? data
+            : await getDownloadedAlbum(id, slug);
 
-      if (data && data.result.tracks) {
-        data.result.tracks.forEach((track) => {
-          const newTrack: RNTrack = {
-            title: track.title,
-            artist: data.result.artist.name,
-            artwork: data.result.cover.sizes[600],
-            url: `${API_ROOT}${track.audio.url}`,
-            allowIndividualSale: track.allowIndividualSale,
-            id: track.id,
-            trackArtists: track.trackArtists,
-            queueIndex: track.order,
-            trackGroupId: data.result.trackGroupId,
-            trackGroup: {
-              userTrackGroupPurchases: data.result.userTrackGroupPurchases,
-              artistId: data.result.artistId,
-              urlSlug: data.result.urlSlug,
-              cover: data.result.cover,
-              title: data.result.title,
-              artist: data.result.artist,
-              id: data.result.id,
-              releaseDate: data.result.releaseDate,
-              trackGroupId: data.result.trackGroupId,
-            },
-            audio: {
-              url: track.audio.url,
-              duration: track.audio.duration,
-            },
-            isPreview: track.isPreview,
-            order: track.order,
-            headers: {
-              "mirlo-api-key": API_KEY,
-            },
-          };
+        if (albumData === undefined) {
+          return;
+        }
 
-          allTracks.push(newTrack);
+        processTracks(
+          user,
+          networkState,
+          albumData,
+          setAlbum,
+          setPlayableTracks,
+        );
 
-          if (isTrackOwnedOrPreview(newTrack, user, data.result)) {
-            newTrack.queueIndex = playableIndex;
-            playableIndex++;
-            tracksToPlay.push(newTrack);
-          }
-        });
-      }
-      setAlbum(allTracks);
-      setPlayableTracks(tracksToPlay);
-    }, [data]),
+        setApiData(albumData.result);
+      };
+
+      loadAlbum();
+    }, [data, id, networkState, user, setPlayableTracks, slug]),
   );
 
-  if (isPending) {
+  if (networkState.isConnected && isPending) {
     return (
       <View style={{ flex: 1 }}>
         <ActivityIndicator
@@ -234,7 +324,7 @@ export default function AlbumTracks() {
     );
   }
 
-  if (isError) {
+  if (networkState.isConnected && isError) {
     console.error(error);
     return (
       <View style={{ flex: 1 }}>
@@ -247,10 +337,23 @@ export default function AlbumTracks() {
     );
   }
 
-  const selectedAlbum = data.result;
-  console.log(selectedAlbum);
+  if (!apiData) {
+    return (
+      <View style={{ flex: 1 }}>
+        <Text>waiting for api data</Text>
+        <ActivityIndicator
+          size="large"
+          color="#BE3455"
+          style={styles.loadSpinner}
+        />
+      </View>
+    );
+  }
 
-  const tagPills = selectedAlbum.tags?.map((tagName, index) => {
+  //const selectedAlbum = data.result;
+  console.log(apiData);
+
+  const tagPills = apiData.tags?.map((tagName, index) => {
     return (
       <Link
         key={index}
@@ -302,10 +405,10 @@ export default function AlbumTracks() {
           data={album}
           keyExtractor={(item, index) => `${index}-${item.id || item.title}`}
           renderItem={({ item }) =>
-            selectedAlbum ? (
+            apiData ? (
               <PlayPauseWrapper
                 trackObject={item}
-                selectedAlbum={selectedAlbum}
+                selectedAlbum={apiData}
                 onTrackScreen={false}
               ></PlayPauseWrapper>
             ) : null
@@ -313,7 +416,7 @@ export default function AlbumTracks() {
           ListHeaderComponent={() => (
             <View style={{ marginBottom: 10 }}>
               <Image
-                source={{ uri: selectedAlbum?.cover?.sizes[600] }}
+                source={{ uri: apiData?.cover?.sizes[600] }}
                 style={[
                   styles.image,
                   { width: width, height: width < 380 ? width * 0.9 : width },
@@ -338,7 +441,7 @@ export default function AlbumTracks() {
                     ellipsizeMode="tail"
                     numberOfLines={1}
                   >
-                    {selectedAlbum?.title}
+                    {apiData?.title}
                   </Text>
                   <Text>
                     {/* const result = str.replace(/<[^>]*>/g, '').trim(); */}
@@ -348,11 +451,11 @@ export default function AlbumTracks() {
                     <Link
                       href={{
                         pathname: "/artist/[id]/artist-page",
-                        params: { id: selectedAlbum?.artistId },
+                        params: { id: apiData?.artistId },
                       }}
                       style={{ color: "#BE3455", fontWeight: "bold" }}
                     >
-                      {selectedAlbum?.artist.name}
+                      {apiData?.artist.name}
                     </Link>
                   </Text>
                 </View>
@@ -364,18 +467,18 @@ export default function AlbumTracks() {
                   }}
                 >
                   <DownloadButton
-                    itemData={selectedAlbum}
+                    itemData={apiData}
                     format="320.mp3"
-                    prefix={`trackGroups/${selectedAlbum.id}`}
+                    prefix={`trackGroups/${apiData.id}`}
                     size={40}
                   />
                   <AddAlbumButton
-                    trackGroup={selectedAlbum}
+                    trackGroup={apiData}
                     size={40}
                     setModalVisible={setModalVisible}
                   />
                   <WishlistButton
-                    trackGroup={selectedAlbum}
+                    trackGroup={apiData}
                     size={40}
                     style={{ marginLeft: 10 }}
                   />
@@ -396,21 +499,21 @@ export default function AlbumTracks() {
                 {t("trackGroupDetails.about")}
               </Text>
               <Text style={{ fontStyle: "italic", marginBottom: 20 }}>
-                {formatUTCDate(selectedAlbum?.releaseDate)}
+                {formatUTCDate(apiData?.releaseDate)}
               </Text>
 
-              {selectedAlbum?.about ? (
+              {apiData?.about ? (
                 <View style={{ marginBottom: 20 }}>
                   <Markdown>
                     {linkifyUrls(
-                      selectedAlbum.about.replace(/([^\n])\n([^\n])/g, "$1 $2"),
+                      apiData.about.replace(/([^\n])\n([^\n])/g, "$1 $2"),
                     )}
                   </Markdown>
                 </View>
               ) : null}
 
               <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                {selectedAlbum.tags && tagPills}
+                {apiData.tags && tagPills}
               </View>
             </View>
           )}
@@ -435,7 +538,7 @@ export default function AlbumTracks() {
                   padding: 10,
                   borderRadius: 10,
                 }}
-                onPress={() => handleExternalPurchase(selectedAlbum)}
+                onPress={() => handleExternalPurchase(apiData)}
               >
                 <Text style={{ color: "white", fontSize: 18 }}>
                   Purchase Info{" "}
