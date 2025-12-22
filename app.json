@@ -64,6 +64,14 @@
           }
         }
       ],
+      "expo-audio",
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ],
       [
         "expo-secure-store",
         {
