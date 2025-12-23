@@ -1,11 +1,12 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as api from "../queries/fetch/fetchWrapper";
-import { View, Pressable } from "react-native";
+import { StyleSheet, View, Pressable } from "react-native";
 import { File, Paths, Directory } from "expo-file-system";
 import { unzip } from "react-native-zip-archive";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useAuthContext } from "@/state/AuthContext";
+import { ActivityIndicator } from "react-native";
 
 type DownloadButtonProps = {
   format: string;
@@ -21,12 +22,32 @@ export default function DownloadButton({
   size,
 }: DownloadButtonProps) {
   const { user } = useAuthContext();
+  const [downloading, setDownloading] = useState<boolean>(false);
+  const [downloaded, setDownloaded] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkDownload = async () => {
+      const exists = await downloadExists(itemData);
+      if (isMounted) {
+        setDownloaded(exists);
+      }
+    };
+
+    checkDownload();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [itemData, downloading]);
 
   const ids: number[] | undefined = user?.userTrackGroupPurchases?.map(
     (purchase) => purchase.trackGroupId,
   );
   const onPress = useCallback(async () => {
     try {
+      setDownloading(true);
       const storageKey = getAlbumStorageKey(itemData);
       const exists = await getAlbumData(storageKey);
       console.log("exists: " + exists);
@@ -36,6 +57,7 @@ export default function DownloadButton({
         console.log("album already downloaded");
         console.log("removing download");
         await AsyncStorage.removeItem(storageKey);
+        await removeDownloadedKey(storageKey);
 
         const albumDir = new Directory(
           Paths.document,
@@ -57,16 +79,35 @@ export default function DownloadButton({
       await storeAlbumData(itemData);
     } catch (err) {
       console.log("Error on download button press: ", err);
+    } finally {
+      setDownloading(false);
     }
   }, [format, prefix, itemData]);
 
   return ids && !ids.includes(itemData.id) ? null : (
     <View>
-      <Pressable onPress={onPress}>
-        <Ionicons name="download-outline" size={size} />
-      </Pressable>
+      {downloading ? (
+        <ActivityIndicator
+          size="large"
+          color="#BE3455"
+          style={styles.loadSpinner}
+        />
+      ) : (
+        <Pressable onPress={onPress}>
+          <Ionicons
+            name={downloaded ? "checkmark-done-circle" : "download-outline"}
+            size={size}
+          />
+        </Pressable>
+      )}
     </View>
   );
+}
+
+async function downloadExists(itemData: AlbumProps) {
+  const storageKey = getAlbumStorageKey(itemData);
+  const exists = await getAlbumData(storageKey);
+  return exists ? true : false;
 }
 
 async function downloadAudioZip(
@@ -216,6 +257,21 @@ async function storeDownloadedKey(key: string) {
   await AsyncStorage.setItem("downloadedKeys", JSON.stringify(keys));
 }
 
+async function removeDownloadedKey(key: string) {
+  const downloadedKeys = await AsyncStorage.getItem("downloadedKeys");
+
+  const keys: string[] = downloadedKeys ? JSON.parse(downloadedKeys) : [];
+
+  if (!keys.includes(key)) {
+    console.log("key doesn't exist in list of downloadedKeys");
+    return;
+  }
+
+  const updatedKeys = keys.filter((key) => key !== key);
+
+  await AsyncStorage.setItem("downloadedKeys", JSON.stringify(updatedKeys));
+}
+
 function getAlbumStorageKey(album: { title: string; id: string | number }) {
   const cleanTitle = album.title
     .replace(/[^\w\s-]/g, "")
@@ -224,3 +280,9 @@ function getAlbumStorageKey(album: { title: string; id: string | number }) {
 
   return `${cleanTitle}-${album.id}`;
 }
+
+const styles = StyleSheet.create({
+  loadSpinner: {
+    flex: 1,
+  },
+});
