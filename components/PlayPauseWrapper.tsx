@@ -65,7 +65,7 @@ export default function PlayPauseWrapper({
     };
 
     checkTrack();
-  }, [activeTrack, playableTracks]);
+  }, [activeTrack, playableTracks, audioURL, trackObject.trackGroup.urlSlug]);
 
   const togglePlayBack = async (
     playBackState: PlaybackState | { state: undefined },

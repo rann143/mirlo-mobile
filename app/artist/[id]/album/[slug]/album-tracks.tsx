@@ -350,9 +350,6 @@ export default function AlbumTracks() {
     );
   }
 
-  //const selectedAlbum = data.result;
-  console.log(apiData);
-
   const tagPills = apiData.tags?.map((tagName, index) => {
     return (
       <Link
