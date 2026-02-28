@@ -12,7 +12,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.drod17.mirlo-mobile",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIBackgroundModes": [
+          "audio"
+        ]
       },
       "icon": {
         "dark": "./assets/images/mirlo-logo-logoOnly-dark.png",

@@ -8,8 +8,11 @@ import {
   useRef,
 } from "react";
 import TrackPlayer, {
+  AppKilledPlaybackBehavior,
   Capability,
   Event,
+  IOSCategory,
+  IOSCategoryOptions,
   usePlaybackState,
   useTrackPlayerEvents,
   PlaybackState,
@@ -171,9 +174,33 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   async function setUpTrackPlayer() {
     try {
-      await TrackPlayer.setupPlayer();
+      await TrackPlayer.setupPlayer({
+        autoHandleInterruptions: true,
+        iosCategory: IOSCategory.Playback,
+        iosCategoryOptions: [
+          IOSCategoryOptions.AllowAirPlay,
+          IOSCategoryOptions.AllowBluetoothA2DP,
+        ],
+      });
       await TrackPlayer.updateOptions({
+        android: {
+          appKilledPlaybackBehavior:
+            AppKilledPlaybackBehavior.ContinuePlayback,
+        },
         capabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
+          Capability.SeekTo,
+        ],
+        compactCapabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
+        ],
+        notificationCapabilities: [
           Capability.Play,
           Capability.Pause,
           Capability.SkipToNext,
