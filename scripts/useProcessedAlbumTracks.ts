@@ -1,4 +1,5 @@
 // hooks/useProcessedAlbumTracks.ts
+// NOTE: This hook is currently unused in the app and is slated for removal.
 import { useMemo } from "react";
 import { isEqual } from "lodash";
 import { isTrackOwnedOrPreview } from "@/scripts/utils";
