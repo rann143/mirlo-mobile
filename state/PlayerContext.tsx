@@ -23,6 +23,115 @@ import { isTrackOwned } from "@/scripts/utils";
 import { useRouter } from "expo-router";
 import * as api from "../queries/fetch/fetchWrapper";
 
+const setupPlayerOptions = {
+  autoHandleInterruptions: true,
+  iosCategory: IOSCategory.Playback,
+  iosCategoryOptions: [
+    IOSCategoryOptions.AllowAirPlay,
+    IOSCategoryOptions.AllowBluetoothA2DP,
+  ],
+};
+
+const updatePlayerOptions = {
+  android: {
+    appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback,
+  },
+  capabilities: [
+    Capability.Play,
+    Capability.Pause,
+    Capability.SkipToNext,
+    Capability.SkipToPrevious,
+    Capability.SeekTo,
+  ],
+  compactCapabilities: [
+    Capability.Play,
+    Capability.Pause,
+    Capability.SkipToNext,
+    Capability.SkipToPrevious,
+  ],
+  notificationCapabilities: [
+    Capability.Play,
+    Capability.Pause,
+    Capability.SkipToNext,
+    Capability.SkipToPrevious,
+    Capability.SeekTo,
+  ],
+  progressUpdateEventInterval: 2, // Every 2 seconds
+};
+
+let playerSetupPromise: Promise<void> | null = null;
+let trackPlayerMethodsPatched = false;
+
+function isAlreadyInitializedError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    message.toLowerCase().includes("already") &&
+    message.toLowerCase().includes("initial")
+  );
+}
+
+async function initializeTrackPlayer(): Promise<void> {
+  try {
+    await TrackPlayer.setupPlayer(setupPlayerOptions);
+  } catch (error) {
+    if (!isAlreadyInitializedError(error)) {
+      throw error;
+    }
+  }
+
+  // Always apply options even if the player was already initialized.
+  await TrackPlayer.updateOptions(updatePlayerOptions);
+}
+
+async function ensureTrackPlayerInitialized(): Promise<void> {
+  if (!playerSetupPromise) {
+    playerSetupPromise = initializeTrackPlayer().catch((error) => {
+      playerSetupPromise = null;
+      throw error;
+    });
+  }
+
+  await playerSetupPromise;
+}
+
+function patchTrackPlayerMethodsForInitialization() {
+  if (trackPlayerMethodsPatched) return;
+
+  const methodsRequiringSetup = [
+    "play",
+    "pause",
+    "stop",
+    "seekTo",
+    "skip",
+    "skipToNext",
+    "skipToPrevious",
+    "setQueue",
+    "add",
+    "remove",
+    "removeUpcomingTracks",
+    "setRepeatMode",
+  ];
+
+  const trackPlayerAny = TrackPlayer as unknown as Record<
+    string,
+    (...args: unknown[]) => Promise<unknown>
+  >;
+
+  for (const methodName of methodsRequiringSetup) {
+    const originalMethod = trackPlayerAny[methodName];
+    if (typeof originalMethod !== "function") continue;
+
+    trackPlayerAny[methodName] = async (...args: unknown[]) => {
+      await ensureTrackPlayerInitialized();
+      return originalMethod(...args);
+    };
+  }
+
+  trackPlayerMethodsPatched = true;
+}
+
+patchTrackPlayerMethodsForInitialization();
+
 interface PlayerContextType {
   playbackState: PlaybackState | { state: undefined };
   playableTracks: RNTrack[];
@@ -55,7 +164,13 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const activeTrackIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    setUpTrackPlayer();
+    ensureTrackPlayerInitialized()
+      .then(() => {
+        console.log("track player set up");
+      })
+      .catch((err) => {
+        console.error("Issue setting up Track Player", err);
+      });
   }, []);
 
   // Clear cache when user changes (ownership might change with different users)
@@ -171,49 +286,6 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     },
   );
-
-  async function setUpTrackPlayer() {
-    try {
-      await TrackPlayer.setupPlayer({
-        autoHandleInterruptions: true,
-        iosCategory: IOSCategory.Playback,
-        iosCategoryOptions: [
-          IOSCategoryOptions.AllowAirPlay,
-          IOSCategoryOptions.AllowBluetoothA2DP,
-        ],
-      });
-      await TrackPlayer.updateOptions({
-        android: {
-          appKilledPlaybackBehavior:
-            AppKilledPlaybackBehavior.ContinuePlayback,
-        },
-        capabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.SkipToNext,
-          Capability.SkipToPrevious,
-          Capability.SeekTo,
-        ],
-        compactCapabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.SkipToNext,
-          Capability.SkipToPrevious,
-        ],
-        notificationCapabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.SkipToNext,
-          Capability.SkipToPrevious,
-          Capability.SeekTo,
-        ],
-        progressUpdateEventInterval: 2, //Every 2 seconds
-      });
-      console.log("track player set up");
-    } catch (err) {
-      console.error("Issue setting up Track Player", err);
-    }
-  }
 
   const isPlaying = playerState === State.Playing;
 
