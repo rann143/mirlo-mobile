@@ -7,13 +7,15 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "jsEngine": "hermes",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.drod17.mirlo-mobile",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIBackgroundModes": [
+          "audio"
+        ]
       },
       "icon": {
         "dark": "./assets/images/mirlo-logo-logoOnly-dark.png",
@@ -56,14 +58,6 @@
           }
         }
       ],
-      "expo-audio",
-      [
-        "expo-video",
-        {
-          "supportsBackgroundPlayback": true,
-          "supportsPictureInPicture": true
-        }
-      ],
       [
         "expo-secure-store",
         {
@@ -71,7 +65,8 @@
           "faceIDPermission": "Allow Mirlo-Mobile to access your Face ID biometric data."
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true
@@ -91,7 +86,7 @@
     "updates": {
       "url": "https://u.expo.dev/a2ccd2d1-a537-4697-9df3-43228ba534ef",
       "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 2000  
+      "fallbackToCacheTimeout": 2000
     }
   }
 }
