@@ -101,6 +101,15 @@ export default function RootLayout() {
                   }}
                 />
                 <Stack.Screen
+                  name="deleteAccount"
+                  options={{
+                    headerShown: false,
+                    presentation: "modal",
+                    animation: "slide_from_bottom",
+                    animationDuration: 200,
+                  }}
+                />
+                <Stack.Screen
                   name="tags/[tag]"
                   options={{
                     headerShown: false,

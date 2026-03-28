@@ -1,10 +1,9 @@
-import { Dimensions, View, Pressable, Text, StyleSheet } from "react-native";
+import { View, Pressable, Text, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter } from "expo-router";
+import { Href, useRouter } from "expo-router";
 import { useAuthContext } from "@/state/AuthContext";
 import { useLogoutMutation } from "@/queries/authQueries";
 import { useTranslation } from "react-i18next";
-import * as WebBrowser from "expo-web-browser";
 
 export default function Menu() {
   const router = useRouter();
@@ -142,10 +141,8 @@ export default function Menu() {
                   marginBottom: 30,
                 },
               ]}
-              onPress={async () => {
-                await WebBrowser.openBrowserAsync(
-                  "https://mirlo.space/profile",
-                );
+              onPress={() => {
+                router.push("/deleteAccount" as Href);
               }}
             >
               <Text style={{ fontSize: 20, color: "red" }}>
