@@ -42,8 +42,8 @@ async function fetchWrapper<R>(
     let message;
     try {
       message = (await res.json()).error;
-    } catch (e) {
-      message = res.text;
+    } catch {
+      message = await res.text();
     }
     throw new MirloFetchError(res, message);
   }
@@ -96,6 +96,13 @@ export function post<T, R>(
 export function get<R>(endpoint: string, init: RequestInit): Promise<R> {
   return fetchWrapper(endpoint, {
     method: "GET",
+    ...init,
+  });
+}
+
+export function del<R>(endpoint: string, init: RequestInit = {}): Promise<R> {
+  return fetchWrapper(endpoint, {
+    method: "DELETE",
     ...init,
   });
 }
