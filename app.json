@@ -21,9 +21,7 @@
         "dark": "./assets/images/mirlo-logo-logoOnly-dark.png",
         "light": "./assets/images/mirlo-app-icon-light.png"
       },
-      "runtimeVersion": {
-        "policy": "appVersion"
-      }
+      "runtimeVersion": "1.0.1"
     },
     "android": {
       "adaptiveIcon": {
@@ -80,9 +78,7 @@
       }
     },
     "owner": "drod17",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.1",
     "updates": {
       "url": "https://u.expo.dev/a2ccd2d1-a537-4697-9df3-43228ba534ef",
       "checkAutomatically": "ON_LOAD",

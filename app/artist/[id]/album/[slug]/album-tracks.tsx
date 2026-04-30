@@ -18,7 +18,7 @@ import {
   useFocusEffect,
 } from "expo-router";
 import { usePlayer } from "@/state/PlayerContext";
-import { handleExternalPurchase, isTrackOwnedOrPreview } from "@/scripts/utils";
+import { audioTrackType, handleExternalPurchase, isTrackOwnedOrPreview } from "@/scripts/utils";
 import { useAuthContext } from "@/state/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { queryAlbum } from "@/queries/queries";
@@ -205,6 +205,7 @@ export default function AlbumTracks() {
             headers: {
               "mirlo-api-key": API_KEY,
             },
+            type: audioTrackType(track.audio.url),
           };
 
           allTracks.push(newTrack);

@@ -25,10 +25,9 @@ export async function checkForUpdates() {
       storeVersion = result.version;
       storeUrl = result.url;
     } else if (Platform.OS === "android") {
-      throw new Error("Version check for Android not yet implemented");
-      //const result = await checkAndroidVersion(bundleId);
-      // storeVersion = result.version;
-      // storeUrl = result.url;
+      // Play Store has no official version-lookup API equivalent to iTunes;
+      // distribution-side update prompts are handled by the store, so skip.
+      return false;
     } else {
       console.log("Platform not supported for version checking");
       return false;

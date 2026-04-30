@@ -20,6 +20,7 @@ import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import { usePlayer } from "@/state/PlayerContext";
 import { API_KEY } from "@/constants/api-key";
 import { API_ROOT } from "@/constants/api-root";
+import { audioTrackType } from "@/scripts/utils";
 import { useState, useEffect, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -72,6 +73,7 @@ export default function TrackView() {
           filteredTrack.headers = {
             "mirlo-api-key": API_KEY,
           };
+          filteredTrack.type = audioTrackType(filteredTrack.audio.url);
 
           setPlayableTracks([filteredTrack]);
           setAlbum([filteredTrack]);
