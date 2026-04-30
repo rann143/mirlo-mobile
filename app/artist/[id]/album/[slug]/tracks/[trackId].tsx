@@ -2,7 +2,6 @@ import { queryAlbum, queryTrackGroups } from "@/queries/queries";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import {
-  SafeAreaView,
   View,
   Pressable,
   Text,
@@ -11,8 +10,8 @@ import {
   ActivityIndicator,
   StyleSheet,
   FlatList,
-  useWindowDimensions,
-} from "react-native";
+  useWindowDimensions} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link, useRouter } from "expo-router";
 import PlayPauseWrapper from "@/components/PlayPauseWrapper";

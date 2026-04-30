@@ -1,12 +1,11 @@
 import * as api from "../queries/fetch/fetchWrapper";
 import {
   View,
-  SafeAreaView,
   Text,
   StyleSheet,
   Pressable,
-  FlatList,
-} from "react-native";
+  FlatList} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { usePlayer } from "@/state/PlayerContext";

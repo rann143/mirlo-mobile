@@ -1,7 +1,6 @@
 import {
   Text,
   View,
-  SafeAreaView,
   StyleSheet,
   FlatList,
   Image,
@@ -9,8 +8,8 @@ import {
   TouchableOpacity,
   Pressable,
   useWindowDimensions,
-  Modal,
-} from "react-native";
+  Modal} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   useLocalSearchParams,
   useRouter,

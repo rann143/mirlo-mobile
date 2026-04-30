@@ -4,9 +4,8 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Animated,
-  SafeAreaView,
-} from "react-native";
+  Animated} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type ErrorNotificationProps = {
   onDismiss: () => void;

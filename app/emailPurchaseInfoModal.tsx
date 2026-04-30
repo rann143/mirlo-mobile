@@ -2,11 +2,10 @@ import DismissModalBar from "@/components/DismissModalBar";
 import {
   View,
   Text,
-  SafeAreaView,
   Pressable,
   FlatList,
-  StyleSheet,
-} from "react-native";
+  StyleSheet} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import * as api from "../queries/fetch/fetchWrapper";
 import { useState } from "react";
