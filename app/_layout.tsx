@@ -7,11 +7,19 @@ import { DevToolsBubble } from "react-native-react-query-devtools";
 import * as Clipboard from "expo-clipboard";
 import { StatusBar } from "expo-status-bar";
 import TrackPlayer from "react-native-track-player";
+import * as SplashScreen from "expo-splash-screen";
 import { AppReadyContextProvider } from "@/state/AppReadyContext";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "@/components/Footer";
 import "../i18n";
 import { checkForUpdates } from "../scripts/appVersionCheck";
+
+SplashScreen.preventAutoHideAsync();
+
+SplashScreen.setOptions({
+  duration: 500,
+  fade: true,
+});
 
 TrackPlayer.registerPlaybackService(() => require("../scripts/service"));
 
@@ -30,6 +38,12 @@ export default function RootLayout() {
   useEffect(() => {
     checkForUpdates();
   }, []);
+
+  useEffect(() => {
+    if (isDataLoaded) {
+      SplashScreen.hide();
+    }
+  }, [isDataLoaded]);
 
   return (
     <AppReadyContextProvider

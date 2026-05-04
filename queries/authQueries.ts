@@ -14,7 +14,10 @@ type LoginBody = {
   password: string;
 };
 
-export const AUTH_PROFILE_QUERY_KEY = ["fetchProfile", "auth"] as const;
+export const AUTH_PROFILE_QUERY_KEY: ["fetchProfile", "auth"] = [
+  "fetchProfile",
+  "auth",
+];
 
 export async function storeTokens(): Promise<boolean> {
   try {

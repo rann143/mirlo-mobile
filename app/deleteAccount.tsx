@@ -141,19 +141,29 @@ export default function DeleteAccountScreen() {
           ))}
         </View>
 
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Account summary</Text>
-          <Text style={styles.summaryText}>Artist profiles: {artistCount}</Text>
-          <Text style={styles.summaryText}>
-            Artist subscriptions: {subscriptionCount}
-          </Text>
-          <Text style={styles.summaryText}>
-            Music purchases: {albumPurchaseCount + trackPurchaseCount}
-          </Text>
-          <Text style={styles.summaryText}>
-            Merch purchases: {merchPurchaseCount}
-          </Text>
-        </View>
+        {(() => {
+          const musicPurchaseCount = albumPurchaseCount + trackPurchaseCount;
+          const summaryRows = [
+            artistCount > 0 && `Artist profiles: ${artistCount}`,
+            subscriptionCount > 0 &&
+              `Artist subscriptions: ${subscriptionCount}`,
+            musicPurchaseCount > 0 && `Music purchases: ${musicPurchaseCount}`,
+            merchPurchaseCount > 0 && `Merch purchases: ${merchPurchaseCount}`,
+          ].filter(Boolean) as string[];
+
+          if (summaryRows.length === 0) return null;
+
+          return (
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryTitle}>Account summary</Text>
+              {summaryRows.map((row) => (
+                <Text key={row} style={styles.summaryText}>
+                  {row}
+                </Text>
+              ))}
+            </View>
+          );
+        })()}
 
         <Pressable
           onPress={confirmDelete}

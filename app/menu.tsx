@@ -1,6 +1,6 @@
 import { View, Pressable, Text, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Href, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useAuthContext } from "@/state/AuthContext";
 import { useLogoutMutation } from "@/queries/authQueries";
 import { useTranslation } from "react-i18next";
@@ -142,7 +142,7 @@ export default function Menu() {
                 },
               ]}
               onPress={() => {
-                router.push("/deleteAccount" as Href);
+                router.push("/deleteAccount");
               }}
             >
               <Text style={{ fontSize: 20, color: "red" }}>
