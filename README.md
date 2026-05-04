@@ -58,6 +58,73 @@ Follow Expo's guides to set up a development build for your iOS simulator:
 
 This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
+## Patched dependencies (Android)
+
+Two transitive dependencies need patches to build and run on Android with Expo SDK 55 / RN 0.83 / Gradle 9 / New Architecture. Patches live in [`patches/`](patches/) and are auto-applied on `npm install` via the `postinstall` hook (uses [`patch-package`](https://github.com/ds300/patch-package)). Each patch is small (the published `.patch` files are the source of truth — read them when in doubt).
+
+### `react-native-track-player+4.1.2.patch`
+
+Three issues, all in `node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/`:
+
+1. **`module/MusicModule.kt` — `originalItem!!` (×2).** Kotlin 2.1.20 (shipped with RN 0.83) enforces strict null-checks: `Arguments.fromBundle(Bundle)` no longer accepts `Bundle?`. Two call sites in `getTrack` and `getActiveTrack` needed the non-null assertion.
+2. **`module/MusicModule.kt` — block-body conversion (37 methods).** RN 0.83 introduced `TurboModuleInteropUtils`, which inspects `@ReactMethod` JVM return types and rejects any module where a non-synchronous method returns non-`void`. Track-player's expression-body methods like `fun play(callback: Promise) = scope.launch { ... }` infer return type `kotlinx.coroutines.Job`, not `Unit`, and the parser throws `ParsingException: TurboModule system assumes returnType == void iff the method is synchronous` — which means **`TrackPlayerModule` won't load at all on Android**, cascading into "No QueryClient set", missing-default-export warnings, and a broken UI. The patch converts each method to a block body so the inferred return type is `Unit`.
+3. **`service/MusicService.kt` — `reactHost` accessor.** Track-player's `emit()` and `emitList()` reach the JS context via `reactNativeHost.reactInstanceManager.currentReactContext`. Under New Architecture (Bridgeless), `HeadlessJsTaskService.getReactNativeHost()` throws `RuntimeException: You should not use ReactNativeHost directly in the New Architecture` the first time playback state changes. The patch adds a `currentReactContextOrNull()` helper that prefers `(applicationContext as ReactApplication).reactHost?.currentReactContext` and falls back to the legacy path inside try/catch.
+
+**When can we drop this patch?**
+
+Upstream landed all three fixes on `main` in [`5ce8412` (2025-06-25): "feat(android, ios): migrate the library to the new architecture"](https://github.com/doublesymmetry/react-native-track-player/commit/5ce8412). They were published as `5.0.0-alpha0` on 2025-08-12 — and as of this writing the [`latest` dist-tag still points to `4.1.2`](https://www.npmjs.com/package/react-native-track-player), with no nightlies since 2025-09-24. Adopting the alpha is risky for two reasons worth understanding before you do it:
+
+- **5.0.0-alpha0 changes the iOS audio engine.** It declares `shaka-player ^4.7.9` as a peer dependency, replacing the AVPlayer-based path. Background audio, lockscreen controls, and AirPlay all need re-validation on iOS.
+- **The branch has been quiet for ~7 months.** Treat it as alpha-grade until activity resumes or `5.0.0` ships stable.
+
+**Drop the patch when:**
+
+1. `react-native-track-player@5.x` ships on the `latest` dist-tag (check with `npm view react-native-track-player dist-tags`), AND
+2. After upgrading and re-running `npx expo run:android` cold on a clean install, all three of these greps produce the expected results:
+
+```bash
+# 1. Block-body methods (no expression-body @ReactMethod returning Job)
+grep -E "fun [a-z]+\([^)]*\) = scope\.launch" \
+  node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
+# Expect: no output. If matches appear, the TurboModule issue is back.
+
+# 2. emit() must use reactHost (or be otherwise New-Arch safe)
+grep -n "reactNativeHost.reactInstanceManager" \
+  node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
+# Expect: no output. If matches appear, the Bridgeless crash is back.
+
+# 3. Strict-null fixes for getTrack / getActiveTrack
+grep -c "originalItem!!" \
+  node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
+# Expect: ≥ 2 OR upstream changed the type so !! is unnecessary. To verify the
+# end-to-end story, temporarily delete patches/react-native-track-player+*.patch,
+# run `npm install`, then `npx expo run:android`. If it builds and the app
+# starts, the patch can go.
+```
+
+### `@react-native+gradle-plugin+0.83.2.patch`
+
+Bumps `org.gradle.toolchains.foojay-resolver-convention` from `0.5.0` to `1.0.0` in `node_modules/@react-native/gradle-plugin/settings.gradle.kts`. The 0.5.0 / 0.10.0 jars reference `JvmVendorSpec.IBM_SEMERU`, an enum value Gradle 9.0 removed; configuration fails with `Class JvmVendorSpec does not have member field 'IBM_SEMERU'`. Foojay 1.0.0 (Aug 2025) added Gradle 9 support.
+
+**When can we drop this patch?**
+
+Upstream fix already merged: [`664acaf` (2026-03-31), PR #56210: "fix: upgrade foojay-resolver-convention to 1.0.0"](https://github.com/facebook/react-native/pull/56210). It is **not yet in any released version** — verified at the time of writing that `@react-native/gradle-plugin@0.85.2` (current `latest`) and `0.83.9` (latest patch on the `0.83-stable` channel we're on) both still pin foojay 0.5.0. The fix will likely first ship in **React Native 0.86**.
+
+The gradle-plugin is version-locked to `react-native` itself — bumping it independently isn't safe. So this patch is tied to the broader RN upgrade, not a one-line bump.
+
+**Drop the patch when:** this project upgrades to a React Native version that includes #56210 (most likely 0.86+). After the upgrade, verify:
+
+```bash
+grep "foojay-resolver-convention" \
+  node_modules/@react-native/gradle-plugin/settings.gradle.kts
+# Expect a version ≥ 1.0.0. If still 0.5.0 / 0.10.0 on Gradle ≥ 9, keep the patch.
+```
+
+### Operational notes
+
+- Patches apply automatically on `npm install` via the `postinstall` script. If a patch fails to apply (because the underlying package version changed), `patch-package` prints a clear error pointing at the offending hunk.
+- After bumping either of the two patched packages, re-run `npx expo run:android` cold to confirm. If everything still works, regenerate or delete the corresponding patch.
+
 ## Contributing
 
 _Branch Structure:_

@@ -1,5 +1,6 @@
 import LoginForm from "@/components/LoginForm";
-import { Text, View, SafeAreaView, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 

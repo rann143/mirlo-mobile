@@ -138,6 +138,7 @@ interface RNTrack {
   isPreview: boolean;
   order: number;
   headers: {};
+  type?: "default" | "hls" | "dash" | "smoothstreaming";
 }
 
 interface PlayButtonProps {

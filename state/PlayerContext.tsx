@@ -220,13 +220,13 @@ export const PlayerContextProvider: React.FC<{ children: React.ReactNode }> = ({
         await TrackPlayer.skip(0);
       }
 
-      // Get current track (only if we haven't already got it above)
-      let track: RNTrack;
-      if (event.type === Event.PlaybackActiveTrackChanged) {
-        track = activeTrack!; // We already have it from above
-      } else {
-        track = (await TrackPlayer.getActiveTrack()) as RNTrack;
-      }
+      // Several events fire before the queue has an active track (cold-start
+      // PlaybackState/PlaybackError, non-"limit exceeded" PlaybackErrors).
+      // Bail out before touching track.trackGroup so we don't crash.
+      const track = (await TrackPlayer.getActiveTrack()) as
+        | RNTrack
+        | undefined;
+      if (!track) return;
 
       // Handle playback progress
       if (

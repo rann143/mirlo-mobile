@@ -1,5 +1,11 @@
 import * as Linking from "expo-linking";
 
+export function audioTrackType(url: string): "default" | "hls" | "dash" {
+  if (url.endsWith(".m3u8")) return "hls";
+  if (url.endsWith(".mpd")) return "dash";
+  return "default";
+}
+
 export const isTrackOwnedOrPreview = (
   track: RNTrack,
   user?: LoggedInUser | null,

@@ -6,6 +6,7 @@ import {
   ViewProps,
   Text,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import TrackPlayer, {
@@ -66,7 +67,10 @@ export default function Footer({ style }: ViewProps) {
             height: "100%",
             alignItems: "center",
             marginLeft: 20,
-            marginTop: -20,
+            // Hand-calibrated lift for iOS home-indicator geometry; on Android
+            // the gesture-bar inset is smaller, so the same lift leaves the
+            // icons floating with empty white space below them.
+            marginTop: Platform.OS === "ios" ? -20 : 0,
           }}
         >
           <Pressable
@@ -159,7 +163,7 @@ export default function Footer({ style }: ViewProps) {
             flexDirection: "row",
             height: "100%",
             alignItems: "center",
-            marginTop: -20,
+            marginTop: Platform.OS === "ios" ? -20 : 0,
           }}
         >
           {activeTrack && <FooterPlayButton />}

@@ -2,7 +2,6 @@ import { queryAlbum, queryTrackGroups } from "@/queries/queries";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import {
-  SafeAreaView,
   View,
   Pressable,
   Text,
@@ -11,8 +10,8 @@ import {
   ActivityIndicator,
   StyleSheet,
   FlatList,
-  useWindowDimensions,
-} from "react-native";
+  useWindowDimensions} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link, useRouter } from "expo-router";
 import PlayPauseWrapper from "@/components/PlayPauseWrapper";
@@ -20,6 +19,7 @@ import TrackPlayer, { PlaybackState, State } from "react-native-track-player";
 import { usePlayer } from "@/state/PlayerContext";
 import { API_KEY } from "@/constants/api-key";
 import { API_ROOT } from "@/constants/api-root";
+import { audioTrackType } from "@/scripts/utils";
 import { useState, useEffect, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -72,6 +72,7 @@ export default function TrackView() {
           filteredTrack.headers = {
             "mirlo-api-key": API_KEY,
           };
+          filteredTrack.type = audioTrackType(filteredTrack.audio.url);
 
           setPlayableTracks([filteredTrack]);
           setAlbum([filteredTrack]);

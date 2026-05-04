@@ -6,12 +6,11 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
-  SafeAreaView,
   Pressable,
   Image,
   Dimensions,
-  FlatList,
-} from "react-native";
+  FlatList} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Markdown from "react-native-markdown-display";
 import React from "react";
