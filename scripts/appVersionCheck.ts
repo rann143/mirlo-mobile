@@ -124,7 +124,7 @@ function showForceUpdateAlert(
 }
 
 // Version comparison helper
-function compareVersions(version1: string, version2: string) {
+export function compareVersions(version1: string, version2: string) {
   // Clean versions (remove any non-numeric characters except dots)
   const v1 = version1
     .replace(/[^\d.]/g, "")
@@ -149,6 +149,6 @@ function compareVersions(version1: string, version2: string) {
 }
 
 // Helper functions
-function isVersionGreater(version1: string, version2: string) {
+export function isVersionGreater(version1: string, version2: string) {
   return compareVersions(version1, version2) > 0;
 }

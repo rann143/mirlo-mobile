@@ -39,11 +39,16 @@ async function fetchWrapper<R>(
   });
 
   if (!res.ok) {
-    let message;
+    // Read the body once as text, then opportunistically JSON-parse it.
+    // Calling res.json() then res.text() throws because the body stream
+    // can only be consumed once
+    const text = await res.text();
+    let message: string = text;
     try {
-      message = (await res.json()).error;
+      const parsed = JSON.parse(text);
+      if (parsed && typeof parsed.error === "string") message = parsed.error;
     } catch {
-      message = await res.text();
+      // not JSON — keep the raw text as the message
     }
     throw new MirloFetchError(res, message);
   }

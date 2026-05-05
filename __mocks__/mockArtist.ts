@@ -1,7 +1,8 @@
 import { faker } from "@faker-js/faker";
-import { createMockAlbum } from "./mockAlbum"; // assumes mockAlbum exists
-import { createMockUser } from "./mockUser"; // optional, if you have User
 
+// trackGroups defaults to [] to avoid mutual recursion with createMockAlbum
+// (which itself includes an artist). Override explicitly when a populated
+// artist with albums is needed
 export const createMockArtist = (overrides?: Partial<Artist>): Artist => ({
   id: faker.number.int(),
   userId: faker.number.int(),
@@ -10,7 +11,7 @@ export const createMockArtist = (overrides?: Partial<Artist>): Artist => ({
   activityPub: faker.datatype.boolean(),
   enabled: true,
   createdAt: faker.date.past().toISOString(),
-  trackGroups: [createMockAlbum(), createMockAlbum()],
+  trackGroups: [],
   urlSlug: faker.helpers.slugify(faker.person.fullName().toLowerCase()),
   location: faker.location.city(),
   artistLabels: [],
