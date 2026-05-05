@@ -57,19 +57,29 @@ export default function Footer({ style }: ViewProps) {
           flexDirection: "row",
           width: "100%",
           height: "100%",
-          alignItems: "flex-start",
+          // On Android, the bottom safe-area inset can be unexpectedly large
+          // on some skins/emulators, which used to leave empty white space
+          // between centered icons and the gesture bar. Anchoring the icon
+          // rows to the bottom of the content area keeps them flush above
+          // the gesture bar regardless of inset size. iOS keeps top anchoring
+          // because its layout is hand-tuned with the negative marginTop
+          // below.
+          alignItems: Platform.OS === "ios" ? "flex-start" : "flex-end",
           justifyContent: "space-between",
         }}
       >
         <View
           style={{
             flexDirection: "row",
-            height: "100%",
+            // On Android we want the icon row to size to its content so it
+            // can sit at the bottom of the parent (alignItems:flex-end above).
+            // On iOS, full-height + negative marginTop is the original layout.
+            height: Platform.OS === "ios" ? "100%" : undefined,
             alignItems: "center",
             marginLeft: 20,
             // Hand-calibrated lift for iOS home-indicator geometry; on Android
-            // the gesture-bar inset is smaller, so the same lift leaves the
-            // icons floating with empty white space below them.
+            // we already anchor to the bottom via the parent's alignItems, so
+            // no lift is needed.
             marginTop: Platform.OS === "ios" ? -20 : 0,
           }}
         >
@@ -161,7 +171,9 @@ export default function Footer({ style }: ViewProps) {
         <View
           style={{
             flexDirection: "row",
-            height: "100%",
+            // Match the left icons' Android sizing: auto-height so the row
+            // can sit at flex-end of the parent.
+            height: Platform.OS === "ios" ? "100%" : undefined,
             alignItems: "center",
             marginTop: Platform.OS === "ios" ? -20 : 0,
           }}

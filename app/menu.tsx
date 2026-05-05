@@ -1,4 +1,5 @@
 import { View, Pressable, Text, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { useAuthContext } from "@/state/AuthContext";
@@ -21,7 +22,7 @@ export default function Menu() {
   };
 
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
         justifyContent: "flex-start",
@@ -153,7 +154,7 @@ export default function Menu() {
           )}
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

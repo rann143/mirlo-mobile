@@ -8,6 +8,7 @@ import * as api from "./fetch/fetchWrapper";
 import { MirloFetchError } from "./fetch/MirloFetchError";
 import CookieManager from "@preeternal/react-native-cookie-manager";
 import * as SecureStore from "expo-secure-store";
+import { API_ROOT } from "@/constants/api-root";
 
 type LoginBody = {
   email: string;
@@ -21,10 +22,21 @@ export const AUTH_PROFILE_QUERY_KEY: ["fetchProfile", "auth"] = [
 
 export async function storeTokens(): Promise<boolean> {
   try {
-    const cookies = await CookieManager.getAll();
+    // CookieManager.getAll() is web-only in the @preeternal fork (and was
+    // never reliable on Android in the original); use get(url) to read
+    // cookies scoped to our API origin
+    const cookies = await CookieManager.get(API_ROOT);
 
-    const jwtToken = cookies.jwt.value;
-    const refreshToken = cookies.refresh.value;
+    const jwtToken = cookies.jwt?.value;
+    const refreshToken = cookies.refresh?.value;
+
+    if (!jwtToken || !refreshToken) {
+      console.error(
+        "storeTokens: missing jwt or refresh cookie after login",
+        Object.keys(cookies),
+      );
+      return false;
+    }
 
     await SecureStore.setItemAsync("jwt", jwtToken);
     await SecureStore.setItemAsync("refresh", refreshToken);

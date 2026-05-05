@@ -18,10 +18,10 @@ This gif displays the most recent versions of the home, search, menu, album, and
 
 ### Prerequisites
 
-- Node.js v18+
-- Xcode (for iOS)
-- [Cocoapods](https://guides.cocoapods.org/using/getting-started.html) - For building native app
+- Node.js **v20+** (the CI workflow and `eas-cli` 18.x both require ≥ 20)
 - npm
+- For iOS: Xcode 26+ (Expo SDK 55 / `expo-modules-core` uses Swift 6.2 syntax — Xcode 16 ships only Swift 6.1 and won't build) and [CocoaPods](https://guides.cocoapods.org/using/getting-started.html)
+- For Android: [Android Studio](https://developer.android.com/studio) (or just the [command-line tools](https://formulae.brew.sh/cask/android-commandlinetools)) plus the API 35 system image, build-tools 35, and platform-tools
 
 ### Setup
 
@@ -36,13 +36,23 @@ This gif displays the most recent versions of the home, search, menu, album, and
    npm install
    ```
 
-3. Build native iOS app
+   `npm install` runs `patch-package` via the `postinstall` script — see [Patched dependencies (Android)](#patched-dependencies-android) below.
+
+3. Build and run the native app
+
+   For iOS:
 
    ```bash
    npx expo run:ios
    ```
 
-4. Start the app
+   For Android (set `ANDROID_HOME` / `JAVA_HOME` and have an emulator running first — see [Android setup](#android-setup) below):
+
+   ```bash
+   npx expo run:android
+   ```
+
+4. Start Metro on its own (after the native build is installed)
 
    ```bash
    npx expo start
@@ -55,6 +65,36 @@ Follow Expo's guides to set up a development build for your iOS simulator:
 - [Create build for iOS Simulator](https://docs.expo.dev/build-reference/simulators/)
 
 **Note:** This project contains native dependencies, so it cannot be run in Expo Go. You must build the native app first using the commands above.
+
+### Android setup
+
+Android Studio installs the IDE; the SDK and emulator are separate. The fastest macOS path is:
+
+```bash
+brew install --cask android-studio
+brew install --cask android-commandlinetools
+
+export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
+export ANDROID_SDK_ROOT=$ANDROID_HOME
+export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
+export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+
+# accept licenses, install SDK packages
+yes | sdkmanager --licenses
+sdkmanager "platform-tools" "emulator" \
+  "platforms;android-35" "build-tools;35.0.0" \
+  "system-images;android-35;google_apis_playstore;arm64-v8a"
+
+# create + boot a Pixel 7 / API 35 AVD (one-time)
+echo "no" | avdmanager create avd -n mirlo_test \
+  -k 'system-images;android-35;google_apis_playstore;arm64-v8a' -d pixel_7
+emulator -avd mirlo_test -no-snapshot &
+
+# run the app — first build is ~10 min, incremental builds are ~10 sec
+npx expo run:android
+```
+
+Persist the env block in your `~/.zshrc` (or `~/.bashrc`) so future shells pick it up automatically.
 
 This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
@@ -170,3 +210,17 @@ git checkout -b feature/your-feature-name
 - Your PR gets reviewed against the preview branch
 - Once merged to preview, your changes automatically deploy to our testing environment
 - After testing, maintainers merge preview → main for production release
+
+
+
+Tap the hamburger (top right) → menu opens.
+Tap Log in and sign in with whatever test/throwaway account you want to delete (the Delete Account button only appears when logged in).
+After login: hamburger → menu → scroll to bottom → Delete account (red text).
+You should see the new screen with the account-summary card (only nonzero rows shown, hidden entirely if zero).
+Tap the Delete account button → native confirmation Alert appears.
+Tap Cancel to verify the dialog dismisses cleanly. (Or Delete account to actually nuke the test account — this is the destructive irreversible step.)
+
+
+listener@admin.example
+test1234
+
