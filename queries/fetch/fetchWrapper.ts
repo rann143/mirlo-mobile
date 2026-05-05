@@ -39,11 +39,16 @@ async function fetchWrapper<R>(
   });
 
   if (!res.ok) {
-    let message;
+    // Read the body once as text, then opportunistically JSON-parse it.
+    // Calling res.json() then res.text() throws because the body stream
+    // can only be consumed once
+    const text = await res.text();
+    let message: string = text;
     try {
-      message = (await res.json()).error;
-    } catch (e) {
-      message = res.text;
+      const parsed = JSON.parse(text);
+      if (parsed && typeof parsed.error === "string") message = parsed.error;
+    } catch {
+      // not JSON — keep the raw text as the message
     }
     throw new MirloFetchError(res, message);
   }
@@ -96,6 +101,13 @@ export function post<T, R>(
 export function get<R>(endpoint: string, init: RequestInit): Promise<R> {
   return fetchWrapper(endpoint, {
     method: "GET",
+    ...init,
+  });
+}
+
+export function del<R>(endpoint: string, init: RequestInit = {}): Promise<R> {
+  return fetchWrapper(endpoint, {
+    method: "DELETE",
     ...init,
   });
 }

@@ -81,8 +81,10 @@ export default function LoginForm() {
             <TextInput
               style={styles.inputStyle}
               autoCapitalize="none"
-              inputMode="email"
+              autoCorrect={false}
+              keyboardType="email-address"
               autoComplete="email"
+              textContentType="emailAddress"
               placeholderTextColor="#555"
               onBlur={onBlur}
               onChangeText={onChange}

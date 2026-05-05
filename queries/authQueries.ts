@@ -15,12 +15,28 @@ type LoginBody = {
   password: string;
 };
 
+export const AUTH_PROFILE_QUERY_KEY: ["fetchProfile", "auth"] = [
+  "fetchProfile",
+  "auth",
+];
+
 export async function storeTokens(): Promise<boolean> {
   try {
-    const cookies = await CookieManager.getAll();
+    // CookieManager.getAll() is web-only in the @preeternal fork (and was
+    // never reliable on Android in the original); use get(url) to read
+    // cookies scoped to our API origin
+    const cookies = await CookieManager.get(API_ROOT);
 
-    const jwtToken = cookies.jwt.value;
-    const refreshToken = cookies.refresh.value;
+    const jwtToken = cookies.jwt?.value;
+    const refreshToken = cookies.refresh?.value;
+
+    if (!jwtToken || !refreshToken) {
+      console.error(
+        "storeTokens: missing jwt or refresh cookie after login",
+        Object.keys(cookies),
+      );
+      return false;
+    }
 
     await SecureStore.setItemAsync("jwt", jwtToken);
     await SecureStore.setItemAsync("refresh", refreshToken);
@@ -30,6 +46,21 @@ export async function storeTokens(): Promise<boolean> {
     console.error("failed to store tokens", err);
     return false;
   }
+}
+
+async function clearCookies() {
+  await CookieManager.clearAll().catch(() => undefined);
+  await CookieManager.clearAll(true).catch(() => undefined);
+}
+
+async function clearStoredTokens() {
+  await SecureStore.deleteItemAsync("jwt").catch(() => undefined);
+  await SecureStore.deleteItemAsync("refresh").catch(() => undefined);
+}
+
+export async function clearLocalAuthSession() {
+  await clearCookies();
+  await clearStoredTokens();
 }
 
 async function login(body: LoginBody) {
@@ -46,6 +77,9 @@ export function useLoginMutation() {
     mutationFn: login,
     async onSuccess() {
       await client.invalidateQueries({
+        queryKey: AUTH_PROFILE_QUERY_KEY,
+      });
+      await client.invalidateQueries({
         predicate: (query) => query.queryKey.includes("auth"),
       });
     },
@@ -57,12 +91,17 @@ async function logout() {
 
   try {
     await api.get("/auth/logout", {});
-    await CookieManager.clearAll();
-    await SecureStore.deleteItemAsync("jwt");
-    await SecureStore.deleteItemAsync("refresh");
   } catch (err) {
-    console.error("issue logging out");
+    const isAlreadyLoggedOut =
+      err instanceof MirloFetchError &&
+      (err.status === 401 || err.message === "Invalid jwt");
+
+    if (!isAlreadyLoggedOut) {
+      console.error("issue logging out", err);
+    }
   }
+
+  await clearLocalAuthSession();
 }
 
 export function useLogoutMutation() {
@@ -70,6 +109,7 @@ export function useLogoutMutation() {
   return useMutation({
     mutationFn: logout,
     async onSuccess() {
+      client.setQueryData(AUTH_PROFILE_QUERY_KEY, null);
       await client.invalidateQueries({
         predicate: (query) => query.queryKey.includes("auth"),
       });
@@ -79,10 +119,9 @@ export function useLogoutMutation() {
 
 export async function authRefresh() {
   try {
-    await CookieManager.clearAll();
+    await clearCookies();
     await api.post("/auth/refresh", {});
-    await SecureStore.deleteItemAsync("jwt");
-    await SecureStore.deleteItemAsync("refresh");
+    await clearStoredTokens();
     await storeTokens();
 
     return false;
@@ -97,6 +136,9 @@ export function useAuthRefreshMutation() {
   const { mutate } = useMutation({
     mutationFn: authRefresh,
     async onSuccess() {
+      await client.invalidateQueries({
+        queryKey: AUTH_PROFILE_QUERY_KEY,
+      });
       await client.invalidateQueries({
         predicate: (query) => query.queryKey.includes("auth"),
       });
@@ -121,7 +163,7 @@ const fetchProfile: QueryFunction<
 
 export function queryAuthProfile() {
   return queryOptions({
-    queryKey: ["fetchProfile", "auth"],
+    queryKey: AUTH_PROFILE_QUERY_KEY,
     queryFn: fetchProfile,
   });
 }

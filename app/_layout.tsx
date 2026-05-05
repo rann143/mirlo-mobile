@@ -9,7 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import TrackPlayer from "react-native-track-player";
 import * as SplashScreen from "expo-splash-screen";
 import { AppReadyContextProvider } from "@/state/AppReadyContext";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "@/components/Footer";
 import "../i18n";
 import { checkForUpdates } from "../scripts/appVersionCheck";
@@ -98,6 +98,15 @@ export default function RootLayout() {
                     headerShown: false,
                     presentation: "modal",
                     animation: "slide_from_bottom",
+                  }}
+                />
+                <Stack.Screen
+                  name="deleteAccount"
+                  options={{
+                    headerShown: false,
+                    presentation: "modal",
+                    animation: "slide_from_bottom",
+                    animationDuration: 200,
                   }}
                 />
                 <Stack.Screen

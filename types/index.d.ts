@@ -2,10 +2,14 @@ interface LoggedInUser {
   email: string;
   name: string;
   id: number;
+  urlSlug?: string;
+  artists?: Artist[];
+  artistUserSubscriptions?: ArtistUserSubscription[];
   userTrackGroupPurchases?: { trackGroupId: number }[];
   userTrackPurchases?: { trackId: number }[];
   isAdmin: boolean;
   currency?: string;
+  isLabelAccount?: boolean;
   wishlist?: {
     userId: number;
     trackGroupId: number;
@@ -17,6 +21,8 @@ interface LoggedInUser {
     createdAt: Date;
   }[];
   language?: string;
+  canCreateArtists?: boolean;
+  merchPurchase?: MerchPurchase[];
 }
 
 interface UserTransaction {
@@ -194,4 +200,23 @@ interface Artist {
 
 interface Tag {
   tag: string;
+}
+
+interface ArtistSubscriptionTier {
+  artist?: Artist;
+}
+
+interface ArtistUserSubscription {
+  id: number;
+  amount: number;
+  currency?: string;
+  userId: number;
+  artistSubscriptionTierId?: number;
+  artistSubscriptionTier?: ArtistSubscriptionTier;
+}
+
+interface MerchPurchase {
+  merchId: string;
+  id: string;
+  userId: number;
 }

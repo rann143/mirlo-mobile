@@ -1,10 +1,10 @@
-import { Dimensions, View, Pressable, Text, StyleSheet } from "react-native";
+import { View, Pressable, Text, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { useAuthContext } from "@/state/AuthContext";
 import { useLogoutMutation } from "@/queries/authQueries";
 import { useTranslation } from "react-i18next";
-import * as WebBrowser from "expo-web-browser";
 
 export default function Menu() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function Menu() {
   };
 
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
         justifyContent: "flex-start",
@@ -142,10 +142,8 @@ export default function Menu() {
                   marginBottom: 30,
                 },
               ]}
-              onPress={async () => {
-                await WebBrowser.openBrowserAsync(
-                  "https://mirlo.space/profile",
-                );
+              onPress={() => {
+                router.push("/deleteAccount");
               }}
             >
               <Text style={{ fontSize: 20, color: "red" }}>
@@ -156,7 +154,7 @@ export default function Menu() {
           )}
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
